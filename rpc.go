@@ -2,7 +2,7 @@ package plugin
 
 import (
 	"context"
-	"encoding/gob"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/rpc"
@@ -15,15 +15,6 @@ const (
 	PluginName = "payment_channel"
 )
 
-func init() {
-	// 注册 gob 需要透传的具体类型，否则 map[string]any 中的嵌套结构会报未注册错误。
-	gob.Register(InputField{})
-	gob.Register(map[string]InputField{})
-	gob.Register(map[string]*InputField{})
-	gob.Register([]InputField{})
-	gob.Register([]*InputField{})
-}
-
 // HandshakeConfig 约束宿主与插件的握手参数，避免错误进程被当作插件启动。
 var HandshakeConfig = hplugin.HandshakeConfig{
 	ProtocolVersion:  1,
@@ -33,7 +24,7 @@ var HandshakeConfig = hplugin.HandshakeConfig{
 
 var (
 	// ErrNoImplementation 当 RPC 服务未准备好时返回。
-	ErrNoImplementation = errors.New("plugin: implementation not available")
+	ErrNoImplementation = errors.New("插件实现不可用")
 )
 
 // RPCPlugin 将 PaymentChannel 封装成 go-plugin 可识别的插件类型。
@@ -42,12 +33,12 @@ type RPCPlugin struct {
 }
 
 // Server 启动 RPC 服务端。
-func (p *RPCPlugin) Server(*hplugin.MuxBroker) (interface{}, error) {
+func (p *RPCPlugin) Server(b *hplugin.MuxBroker) (interface{}, error) {
 	return &RPCServer{Impl: p.Impl}, nil
 }
 
 // Client 构造 RPC 客户端代理。
-func (p *RPCPlugin) Client(_ *hplugin.MuxBroker, c *rpc.Client) (interface{}, error) {
+func (p *RPCPlugin) Client(b *hplugin.MuxBroker, c *rpc.Client) (interface{}, error) {
 	return &RPCClient{client: c}, nil
 }
 
@@ -56,20 +47,34 @@ type RPCServer struct {
 	Impl PaymentChannel
 }
 
-func (s *RPCServer) Invoke(args *InvokeArgs, resp *map[string]any) error {
+func (s *RPCServer) Invoke(args *InvokeArgs, resp *[]byte) error {
 	if s == nil || s.Impl == nil {
 		return ErrNoImplementation
 	}
 	if args == nil {
 		return fmt.Errorf("调用参数为空")
 	}
-	result, err := s.Impl.Call(context.Background(), args.Func, args.Payload)
+	req, err := decodeCallRequest(args.Payload)
 	if err != nil {
 		return err
 	}
-	if result != nil && resp != nil {
-		*resp = result
+	ctx := context.Background()
+	result, err := s.Impl.Call(ctx, args.Func, req)
+	if err != nil {
+		return err
 	}
+	if resp == nil {
+		return nil
+	}
+	if result == nil {
+		*resp = []byte("{}")
+		return nil
+	}
+	out, err := json.Marshal(result)
+	if err != nil {
+		return fmt.Errorf("序列化响应失败: %w", err)
+	}
+	*resp = out
 	return nil
 }
 
@@ -79,18 +84,22 @@ type RPCClient struct {
 }
 
 func (c *RPCClient) Call(ctx context.Context, funcName string, req *CallRequest) (map[string]any, error) {
-	args := &InvokeArgs{Func: funcName, Payload: req}
-	var resp map[string]any
+	payload, err := encodeCallRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	args := &InvokeArgs{Func: funcName, Payload: payload}
+	var resp []byte
 	if err := callRPC(ctx, c.client, "Plugin.Invoke", args, &resp); err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return decodeCallResponse(resp)
 }
 
 // InvokeArgs 是 RPC 调用参数，需要导出以满足 net/rpc 要求。
 type InvokeArgs struct {
-	Func    string       `json:"func"`
-	Payload *CallRequest `json:"payload"`
+	Func    string `json:"func"`
+	Payload []byte `json:"payload"`
 }
 
 func callRPC(ctx context.Context, client *rpc.Client, method string, req any, resp any) error {
@@ -108,4 +117,40 @@ func callRPC(ctx context.Context, client *rpc.Client, method string, req any, re
 		_ = client.Close()
 		return ctx.Err()
 	}
+}
+
+func decodeCallResponse(payload []byte) (map[string]any, error) {
+	if len(payload) == 0 {
+		return map[string]any{}, nil
+	}
+	var out map[string]any
+	if err := json.Unmarshal(payload, &out); err != nil {
+		return nil, fmt.Errorf("解析响应失败: %w", err)
+	}
+	if out == nil {
+		out = map[string]any{}
+	}
+	return out, nil
+}
+
+func encodeCallRequest(req *CallRequest) ([]byte, error) {
+	if req == nil {
+		return []byte("null"), nil
+	}
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("序列化请求失败: %w", err)
+	}
+	return payload, nil
+}
+
+func decodeCallRequest(payload []byte) (*CallRequest, error) {
+	if len(payload) == 0 || string(payload) == "null" {
+		return &CallRequest{}, nil
+	}
+	var req CallRequest
+	if err := json.Unmarshal(payload, &req); err != nil {
+		return nil, fmt.Errorf("解析请求失败: %w", err)
+	}
+	return &req, nil
 }

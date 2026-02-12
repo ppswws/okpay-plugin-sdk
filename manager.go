@@ -260,15 +260,18 @@ func (m *Manager) InvokeFunc(ctx context.Context, id, funcName string, call func
 
 	rpcClient, err := client.Client()
 	if err != nil {
+		release(true)
 		return fmt.Errorf("启动插件失败: %w", err)
 	}
 
 	raw, err := rpcClient.Dispense(PluginName)
 	if err != nil {
+		release(true)
 		return fmt.Errorf("获取插件实例失败: %w", err)
 	}
 	channel, ok := raw.(PaymentChannel)
 	if !ok {
+		release(true)
 		return fmt.Errorf("插件实例类型不匹配")
 	}
 	start := time.Now()
@@ -307,6 +310,7 @@ func (m *Manager) newClient(path string) (*hplugin.Client, error) {
 		AllowedProtocols: []hplugin.Protocol{hplugin.ProtocolNetRPC},
 		Stderr:           m.stderr,
 		Logger:           m.logger,
+		StartTimeout:     2 * time.Second,
 	}
 	if cfg.Logger == nil {
 		cfg.Logger = hclog.NewNullLogger()
