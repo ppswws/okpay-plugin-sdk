@@ -25,7 +25,8 @@ type OrderPayload struct {
 	ReturnURL  string    `json:"return_url"`
 	Param      string    `json:"param"`
 	Domain     string    `json:"domain"`
-	IP         string    `json:"ip"`
+	IPBuyer    string    `json:"ip_buyer"`
+	IPSource   string    `json:"ip_source"`
 	Buyer      string    `json:"buyer"`
 	Status     int16     `json:"status"`
 	Notify     int16     `json:"notify"`
@@ -33,7 +34,6 @@ type OrderPayload struct {
 	ReqCount   int16     `json:"req_count"`
 	ReqBody    string    `json:"req_body"`
 	RespBody   string    `json:"resp_body"`
-	ErrCode    string    `json:"err_code"`
 	Ext        string    `json:"ext"`
 	Err        string    `json:"err"`
 	Endtime    time.Time `json:"endtime"`
@@ -52,7 +52,6 @@ type RefundPayload struct {
 	ReqMs       int32     `json:"req_ms"`
 	ReqBody     string    `json:"req_body"`
 	RespBody    string    `json:"resp_body"`
-	ErrCode     string    `json:"err_code"`
 	Status      int16     `json:"status"`
 	Remark      string    `json:"remark"`
 	Endtime     time.Time `json:"endtime"`
@@ -69,12 +68,14 @@ type TransferPayload struct {
 	Channel    int64     `json:"channel"`
 	Money      int64     `json:"money"`
 	Fee        int64     `json:"fee"`
-	Account    string    `json:"account"`
-	Username   string    `json:"username"`
+	BankName   string    `json:"bank_name"`
+	CardName   string    `json:"card_name"`
+	CardNo     string    `json:"card_no"`
+	BranchName string    `json:"branch_name"`
+	NotifyURL  string    `json:"notify_url"`
 	ReqMs      int32     `json:"req_ms"`
 	ReqBody    string    `json:"req_body"`
 	RespBody   string    `json:"resp_body"`
-	ErrCode    string    `json:"err_code"`
 	Status     int16     `json:"status"`
 	Remark     string    `json:"remark"`
 	Result     string    `json:"result"`

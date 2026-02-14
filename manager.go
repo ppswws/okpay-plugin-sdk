@@ -400,6 +400,12 @@ func (m *Manager) invokeInfo(ctx context.Context, channel PaymentChannel) (*Plug
 		return nil, fmt.Errorf("info 返回为空")
 	}
 	info := &PluginInfo{}
+	if len(result) > 0 {
+		info.Raw = make(map[string]any, len(result))
+		for key, val := range result {
+			info.Raw[key] = val
+		}
+	}
 	if id, ok := result["id"].(string); ok {
 		info.ID = id
 	}
@@ -409,26 +415,36 @@ func (m *Manager) invokeInfo(ctx context.Context, channel PaymentChannel) (*Plug
 	if link, ok := result["link"].(string); ok {
 		info.Link = link
 	}
-	if types, ok := result["paytypes"].([]string); ok {
-		info.Paytypes = types
+	if types, ok := result["paytypes"]; ok {
+		if paytypes, ok := types.([]string); ok {
+			info.Paytypes = paytypes
+		} else if typesAny, ok := types.([]any); ok {
+			info.Paytypes = toStringSlice(typesAny)
+		} else {
+			return nil, fmt.Errorf("info paytypes 类型错误")
+		}
 	}
-	if typesAny, ok := result["paytypes"].([]any); ok {
-		info.Paytypes = toStringSlice(typesAny)
+	if types, ok := result["transtypes"]; ok {
+		if transtypes, ok := types.([]string); ok {
+			info.Transtypes = transtypes
+		} else if typesAny, ok := types.([]any); ok {
+			info.Transtypes = toStringSlice(typesAny)
+		} else {
+			return nil, fmt.Errorf("info transtypes 类型错误")
+		}
 	}
-	if transtypes, ok := result["transtypes"].([]string); ok {
-		info.Transtypes = transtypes
-	}
-	if transtypesAny, ok := result["transtypes"].([]any); ok {
-		info.Transtypes = toStringSlice(transtypesAny)
-	}
-	if inputs, ok := result["inputs"].(map[string]InputField); ok {
-		info.Inputs = inputs
-	} else if rawInputs, ok := result["inputs"].(map[string]any); ok {
-		info.Inputs = make(map[string]InputField, len(rawInputs))
-		for key, val := range rawInputs {
-			if m := toInputField(val); m != nil {
-				info.Inputs[key] = *m
+	if inputs, ok := result["inputs"]; ok {
+		if inputMap, ok := inputs.(map[string]InputField); ok {
+			info.Inputs = inputMap
+		} else if rawInputs, ok := inputs.(map[string]any); ok {
+			info.Inputs = make(map[string]InputField, len(rawInputs))
+			for key, val := range rawInputs {
+				if m := toInputField(val); m != nil {
+					info.Inputs[key] = *m
+				}
 			}
+		} else {
+			return nil, fmt.Errorf("info inputs 类型错误")
 		}
 	}
 	if note, ok := result["note"].(string); ok {
@@ -436,6 +452,12 @@ func (m *Manager) invokeInfo(ctx context.Context, channel PaymentChannel) (*Plug
 	}
 	if info.ID == "" || info.Name == "" {
 		return nil, fmt.Errorf("info 缺少 id/name")
+	}
+	if len(info.Paytypes) == 0 {
+		return nil, fmt.Errorf("info 缺少 paytypes")
+	}
+	if len(info.Inputs) == 0 {
+		return nil, fmt.Errorf("info 缺少 inputs")
 	}
 	return info, nil
 }

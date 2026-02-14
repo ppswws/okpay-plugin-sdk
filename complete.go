@@ -25,17 +25,17 @@ type CompleteTransferRequest struct {
 	Result     string `json:"result,omitempty"`
 }
 
-// CompleteOrderFromCall 通过反向 RPC 通知核心完成订单。
-func CompleteOrderFromCall(ctx context.Context, call *CallRequest, req CompleteOrderRequest) error {
+// CompleteOrder 通过反向 RPC 通知核心完成订单。
+func CompleteOrder(ctx context.Context, call *CallRequest, req CompleteOrderRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/order", &req)
 }
 
-// CompleteRefundFromCall 通过反向 RPC 通知核心完成退款。
-func CompleteRefundFromCall(ctx context.Context, call *CallRequest, req CompleteRefundRequest) error {
+// CompleteRefund 通过反向 RPC 通知核心完成退款。
+func CompleteRefund(ctx context.Context, call *CallRequest, req CompleteRefundRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/refund", &req)
 }
 
-// CompleteTransferFromCall 通过反向 RPC 通知核心完成转账。
-func CompleteTransferFromCall(ctx context.Context, call *CallRequest, req CompleteTransferRequest) error {
+// CompleteTransfer 通过反向 RPC 通知核心完成转账。
+func CompleteTransfer(ctx context.Context, call *CallRequest, req CompleteTransferRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/transfer", &req)
 }

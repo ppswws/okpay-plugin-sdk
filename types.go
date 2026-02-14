@@ -20,6 +20,7 @@ type PluginInfo struct {
 	Transtypes []string              `json:"transtypes,omitempty"`
 	Inputs     map[string]InputField `json:"inputs,omitempty"`
 	Note       string                `json:"note,omitempty"`
+	Raw        map[string]any        `json:"-"`
 }
 
 // InputField 定义插件动态表单的输入项。
@@ -58,24 +59,12 @@ func (p *PluginInfo) ToMap() map[string]any {
 	if p == nil {
 		return map[string]any{}
 	}
-	out := map[string]any{
-		"id":   p.ID,
-		"name": p.Name,
+	if len(p.Raw) == 0 {
+		return map[string]any{}
 	}
-	if p.Link != "" {
-		out["link"] = p.Link
-	}
-	if len(p.Paytypes) > 0 {
-		out["paytypes"] = p.Paytypes
-	}
-	if len(p.Transtypes) > 0 {
-		out["transtypes"] = p.Transtypes
-	}
-	if len(p.Inputs) > 0 {
-		out["inputs"] = p.Inputs
-	}
-	if p.Note != "" {
-		out["note"] = p.Note
+	out := make(map[string]any, len(p.Raw))
+	for key, val := range p.Raw {
+		out[key] = val
 	}
 	return out
 }
