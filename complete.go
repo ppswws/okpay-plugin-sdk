@@ -7,6 +7,8 @@ type CompleteOrderRequest struct {
 	TradeNo    string `json:"tradeNo"`
 	APITradeNo string `json:"apiTradeNo,omitempty"`
 	Buyer      string `json:"buyer,omitempty"`
+	TS         int64  `json:"ts,omitempty"`
+	Sign       string `json:"sign,omitempty"`
 }
 
 // CompleteRefundRequest 表示退款完成回调参数。
@@ -15,6 +17,8 @@ type CompleteRefundRequest struct {
 	Status      int16  `json:"status"`
 	APIRefundNo string `json:"apiRefundNo,omitempty"`
 	RespBody    string `json:"respBody,omitempty"`
+	TS          int64  `json:"ts,omitempty"`
+	Sign        string `json:"sign,omitempty"`
 }
 
 // CompleteTransferRequest 表示转账完成回调参数。
@@ -23,6 +27,8 @@ type CompleteTransferRequest struct {
 	Status     int16  `json:"status"`
 	APITradeNo string `json:"apiTradeNo,omitempty"`
 	Result     string `json:"result,omitempty"`
+	TS         int64  `json:"ts,omitempty"`
+	Sign       string `json:"sign,omitempty"`
 }
 
 // CompleteOrder 通过反向 RPC 通知核心完成订单。

@@ -62,6 +62,20 @@ func ensurePluginPath(path, base string) error {
 	return nil
 }
 
+func ensureRegularFile(path string) error {
+	info, err := os.Lstat(path)
+	if err != nil {
+		return fmt.Errorf("无法访问插件文件: %w", err)
+	}
+	if info.Mode()&os.ModeSymlink != 0 {
+		return fmt.Errorf("禁止加载符号链接插件: %w", fmt.Errorf("forbid symlink"))
+	}
+	if info.IsDir() {
+		return fmt.Errorf("路径是目录: %s", path)
+	}
+	return nil
+}
+
 func validatePluginID(id string) error {
 	if strings.TrimSpace(id) == "" {
 		return fmt.Errorf("插件 ID 不能为空")

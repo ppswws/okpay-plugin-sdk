@@ -158,6 +158,64 @@ func (m *Manager) SaveAndInspect(ctx context.Context, filename string, content [
 	return info, destPath, nil
 }
 
+// InstallFromPath 从指定路径安装插件（仅临时校验，成功后落盘到插件目录）。
+func (m *Manager) InstallFromPath(ctx context.Context, path string) (*PluginInfo, string, error) {
+	if strings.TrimSpace(path) == "" {
+		return nil, "", fmt.Errorf("插件路径为空")
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := ensureRegularFile(path); err != nil {
+		return nil, "", err
+	}
+	if strings.TrimSpace(m.dir) == "" {
+		return nil, "", fmt.Errorf("插件目录未配置")
+	}
+
+	tempFile, err := os.CreateTemp(m.dir, "upload-*")
+	if err != nil {
+		return nil, "", fmt.Errorf("创建临时文件失败: %w", err)
+	}
+	tempPath := tempFile.Name()
+	defer func() { _ = os.Remove(tempPath) }()
+
+	src, err := os.Open(path)
+	if err != nil {
+		_ = tempFile.Close()
+		return nil, "", fmt.Errorf("读取插件文件失败: %w", err)
+	}
+	if _, err := io.Copy(tempFile, src); err != nil {
+		_ = src.Close()
+		_ = tempFile.Close()
+		return nil, "", fmt.Errorf("写入临时文件失败: %w", err)
+	}
+	_ = src.Close()
+	if err := tempFile.Close(); err != nil {
+		return nil, "", fmt.Errorf("写入临时文件失败: %w", err)
+	}
+
+	if err := ensurePluginPath(tempPath, m.dir); err != nil {
+		return nil, "", err
+	}
+	info, err := m.Inspect(ctx, tempPath)
+	if err != nil {
+		return nil, "", fmt.Errorf("检测插件失败: %w", err)
+	}
+	if err := validatePluginID(info.ID); err != nil {
+		return nil, "", fmt.Errorf("插件 ID 非法: %w", err)
+	}
+	destPath := filepath.Join(m.dir, info.ID)
+	if err := ensureInsideDir(destPath, m.dir); err != nil {
+		return nil, "", fmt.Errorf("插件路径非法: %w", err)
+	}
+	if err := os.Rename(tempPath, destPath); err != nil {
+		return nil, "", fmt.Errorf("覆盖插件文件失败: %w", err)
+	}
+	m.invalidate(info.ID)
+	return info, destPath, nil
+}
+
 // Remove 删除已注册的插件文件并关闭对应的进程复用客户端。
 func (m *Manager) Remove(id string) error {
 	if err := validatePluginID(id); err != nil {

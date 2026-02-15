@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -22,6 +21,12 @@ type httpEnvelopeWithData struct {
 }
 
 const paymentConfigKey = "local_host"
+const callbackSecretKey = "complete_secret"
+
+var callbackHTTPClient = NewHTTPClient(HTTPClientConfig{
+	Timeout: 5 * time.Second,
+	Retry:   1,
+})
 
 func getConfigString(conf map[string]any, key string) string {
 	if conf == nil {
@@ -45,26 +50,19 @@ func completeViaHTTP(ctx context.Context, call *CallRequest, path string, payloa
 	}
 	base = strings.TrimRight(base, "/")
 	url := base + path
-	data, err := json.Marshal(payload)
+	data, err := encodeCallbackPayload(call, payload)
 	if err != nil {
 		return fmt.Errorf("序列化请求失败: %w", err)
 	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
-	if err != nil {
-		return fmt.Errorf("创建请求失败: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
+	respBody, _, _, err := callbackHTTPClient.Do(ctx, http.MethodPost, url, string(data), "application/json")
 	if err != nil {
 		return fmt.Errorf("请求失败: %w", err)
 	}
-	defer resp.Body.Close()
 	var out httpEnvelope
-	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+	if err := json.Unmarshal([]byte(respBody), &out); err != nil {
 		return fmt.Errorf("解析响应失败: %w", err)
 	}
 	if out.Code != 0 {
@@ -87,26 +85,19 @@ func completeViaHTTPWithData(ctx context.Context, call *CallRequest, path string
 	}
 	base = strings.TrimRight(base, "/")
 	url := base + path
-	data, err := json.Marshal(payload)
+	data, err := encodeCallbackPayload(call, payload)
 	if err != nil {
 		return fmt.Errorf("序列化请求失败: %w", err)
 	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(data))
-	if err != nil {
-		return fmt.Errorf("创建请求失败: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
+	respBody, _, _, err := callbackHTTPClient.Do(ctx, http.MethodPost, url, string(data), "application/json")
 	if err != nil {
 		return fmt.Errorf("请求失败: %w", err)
 	}
-	defer resp.Body.Close()
 	var envelope httpEnvelopeWithData
-	if err := json.NewDecoder(resp.Body).Decode(&envelope); err != nil {
+	if err := json.Unmarshal([]byte(respBody), &envelope); err != nil {
 		return fmt.Errorf("解析响应失败: %w", err)
 	}
 	if envelope.Code != 0 {
@@ -122,4 +113,28 @@ func completeViaHTTPWithData(ctx context.Context, call *CallRequest, path string
 		}
 	}
 	return nil
+}
+
+func encodeCallbackPayload(call *CallRequest, payload any) ([]byte, error) {
+	if call == nil {
+		return json.Marshal(payload)
+	}
+	secret := getConfigString(call.Config, callbackSecretKey)
+	if secret == "" {
+		return nil, fmt.Errorf("complete secret 未配置")
+	}
+	raw, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	var data map[string]any
+	if err := json.Unmarshal(raw, &data); err != nil {
+		return nil, err
+	}
+	if data == nil {
+		data = map[string]any{}
+	}
+	data["ts"] = time.Now().UnixMilli()
+	data["sign"] = SignPayload(data, secret)
+	return json.Marshal(data)
 }
