@@ -7,7 +7,7 @@ import (
 
 // PaymentChannel 定义支付插件标准接口，主程序通过 go-plugin 调用。
 type PaymentChannel interface {
-	// Call 通用扩展调用（函数名由插件自定义，如 info/create/query/refund/notify/return）。
+	// Call 通用扩展调用（函数名由插件自定义，如 info/create/query/refund/notify）。
 	Call(ctx context.Context, funcName string, req *CallRequest) (map[string]any, error)
 }
 
@@ -39,7 +39,7 @@ type CallRequest struct {
 	Order    map[string]any `json:"order,omitempty"`    // 订单信息
 	Refund   map[string]any `json:"refund,omitempty"`   // 退款信息
 	Transfer map[string]any `json:"transfer,omitempty"` // 转账信息
-	Config   map[string]any `json:"conf"`               // 全局配置（如 notify/return 前缀）
+	Config   map[string]any `json:"conf"`               // 全局配置（如 notify 前缀）
 	Request  HTTPRequest    `json:"req"`                // HTTP 请求上下文
 	BrokerID uint32         `json:"brokerId,omitempty"` // 回调 RPC broker ID
 }
