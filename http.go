@@ -20,7 +20,7 @@ type httpEnvelopeWithData struct {
 	Data    json.RawMessage `json:"data,omitempty"`
 }
 
-const paymentConfigKey = "local_host"
+const paymentConfigKey = "localhost"
 const callbackSecretKey = "complete_secret"
 
 var callbackHTTPClient = NewHTTPClient(HTTPClientConfig{
