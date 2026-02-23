@@ -38,7 +38,7 @@ type CallRequest struct {
 	Channel  map[string]any `json:"channel"`            // 通道配置
 	Order    map[string]any `json:"order,omitempty"`    // 订单信息
 	Refund   map[string]any `json:"refund,omitempty"`   // 退款信息
-	Transfer map[string]any `json:"transfer,omitempty"` // 转账信息
+	Transfer map[string]any `json:"transfer,omitempty"` // 代付信息
 	Config   map[string]any `json:"conf"`               // 全局配置（如 notify 前缀）
 	Request  HTTPRequest    `json:"req"`                // HTTP 请求上下文
 	BrokerID uint32         `json:"brokerId,omitempty"` // 回调 RPC broker ID

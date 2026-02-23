@@ -21,7 +21,7 @@ type CompleteRefundRequest struct {
 	Sign        string `json:"sign,omitempty"`
 }
 
-// CompleteTransferRequest 表示转账完成回调参数。
+// CompleteTransferRequest 表示代付完成回调参数。
 type CompleteTransferRequest struct {
 	TradeNo    string `json:"tradeNo"`
 	Status     int16  `json:"status"`
@@ -41,7 +41,7 @@ func CompleteRefund(ctx context.Context, call *CallRequest, req CompleteRefundRe
 	return completeViaHTTP(ctx, call, "/api/complete/refund", &req)
 }
 
-// CompleteTransfer 通过反向 RPC 通知核心完成转账。
+// CompleteTransfer 通过反向 RPC 通知核心完成代付。
 func CompleteTransfer(ctx context.Context, call *CallRequest, req CompleteTransferRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/transfer", &req)
 }

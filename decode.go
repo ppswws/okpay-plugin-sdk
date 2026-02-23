@@ -16,8 +16,8 @@ type OrderPayload struct {
 	Channel    int64     `json:"channel"`
 	CID        int64     `json:"cid"`
 	Code       int64     `json:"code"`
-	Name       string    `json:"name"`
-	Money      int64     `json:"money"`
+	Subject    string    `json:"subject"`
+	Amount     int64     `json:"amount"`
 	Real       int64     `json:"real"`
 	Fee        int64     `json:"fee"`
 	Get        int64     `json:"get"`
@@ -48,7 +48,7 @@ type RefundPayload struct {
 	OutRefundNo string    `json:"out_refund_no"`
 	UID         int64     `json:"uid"`
 	Channel     int64     `json:"channel"`
-	Money       int64     `json:"money"`
+	Amount      int64     `json:"amount"`
 	ReqMs       int32     `json:"req_ms"`
 	ReqBody     string    `json:"req_body"`
 	RespBody    string    `json:"resp_body"`
@@ -66,7 +66,7 @@ type TransferPayload struct {
 	OutTradeNo string    `json:"out_trade_no"`
 	UID        int64     `json:"uid"`
 	Channel    int64     `json:"channel"`
-	Money      int64     `json:"money"`
+	Amount     int64     `json:"amount"`
 	Fee        int64     `json:"fee"`
 	BankName   string    `json:"bank_name"`
 	CardName   string    `json:"card_name"`
