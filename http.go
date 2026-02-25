@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"okpay/core/sign"
 )
 
 type httpEnvelope struct {
@@ -135,6 +137,6 @@ func encodeCallbackPayload(call *CallRequest, payload any) ([]byte, error) {
 		data = map[string]any{}
 	}
 	data["ts"] = time.Now().UnixMilli()
-	data["sign"] = SignPayload(data, secret)
+	data["sign"] = sign.SignPayload(data, secret)
 	return json.Marshal(data)
 }
