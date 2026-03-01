@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"crypto/tls"
 	"io"
 	"net"
 	"net/http"
@@ -63,6 +64,7 @@ func NewHTTPClient(cfg HTTPClientConfig) *HTTPClient {
 		TLSHandshakeTimeout:   2 * time.Second,
 		IdleConnTimeout:       60 * time.Second,
 		MaxIdleConns:          100,
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
 	}
 
 	clientTimeout := connTimeout + reqTimeout

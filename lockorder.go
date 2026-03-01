@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -49,6 +50,10 @@ func LockOrderExt(ctx context.Context, call *CallRequest, tradeNo string, fetch 
 		_, _ = lockOrderData(ctx, call, tradeNo, stats, nil)
 		return nil, err
 	}
+	if msg, ok := errorPayloadMsg(result); ok {
+		_, _ = lockOrderData(ctx, call, tradeNo, stats, nil)
+		return nil, errors.New(msg)
+	}
 	lockedExt, err := lockOrderData(ctx, call, tradeNo, stats, result)
 	if err != nil {
 		return nil, err
@@ -57,9 +62,6 @@ func LockOrderExt(ctx context.Context, call *CallRequest, tradeNo string, fetch 
 		if cached, ok := extractPayloadFromAny(lockedExt); ok && cached != nil {
 			return cached, nil
 		}
-	}
-	if result == nil {
-		return nil, nil
 	}
 	if out, ok := extractPayloadFromAny(result); ok {
 		return out, nil
@@ -128,4 +130,20 @@ func extractPayloadFromAny(value any) (map[string]any, bool) {
 	default:
 		return nil, false
 	}
+}
+
+func errorPayloadMsg(value any) (string, bool) {
+	payload, ok := extractPayloadFromAny(value)
+	if !ok || payload == nil {
+		return "", false
+	}
+	t, ok := payload["type"].(string)
+	if !ok || t != "error" {
+		return "", false
+	}
+	msg := strings.TrimSpace(fmt.Sprint(payload["msg"]))
+	if msg == "" {
+		msg = "支付通道返回错误"
+	}
+	return msg, true
 }

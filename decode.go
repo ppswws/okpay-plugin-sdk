@@ -136,3 +136,26 @@ func decodeTo[T any](raw map[string]any) *T {
 	}
 	return &out
 }
+
+// DecodeConfig parses req.Channel["config"] into a map.
+func DecodeConfig(req *CallRequest) map[string]any {
+	if req == nil {
+		return map[string]any{}
+	}
+	raw := req.Channel["config"]
+	switch v := raw.(type) {
+	case map[string]any:
+		return v
+	case string:
+		cfg := map[string]any{}
+		if err := json.Unmarshal([]byte(v), &cfg); err == nil {
+			return cfg
+		}
+	case []byte:
+		cfg := map[string]any{}
+		if err := json.Unmarshal(v, &cfg); err == nil {
+			return cfg
+		}
+	}
+	return map[string]any{}
+}

@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -72,19 +73,94 @@ func IsMobileQQ(ua string) bool {
 // IsMobile 判断移动端环境。
 func IsMobile(ua string) bool {
 	ua = strings.ToLower(ua)
-	return containsAny(ua,
+	needles := []string{
 		"android", "midp", "nokia", "mobile", "iphone", "ipod",
 		"blackberry", "windows phone", "tablet", "ipad",
 		"xiaomi", "huawei", "honor", "oppo", "vivo",
 		"meizu", "realme", "oneplus", "iqoo",
-	)
-}
-
-func containsAny(haystack string, needles ...string) bool {
+	}
 	for _, n := range needles {
-		if n != "" && strings.Contains(haystack, n) {
+		if n != "" && strings.Contains(ua, n) {
 			return true
 		}
 	}
 	return false
+}
+
+// ReadStringSlice normalizes config value into a string slice.
+func ReadStringSlice(value any) []string {
+	out := []string{}
+	switch v := value.(type) {
+	case []string:
+		for _, item := range v {
+			if item != "" {
+				out = append(out, item)
+			}
+		}
+	case []any:
+		for _, item := range v {
+			val := fmt.Sprint(item)
+			if val != "" {
+				out = append(out, val)
+			}
+		}
+	case string:
+		for _, item := range strings.Split(v, ",") {
+			if item != "" {
+				out = append(out, item)
+			}
+		}
+	case []byte:
+		for _, item := range strings.Split(string(v), ",") {
+			if item != "" {
+				out = append(out, item)
+			}
+		}
+	}
+	return out
+}
+
+// ModeSet converts a string slice into a lookup set.
+func ModeSet(values []string) map[string]bool {
+	out := map[string]bool{}
+	for _, v := range values {
+		if v != "" {
+			out[v] = true
+		}
+	}
+	return out
+}
+
+// AllowMode returns true when modes is empty or code is enabled.
+func AllowMode(modes map[string]bool, code string) bool {
+	if len(modes) == 0 {
+		return true
+	}
+	return modes[code]
+}
+
+// GetQuery fetches a query param safely from CallRequest.
+func GetQuery(req *CallRequest, key string) string {
+	if req == nil || req.Request.Query == nil {
+		return ""
+	}
+	value, ok := req.Request.Query[key]
+	if !ok || isNilValue(value) {
+		return ""
+	}
+	return fmt.Sprint(value)
+}
+
+// isNilValue handles typed-nil values stored in interface{}.
+func isNilValue(value any) bool {
+	if value == nil {
+		return true
+	}
+	rv := reflect.ValueOf(value)
+	switch rv.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.Interface, reflect.Slice:
+		return rv.IsNil()
+	default:
+		return false
+	}
 }
