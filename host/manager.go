@@ -1,4 +1,4 @@
-package plugin
+package host
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	hplugin "github.com/hashicorp/go-plugin"
+	"okpay/payment/plugin/contract"
 )
 
 const (
@@ -114,7 +115,7 @@ func NewManager(opts ...Option) (*Manager, error) {
 }
 
 // SaveAndInspect 将上传的二进制写入磁盘（按 info.ID 命名），并返回插件信息，上传相同 ID 时直接覆盖原文件。
-func (m *Manager) SaveAndInspect(ctx context.Context, filename string, content []byte) (*PluginInfo, string, error) {
+func (m *Manager) SaveAndInspect(ctx context.Context, filename string, content []byte) (*contract.PluginInfo, string, error) {
 	if len(content) == 0 {
 		return nil, "", fmt.Errorf("上传内容为空: %w", errors.New("content empty"))
 	}
@@ -159,7 +160,7 @@ func (m *Manager) SaveAndInspect(ctx context.Context, filename string, content [
 }
 
 // InstallFromPath 从指定路径安装插件（仅临时校验，成功后落盘到插件目录）。
-func (m *Manager) InstallFromPath(ctx context.Context, path string) (*PluginInfo, string, error) {
+func (m *Manager) InstallFromPath(ctx context.Context, path string) (*contract.PluginInfo, string, error) {
 	if strings.TrimSpace(path) == "" {
 		return nil, "", fmt.Errorf("插件路径为空")
 	}
@@ -237,7 +238,7 @@ func (m *Manager) Remove(id string) error {
 }
 
 // Inspect 读取指定路径的插件信息（不落盘、不缓存）。
-func (m *Manager) Inspect(ctx context.Context, path string) (*PluginInfo, error) {
+func (m *Manager) Inspect(ctx context.Context, path string) (*contract.PluginInfo, error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -268,11 +269,11 @@ func (m *Manager) Inspect(ctx context.Context, path string) (*PluginInfo, error)
 		return nil, fmt.Errorf("启动插件失败: %w", err)
 	}
 
-	raw, err := rpcClient.Dispense(PluginName)
+	raw, err := rpcClient.Dispense(contract.PluginName)
 	if err != nil {
 		return nil, fmt.Errorf("获取插件实例失败: %w", err)
 	}
-	channel, ok := raw.(PaymentChannel)
+	channel, ok := raw.(contract.PaymentChannel)
 	if !ok {
 		return nil, fmt.Errorf("插件实例类型不匹配")
 	}
@@ -284,10 +285,10 @@ func (m *Manager) Inspect(ctx context.Context, path string) (*PluginInfo, error)
 }
 
 // Call 直接调用指定函数名并返回结果，免去手写 Invoke 包装。
-func (m *Manager) Call(ctx context.Context, id, funcName string, req *CallRequest) (map[string]any, error) {
+func (m *Manager) Call(ctx context.Context, id, funcName string, req *contract.CallRequest) (map[string]any, error) {
 	// 对 InvokeFunc 的薄包装，处理返回值收集。
 	var resp map[string]any
-	err := m.InvokeFunc(ctx, id, funcName, func(ctx context.Context, ch PaymentChannel) error {
+	err := m.InvokeFunc(ctx, id, funcName, func(ctx context.Context, ch contract.PaymentChannel) error {
 		out, err := ch.Call(ctx, funcName, req)
 		if err != nil {
 			return err
@@ -299,7 +300,7 @@ func (m *Manager) Call(ctx context.Context, id, funcName string, req *CallReques
 }
 
 // InvokeFunc 执行带函数名的插件操作。
-func (m *Manager) InvokeFunc(ctx context.Context, id, funcName string, call func(context.Context, PaymentChannel) error) error {
+func (m *Manager) InvokeFunc(ctx context.Context, id, funcName string, call func(context.Context, contract.PaymentChannel) error) error {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -322,12 +323,12 @@ func (m *Manager) InvokeFunc(ctx context.Context, id, funcName string, call func
 		return fmt.Errorf("启动插件失败: %w", err)
 	}
 
-	raw, err := rpcClient.Dispense(PluginName)
+	raw, err := rpcClient.Dispense(contract.PluginName)
 	if err != nil {
 		release(true)
 		return fmt.Errorf("获取插件实例失败: %w", err)
 	}
-	channel, ok := raw.(PaymentChannel)
+	channel, ok := raw.(contract.PaymentChannel)
 	if !ok {
 		release(true)
 		return fmt.Errorf("插件实例类型不匹配")
@@ -362,8 +363,8 @@ func (m *Manager) newClient(path string) (*hplugin.Client, error) {
 		return nil, err
 	}
 	cfg := &hplugin.ClientConfig{
-		HandshakeConfig:  HandshakeConfig,
-		Plugins:          map[string]hplugin.Plugin{PluginName: &RPCPlugin{}},
+		HandshakeConfig:  contract.HandshakeConfig,
+		Plugins:          map[string]hplugin.Plugin{contract.PluginName: &contract.RPCPlugin{}},
 		Cmd:              exec.Command(path),
 		AllowedProtocols: []hplugin.Protocol{hplugin.ProtocolNetRPC},
 		Stderr:           m.stderr,
@@ -446,18 +447,18 @@ func (m *Manager) recordMetrics(id string, d time.Duration) {
 	mt.total += d
 }
 
-func (m *Manager) invokeInfo(ctx context.Context, channel PaymentChannel) (*PluginInfo, error) {
+func (m *Manager) invokeInfo(ctx context.Context, channel contract.PaymentChannel) (*contract.PluginInfo, error) {
 	if channel == nil {
 		return nil, fmt.Errorf("实例为空")
 	}
-	result, err := channel.Call(ctx, "info", &CallRequest{})
+	result, err := channel.Call(ctx, "info", &contract.CallRequest{})
 	if err != nil {
 		return nil, err
 	}
 	if result == nil {
 		return nil, fmt.Errorf("info 返回为空")
 	}
-	info := &PluginInfo{}
+	info := &contract.PluginInfo{}
 	if len(result) > 0 {
 		info.Raw = make(map[string]any, len(result))
 		for key, val := range result {
@@ -492,10 +493,10 @@ func (m *Manager) invokeInfo(ctx context.Context, channel PaymentChannel) (*Plug
 		}
 	}
 	if inputs, ok := result["inputs"]; ok {
-		if inputMap, ok := inputs.(map[string]InputField); ok {
+		if inputMap, ok := inputs.(map[string]contract.InputField); ok {
 			info.Inputs = inputMap
 		} else if rawInputs, ok := inputs.(map[string]any); ok {
-			info.Inputs = make(map[string]InputField, len(rawInputs))
+			info.Inputs = make(map[string]contract.InputField, len(rawInputs))
 			for key, val := range rawInputs {
 				if m := toInputField(val); m != nil {
 					info.Inputs[key] = *m

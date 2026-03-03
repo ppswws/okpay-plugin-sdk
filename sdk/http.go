@@ -1,6 +1,7 @@
-package plugin
+package sdk
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"okpay/core/sign"
+	"okpay/payment/plugin/contract"
 )
 
 type httpEnvelope struct {
@@ -35,14 +37,12 @@ func getConfigString(conf map[string]any, key string) string {
 		return ""
 	}
 	if val, ok := conf[key]; ok {
-		if s, ok := val.(string); ok {
-			return strings.TrimSpace(s)
-		}
+		return String(val)
 	}
 	return ""
 }
 
-func completeViaHTTP(ctx context.Context, call *CallRequest, path string, payload any) error {
+func completeViaHTTP(ctx context.Context, call *contract.CallRequest, path string, payload any) error {
 	if call == nil {
 		return fmt.Errorf("call 为空")
 	}
@@ -68,7 +68,7 @@ func completeViaHTTP(ctx context.Context, call *CallRequest, path string, payloa
 		return fmt.Errorf("解析响应失败: %w", err)
 	}
 	if out.Code != 0 {
-		msg := strings.TrimSpace(out.Message)
+		msg := String(out.Message)
 		if msg == "" {
 			msg = "payment 返回错误"
 		}
@@ -77,7 +77,7 @@ func completeViaHTTP(ctx context.Context, call *CallRequest, path string, payloa
 	return nil
 }
 
-func completeViaHTTPWithData(ctx context.Context, call *CallRequest, path string, payload any, out any) error {
+func completeViaHTTPWithData(ctx context.Context, call *contract.CallRequest, path string, payload any, out any) error {
 	if call == nil {
 		return fmt.Errorf("call 为空")
 	}
@@ -103,7 +103,7 @@ func completeViaHTTPWithData(ctx context.Context, call *CallRequest, path string
 		return fmt.Errorf("解析响应失败: %w", err)
 	}
 	if envelope.Code != 0 {
-		msg := strings.TrimSpace(envelope.Message)
+		msg := String(envelope.Message)
 		if msg == "" {
 			msg = "payment 返回错误"
 		}
@@ -117,7 +117,7 @@ func completeViaHTTPWithData(ctx context.Context, call *CallRequest, path string
 	return nil
 }
 
-func encodeCallbackPayload(call *CallRequest, payload any) ([]byte, error) {
+func encodeCallbackPayload(call *contract.CallRequest, payload any) ([]byte, error) {
 	if call == nil {
 		return json.Marshal(payload)
 	}
@@ -125,13 +125,23 @@ func encodeCallbackPayload(call *CallRequest, payload any) ([]byte, error) {
 	if secret == "" {
 		return nil, fmt.Errorf("complete secret 未配置")
 	}
-	raw, err := json.Marshal(payload)
-	if err != nil {
-		return nil, err
-	}
 	var data map[string]any
-	if err := json.Unmarshal(raw, &data); err != nil {
-		return nil, err
+	switch v := payload.(type) {
+	case map[string]any:
+		data = make(map[string]any, len(v)+2)
+		for k, val := range v {
+			data[k] = val
+		}
+	default:
+		raw, err := json.Marshal(payload)
+		if err != nil {
+			return nil, err
+		}
+		dec := json.NewDecoder(bytes.NewReader(raw))
+		dec.UseNumber()
+		if err := dec.Decode(&data); err != nil {
+			return nil, err
+		}
 	}
 	if data == nil {
 		data = map[string]any{}

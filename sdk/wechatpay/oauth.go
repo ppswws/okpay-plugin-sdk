@@ -9,12 +9,12 @@ import (
 
 	"github.com/go-pay/gopay/wechat"
 
-	"okpay/payment/plugin"
+	"okpay/payment/plugin/sdk"
 )
 
 const defaultOAuthScope = "snsapi_base"
 
-var httpClient = plugin.NewHTTPClient(plugin.HTTPClientConfig{})
+var httpClient = sdk.NewHTTPClient(sdk.HTTPClientConfig{})
 
 type miniProgramSessionResp struct {
 	OpenID  string `json:"openid"`

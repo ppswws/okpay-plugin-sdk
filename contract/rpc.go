@@ -1,6 +1,7 @@
-package plugin
+package contract
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -123,8 +124,10 @@ func decodeCallResponse(payload []byte) (map[string]any, error) {
 	if len(payload) == 0 {
 		return map[string]any{}, nil
 	}
+	dec := json.NewDecoder(bytes.NewReader(payload))
+	dec.UseNumber()
 	var out map[string]any
-	if err := json.Unmarshal(payload, &out); err != nil {
+	if err := dec.Decode(&out); err != nil {
 		return nil, fmt.Errorf("解析响应失败: %w", err)
 	}
 	if out == nil {
@@ -148,8 +151,10 @@ func decodeCallRequest(payload []byte) (*CallRequest, error) {
 	if len(payload) == 0 || string(payload) == "null" {
 		return &CallRequest{}, nil
 	}
+	dec := json.NewDecoder(bytes.NewReader(payload))
+	dec.UseNumber()
 	var req CallRequest
-	if err := json.Unmarshal(payload, &req); err != nil {
+	if err := dec.Decode(&req); err != nil {
 		return nil, fmt.Errorf("解析请求失败: %w", err)
 	}
 	return &req, nil

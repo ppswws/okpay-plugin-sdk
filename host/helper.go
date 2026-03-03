@@ -1,4 +1,4 @@
-package plugin
+package host
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"okpay/payment/plugin/contract"
 )
 
 var pluginIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
@@ -86,12 +88,12 @@ func validatePluginID(id string) error {
 	return nil
 }
 
-func toInputField(val any) *InputField {
+func toInputField(val any) *contract.InputField {
 	obj, ok := val.(map[string]any)
 	if !ok {
 		return nil
 	}
-	field := InputField{}
+	field := contract.InputField{}
 	if name, ok := obj["name"].(string); ok {
 		field.Name = name
 	}

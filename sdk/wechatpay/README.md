@@ -1,6 +1,6 @@
 # WeChatPay SDK (Go)
 
-微信支付客户端创建封装（V2/V3）。只做 gopay 客户端初始化，不做支付/退款/分账等高层封装。函数均位于 `payment/plugin/wechatpay`。
+微信支付客户端创建封装（V2/V3）。只做 gopay 客户端初始化，不做支付/退款/分账等高层封装。函数均位于 `payment/plugin/sdk/wechatpay`。
 
 ## 功能范围
 
@@ -21,7 +21,7 @@
 ### 1. APIv2 客户端（支付/退款等 API 由 gopay 提供）
 
 ```go
-import "okpay/payment/plugin/wechatpay"
+import "okpay/payment/plugin/sdk/wechatpay"
 
 client, err := wechatpay.NewV2Client(wechatpay.V2Config{
   AppID:  appID,

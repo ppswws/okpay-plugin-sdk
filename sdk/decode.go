@@ -1,8 +1,10 @@
-package plugin
+package sdk
 
 import (
 	"encoding/json"
 	"time"
+
+	"okpay/payment/plugin/contract"
 )
 
 // OrderPayload 提供插件侧使用的订单结构。
@@ -35,7 +37,7 @@ type OrderPayload struct {
 	ReqBody    string    `json:"req_body"`
 	RespBody   string    `json:"resp_body"`
 	Ext        string    `json:"ext"`
-	Err        string    `json:"err"`
+	Result     string    `json:"result"`
 	Endtime    time.Time `json:"endtime"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
@@ -54,6 +56,7 @@ type RefundPayload struct {
 	RespBody    string    `json:"resp_body"`
 	Status      int16     `json:"status"`
 	Remark      string    `json:"remark"`
+	Result      string    `json:"result"`
 	Endtime     time.Time `json:"endtime"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
@@ -103,32 +106,41 @@ type ChannelPayload struct {
 }
 
 // DecodeOrder 将 map 转为 OrderPayload（失败返回 nil）。
-func DecodeOrder(raw map[string]any) *OrderPayload {
-	return decodeTo[OrderPayload](raw)
+func DecodeOrder(raw any) *OrderPayload {
+	return decodeAnyTo[OrderPayload](raw)
 }
 
 // DecodeRefund 将 map 转为 RefundPayload（失败返回 nil）。
-func DecodeRefund(raw map[string]any) *RefundPayload {
-	return decodeTo[RefundPayload](raw)
+func DecodeRefund(raw any) *RefundPayload {
+	return decodeAnyTo[RefundPayload](raw)
 }
 
 // DecodeTransfer 将 map 转为 TransferPayload（失败返回 nil）。
-func DecodeTransfer(raw map[string]any) *TransferPayload {
-	return decodeTo[TransferPayload](raw)
+func DecodeTransfer(raw any) *TransferPayload {
+	return decodeAnyTo[TransferPayload](raw)
 }
 
 // DecodeChannel 将 map 转为 ChannelPayload（失败返回 nil）。
-func DecodeChannel(raw map[string]any) *ChannelPayload {
-	return decodeTo[ChannelPayload](raw)
+func DecodeChannel(raw any) *ChannelPayload {
+	return decodeAnyTo[ChannelPayload](raw)
 }
 
-func decodeTo[T any](raw map[string]any) *T {
+func decodeAnyTo[T any](raw any) *T {
 	if raw == nil {
 		return nil
 	}
-	data, err := json.Marshal(raw)
-	if err != nil {
-		return nil
+	var data []byte
+	switch v := raw.(type) {
+	case []byte:
+		data = v
+	case string:
+		data = []byte(v)
+	default:
+		encoded, err := json.Marshal(v)
+		if err != nil {
+			return nil
+		}
+		data = encoded
 	}
 	var out T
 	if err := json.Unmarshal(data, &out); err != nil {
@@ -138,24 +150,16 @@ func decodeTo[T any](raw map[string]any) *T {
 }
 
 // DecodeConfig parses req.Channel["config"] into a map.
-func DecodeConfig(req *CallRequest) map[string]any {
+func DecodeConfig(req *contract.CallRequest) map[string]any {
 	if req == nil {
 		return map[string]any{}
 	}
-	raw := req.Channel["config"]
-	switch v := raw.(type) {
-	case map[string]any:
-		return v
-	case string:
-		cfg := map[string]any{}
-		if err := json.Unmarshal([]byte(v), &cfg); err == nil {
-			return cfg
-		}
-	case []byte:
-		cfg := map[string]any{}
-		if err := json.Unmarshal(v, &cfg); err == nil {
-			return cfg
-		}
+	channel := DecodeChannel(req.Channel)
+	if channel == nil || len(channel.Config) == 0 {
+		return map[string]any{}
+	}
+	if cfg, err := DecodeJSONMap(string(channel.Config)); err == nil && cfg != nil {
+		return cfg
 	}
 	return map[string]any{}
 }

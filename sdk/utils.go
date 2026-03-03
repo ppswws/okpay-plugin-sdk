@@ -1,14 +1,18 @@
-package plugin
+package sdk
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
+
+	"okpay/payment/plugin/contract"
 )
 
 // CreateWithHandlers 通用 create：优先直跳渠道，否则回退本地中转。
-func CreateWithHandlers(ctx context.Context, req *CallRequest, handlers map[string]HandlerFunc) (map[string]any, error) {
+func CreateWithHandlers(ctx context.Context, req *contract.CallRequest, handlers map[string]HandlerFunc) (map[string]any, error) {
 	if req == nil {
 		return nil, fmt.Errorf("request 为空")
 	}
@@ -16,7 +20,7 @@ func CreateWithHandlers(ctx context.Context, req *CallRequest, handlers map[stri
 	if order == nil {
 		return nil, fmt.Errorf("订单为空")
 	}
-	payType := strings.TrimSpace(order.Type)
+	payType := String(order.Type)
 	if payType == "" {
 		return nil, fmt.Errorf("支付方式为空")
 	}
@@ -24,7 +28,7 @@ func CreateWithHandlers(ctx context.Context, req *CallRequest, handlers map[stri
 	if handler == nil {
 		return nil, fmt.Errorf("不支持的支付方式")
 	}
-	siteDomain := strings.TrimRight(fmt.Sprint(req.Config["sitedomain"]), "/")
+	siteDomain := strings.TrimRight(String(req.Config["sitedomain"]), "/")
 	if siteDomain == "" {
 		return nil, fmt.Errorf("缺少 sitedomain")
 	}
@@ -34,22 +38,22 @@ func CreateWithHandlers(ctx context.Context, req *CallRequest, handlers map[stri
 	if err != nil {
 		return nil, err
 	}
-	resType, _ := res["type"].(string)
+	resType := String(res["type"])
 	if strings.EqualFold(resType, "jump") {
-		if url, _ := res["url"].(string); strings.TrimSpace(url) != "" {
-			return map[string]any{"type": "jump", "url": strings.TrimSpace(url)}, nil
+		if url := String(res["url"]); url != "" {
+			return RespJump(url), nil
 		}
 		return nil, fmt.Errorf("插件返回缺少 url")
 	}
 	if strings.EqualFold(resType, "error") {
-		if msg, _ := res["msg"].(string); strings.TrimSpace(msg) != "" {
-			return nil, fmt.Errorf("%s", strings.TrimSpace(msg))
+		if msg := String(res["msg"]); msg != "" {
+			return nil, fmt.Errorf("%s", msg)
 		}
 		return nil, fmt.Errorf("渠道返回失败")
 	}
 
 	// 2) 子函数需要前端承接时，回退到本地支付入口
-	return map[string]any{"type": "jump", "url": siteDomain + "/pay/" + payType + "/" + order.TradeNo}, nil
+	return RespJump(siteDomain + "/pay/" + payType + "/" + order.TradeNo), nil
 }
 
 // IsWeChat 判断微信环境。
@@ -99,7 +103,7 @@ func ReadStringSlice(value any) []string {
 		}
 	case []any:
 		for _, item := range v {
-			val := fmt.Sprint(item)
+			val := String(item)
 			if val != "" {
 				out = append(out, val)
 			}
@@ -120,6 +124,85 @@ func ReadStringSlice(value any) []string {
 	return out
 }
 
+// String converts value to string and returns empty when value is nil/typed-nil.
+// It also filters the literal "<nil>" to avoid leaking typed-nil via fmt.Sprint.
+func String(value any) string {
+	if value == nil {
+		return ""
+	}
+	rv := reflect.ValueOf(value)
+	switch rv.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.Interface, reflect.Slice:
+		if rv.IsNil() {
+			return ""
+		}
+	}
+	switch v := value.(type) {
+	case string:
+		out := strings.TrimSpace(v)
+		if out == "<nil>" {
+			return ""
+		}
+		return out
+	case []byte:
+		out := strings.TrimSpace(string(v))
+		if out == "<nil>" {
+			return ""
+		}
+		return out
+	case fmt.Stringer:
+		out := strings.TrimSpace(v.String())
+		if out == "<nil>" {
+			return ""
+		}
+		return out
+	case int:
+		return strconv.Itoa(v)
+	case int8:
+		return strconv.FormatInt(int64(v), 10)
+	case int16:
+		return strconv.FormatInt(int64(v), 10)
+	case int32:
+		return strconv.FormatInt(int64(v), 10)
+	case int64:
+		return strconv.FormatInt(v, 10)
+	case uint:
+		return strconv.FormatUint(uint64(v), 10)
+	case uint8:
+		return strconv.FormatUint(uint64(v), 10)
+	case uint16:
+		return strconv.FormatUint(uint64(v), 10)
+	case uint32:
+		return strconv.FormatUint(uint64(v), 10)
+	case uint64:
+		return strconv.FormatUint(v, 10)
+	case float32:
+		return strconv.FormatFloat(float64(v), 'f', -1, 32)
+	case float64:
+		return strconv.FormatFloat(v, 'f', -1, 64)
+	case bool:
+		return strconv.FormatBool(v)
+	default:
+		out := strings.TrimSpace(fmt.Sprint(v))
+		if out == "<nil>" {
+			return ""
+		}
+		return out
+	}
+}
+
+// DecodeJSONMap decodes JSON object and keeps number lexemes as json.Number.
+// This preserves numeric text style (e.g. 1.00 vs 1) for signature scenarios.
+func DecodeJSONMap(raw string) (map[string]any, error) {
+	out := map[string]any{}
+	dec := json.NewDecoder(strings.NewReader(raw))
+	dec.UseNumber()
+	if err := dec.Decode(&out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ModeSet converts a string slice into a lookup set.
 func ModeSet(values []string) map[string]bool {
 	out := map[string]bool{}
@@ -137,30 +220,4 @@ func AllowMode(modes map[string]bool, code string) bool {
 		return true
 	}
 	return modes[code]
-}
-
-// GetQuery fetches a query param safely from CallRequest.
-func GetQuery(req *CallRequest, key string) string {
-	if req == nil || req.Request.Query == nil {
-		return ""
-	}
-	value, ok := req.Request.Query[key]
-	if !ok || isNilValue(value) {
-		return ""
-	}
-	return fmt.Sprint(value)
-}
-
-// isNilValue handles typed-nil values stored in interface{}.
-func isNilValue(value any) bool {
-	if value == nil {
-		return true
-	}
-	rv := reflect.ValueOf(value)
-	switch rv.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.Interface, reflect.Slice:
-		return rv.IsNil()
-	default:
-		return false
-	}
 }

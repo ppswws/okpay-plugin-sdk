@@ -1,4 +1,4 @@
-package plugin
+package sdk
 
 import (
 	"context"
@@ -7,12 +7,13 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	hplugin "github.com/hashicorp/go-plugin"
+	"okpay/payment/plugin/contract"
 )
 
 const defaultServeCallTimeout = 15 * time.Second
 
 // HandlerFunc 定义插件侧的业务处理函数。
-type HandlerFunc func(context.Context, *CallRequest) (map[string]any, error)
+type HandlerFunc func(context.Context, *contract.CallRequest) (map[string]any, error)
 
 // ServeOption 配置 Serve 行为。
 type ServeOption func(*serveConfig)
@@ -43,9 +44,9 @@ func Serve(funcs map[string]HandlerFunc, opts ...ServeOption) {
 		timeout: cfg.timeout,
 	}
 	hplugin.Serve(&hplugin.ServeConfig{
-		HandshakeConfig: HandshakeConfig,
+		HandshakeConfig: contract.HandshakeConfig,
 		Plugins: map[string]hplugin.Plugin{
-			PluginName: &RPCPlugin{Impl: dispatcher},
+			contract.PluginName: &contract.RPCPlugin{Impl: dispatcher},
 		},
 		Logger: hclog.NewNullLogger(), // 静默 go-plugin 内部日志
 	})
@@ -57,7 +58,7 @@ type handlerDispatcher struct {
 	timeout time.Duration
 }
 
-func (h *handlerDispatcher) Call(ctx context.Context, funcName string, req *CallRequest) (map[string]any, error) {
+func (h *handlerDispatcher) Call(ctx context.Context, funcName string, req *contract.CallRequest) (map[string]any, error) {
 	if h == nil {
 		return nil, fmt.Errorf("处理器未初始化")
 	}
@@ -76,7 +77,7 @@ func (h *handlerDispatcher) Call(ctx context.Context, funcName string, req *Call
 	return safeCall(ctx, funcName, handler, req)
 }
 
-func safeCall(ctx context.Context, funcName string, fn HandlerFunc, req *CallRequest) (resp map[string]any, err error) {
+func safeCall(ctx context.Context, funcName string, fn HandlerFunc, req *contract.CallRequest) (resp map[string]any, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("调用 %s 时发生 panic: %v", funcName, r)

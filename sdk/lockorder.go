@@ -1,4 +1,4 @@
-package plugin
+package sdk
 
 import (
 	"context"
@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"okpay/payment/plugin/contract"
 )
 
 type RequestStats struct {
@@ -15,18 +17,9 @@ type RequestStats struct {
 	ReqMs    int32
 }
 
-type LockOrderDataRequest struct {
-	TradeNo  string `json:"tradeNo"`
-	ReqBody  string `json:"reqBody,omitempty"`
-	RespBody string `json:"respBody,omitempty"`
-	ReqCount int16  `json:"reqCount,omitempty"`
-	ReqMs    int32  `json:"reqMs,omitempty"`
-	Ext      string `json:"ext,omitempty"`
-}
-
 // LockOrderExt 仅在 Ext 为空时执行 fetch 并写入 Ext；存在则直接复用 Ext。
 // 插件自行决定何时缓存（建议在真正请求渠道后）。
-func LockOrderExt(ctx context.Context, call *CallRequest, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
+func LockOrderExt(ctx context.Context, call *contract.CallRequest, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
 	if call == nil {
 		return nil, fmt.Errorf("call 不能为空")
 	}
@@ -73,7 +66,7 @@ type lockOrderDataResponse struct {
 	Ext string `json:"ext,omitempty"`
 }
 
-func lockOrderData(ctx context.Context, call *CallRequest, tradeNo string, stats RequestStats, ext any) (string, error) {
+func lockOrderData(ctx context.Context, call *contract.CallRequest, tradeNo string, stats RequestStats, ext any) (string, error) {
 	extStr := ""
 	if ext != nil {
 		b, err := json.Marshal(ext)
@@ -83,13 +76,13 @@ func lockOrderData(ctx context.Context, call *CallRequest, tradeNo string, stats
 		extStr = string(b)
 	}
 	var resp lockOrderDataResponse
-	if err := completeViaHTTPWithData(ctx, call, "/api/complete/orderdata/lock", LockOrderDataRequest{
-		TradeNo:  tradeNo,
-		ReqBody:  stats.ReqBody,
-		RespBody: stats.RespBody,
-		ReqCount: stats.ReqCount,
-		ReqMs:    stats.ReqMs,
-		Ext:      extStr,
+	if err := completeViaHTTPWithData(ctx, call, "/api/complete/orderdata/lock", map[string]any{
+		"tradeNo":  tradeNo,
+		"reqBody":  stats.ReqBody,
+		"respBody": stats.RespBody,
+		"reqCount": stats.ReqCount,
+		"reqMs":    stats.ReqMs,
+		"ext":      extStr,
 	}, &resp); err != nil {
 		return "", err
 	}
@@ -141,7 +134,7 @@ func errorPayloadMsg(value any) (string, bool) {
 	if !ok || t != "error" {
 		return "", false
 	}
-	msg := strings.TrimSpace(fmt.Sprint(payload["msg"]))
+	msg := String(payload["msg"])
 	if msg == "" {
 		msg = "支付通道返回错误"
 	}

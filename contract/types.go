@@ -1,4 +1,4 @@
-package plugin
+package contract
 
 import (
 	"context"
@@ -35,23 +35,23 @@ type InputField struct {
 
 // CallRequest 通用调用上下文。
 type CallRequest struct {
-	Channel  map[string]any `json:"channel"`            // 通道配置
-	Order    map[string]any `json:"order,omitempty"`    // 订单信息
-	Refund   map[string]any `json:"refund,omitempty"`   // 退款信息
-	Transfer map[string]any `json:"transfer,omitempty"` // 代付信息
-	Config   map[string]any `json:"conf"`               // 全局配置（如 notify 前缀）
-	Request  HTTPRequest    `json:"req"`                // HTTP 请求上下文
-	BrokerID uint32         `json:"brokerId,omitempty"` // 回调 RPC broker ID
+	Channel  json.RawMessage `json:"channel,omitempty"`  // 通道配置
+	Order    json.RawMessage `json:"order,omitempty"`    // 订单信息
+	Refund   json.RawMessage `json:"refund,omitempty"`   // 退款信息
+	Transfer json.RawMessage `json:"transfer,omitempty"` // 代付信息
+	Config   map[string]any  `json:"conf"`               // 全局配置（如 notify 前缀）
+	Request  HTTPRequest     `json:"req"`                // HTTP 请求上下文
+	BrokerID uint32          `json:"brokerId,omitempty"` // 回调 RPC broker ID
 }
 
 // HTTPRequest 对外暴露的请求上下文。
 type HTTPRequest struct {
-	Method  string            `json:"method,omitempty"`
-	Query   map[string]any    `json:"query,omitempty"`
-	Body    map[string]any    `json:"body,omitempty"`
-	IP      string            `json:"ip,omitempty"`
-	UA      string            `json:"ua,omitempty"`
-	Headers map[string]string `json:"headers,omitempty"`
+	Method string `json:"method,omitempty"`
+	Query  string `json:"query,omitempty"`
+	Body   string `json:"body,omitempty"`
+	IP     string `json:"ip,omitempty"`
+	UA     string `json:"ua,omitempty"`
+	URL    string `json:"url,omitempty"`
 }
 
 // ToMap 转为 map（用于存储 info 字段）。

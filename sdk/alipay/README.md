@@ -1,6 +1,6 @@
 # Alipay SDK (Go)
 
-支付宝基础能力封装（V2/V3 + OAuth），全部基于 gopay，不做自定义协议实现。函数均位于 `payment/plugin/alipay`。
+支付宝基础能力封装（V2/V3 + OAuth），全部基于 gopay，不做自定义协议实现。函数均位于 `payment/plugin/sdk/alipay`。
 
 ## 功能特点
 
@@ -17,7 +17,7 @@
 ### 1. 创建 V2 客户端
 
 ```go
-import "okpay/payment/plugin/alipay"
+import "okpay/payment/plugin/sdk/alipay"
 
 client, err := alipay.NewClient(alipay.ClientConfig{
   AppID:      appID,
