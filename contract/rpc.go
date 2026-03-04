@@ -48,19 +48,19 @@ type RPCServer struct {
 	Impl PaymentChannel
 }
 
-func (s *RPCServer) Invoke(args *InvokeArgs, resp *[]byte) error {
+func (s *RPCServer) InvokeV2(args *InvokeV2Args, resp *[]byte) error {
 	if s == nil || s.Impl == nil {
 		return ErrNoImplementation
 	}
 	if args == nil {
 		return fmt.Errorf("调用参数为空")
 	}
-	req, err := decodeCallRequest(args.Payload)
+	req, err := decodeInvokeV2Request(args.Payload)
 	if err != nil {
 		return err
 	}
 	ctx := context.Background()
-	result, err := s.Impl.Call(ctx, args.Func, req)
+	result, err := s.Impl.InvokeV2(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -84,22 +84,21 @@ type RPCClient struct {
 	client *rpc.Client
 }
 
-func (c *RPCClient) Call(ctx context.Context, funcName string, req *CallRequest) (map[string]any, error) {
-	payload, err := encodeCallRequest(req)
+func (c *RPCClient) InvokeV2(ctx context.Context, req *InvokeRequestV2) (*InvokeResponseV2, error) {
+	payload, err := encodeInvokeV2Request(req)
 	if err != nil {
 		return nil, err
 	}
-	args := &InvokeArgs{Func: funcName, Payload: payload}
+	args := &InvokeV2Args{Payload: payload}
 	var resp []byte
-	if err := callRPC(ctx, c.client, "Plugin.Invoke", args, &resp); err != nil {
+	if err := callRPC(ctx, c.client, "Plugin.InvokeV2", args, &resp); err != nil {
 		return nil, err
 	}
-	return decodeCallResponse(resp)
+	return decodeInvokeV2Response(resp)
 }
 
-// InvokeArgs 是 RPC 调用参数，需要导出以满足 net/rpc 要求。
-type InvokeArgs struct {
-	Func    string `json:"func"`
+// InvokeV2Args 是 lossless InvokeV2 调用参数。
+type InvokeV2Args struct {
 	Payload []byte `json:"payload"`
 }
 
@@ -120,23 +119,7 @@ func callRPC(ctx context.Context, client *rpc.Client, method string, req any, re
 	}
 }
 
-func decodeCallResponse(payload []byte) (map[string]any, error) {
-	if len(payload) == 0 {
-		return map[string]any{}, nil
-	}
-	dec := json.NewDecoder(bytes.NewReader(payload))
-	dec.UseNumber()
-	var out map[string]any
-	if err := dec.Decode(&out); err != nil {
-		return nil, fmt.Errorf("解析响应失败: %w", err)
-	}
-	if out == nil {
-		out = map[string]any{}
-	}
-	return out, nil
-}
-
-func encodeCallRequest(req *CallRequest) ([]byte, error) {
+func encodeInvokeV2Request(req *InvokeRequestV2) ([]byte, error) {
 	if req == nil {
 		return []byte("null"), nil
 	}
@@ -147,15 +130,28 @@ func encodeCallRequest(req *CallRequest) ([]byte, error) {
 	return payload, nil
 }
 
-func decodeCallRequest(payload []byte) (*CallRequest, error) {
+func decodeInvokeV2Request(payload []byte) (*InvokeRequestV2, error) {
 	if len(payload) == 0 || string(payload) == "null" {
-		return &CallRequest{}, nil
+		return &InvokeRequestV2{}, nil
 	}
 	dec := json.NewDecoder(bytes.NewReader(payload))
 	dec.UseNumber()
-	var req CallRequest
+	var req InvokeRequestV2
 	if err := dec.Decode(&req); err != nil {
 		return nil, fmt.Errorf("解析请求失败: %w", err)
 	}
 	return &req, nil
+}
+
+func decodeInvokeV2Response(payload []byte) (*InvokeResponseV2, error) {
+	if len(payload) == 0 {
+		return &InvokeResponseV2{}, nil
+	}
+	dec := json.NewDecoder(bytes.NewReader(payload))
+	dec.UseNumber()
+	var out InvokeResponseV2
+	if err := dec.Decode(&out); err != nil {
+		return nil, fmt.Errorf("解析响应失败: %w", err)
+	}
+	return &out, nil
 }

@@ -7,8 +7,8 @@ import (
 
 // PaymentChannel 定义支付插件标准接口，主程序通过 go-plugin 调用。
 type PaymentChannel interface {
-	// Call 通用扩展调用（函数名由插件自定义，如 info/create/query/refund/notify）。
-	Call(ctx context.Context, funcName string, req *CallRequest) (map[string]any, error)
+	// InvokeV2 为唯一插件调用入口，保留 action 的自由命名能力。
+	InvokeV2(ctx context.Context, req *InvokeRequestV2) (*InvokeResponseV2, error)
 }
 
 // PluginInfo 插件自描述元信息（与插件表字段一致）。
@@ -31,27 +31,6 @@ type InputField struct {
 	Required bool              `json:"required,omitempty"`
 	Default  any               `json:"default,omitempty"`
 	Options  map[string]string `json:"options,omitempty"`
-}
-
-// CallRequest 通用调用上下文。
-type CallRequest struct {
-	Channel  json.RawMessage `json:"channel,omitempty"`  // 通道配置
-	Order    json.RawMessage `json:"order,omitempty"`    // 订单信息
-	Refund   json.RawMessage `json:"refund,omitempty"`   // 退款信息
-	Transfer json.RawMessage `json:"transfer,omitempty"` // 代付信息
-	Config   map[string]any  `json:"conf"`               // 全局配置（如 notify 前缀）
-	Request  HTTPRequest     `json:"req"`                // HTTP 请求上下文
-	BrokerID uint32          `json:"brokerId,omitempty"` // 回调 RPC broker ID
-}
-
-// HTTPRequest 对外暴露的请求上下文。
-type HTTPRequest struct {
-	Method string `json:"method,omitempty"`
-	Query  string `json:"query,omitempty"`
-	Body   string `json:"body,omitempty"`
-	IP     string `json:"ip,omitempty"`
-	UA     string `json:"ua,omitempty"`
-	URL    string `json:"url,omitempty"`
 }
 
 // ToMap 转为 map（用于存储 info 字段）。

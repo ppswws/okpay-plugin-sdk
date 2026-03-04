@@ -19,7 +19,7 @@ type RequestStats struct {
 
 // LockOrderExt 仅在 Ext 为空时执行 fetch 并写入 Ext；存在则直接复用 Ext。
 // 插件自行决定何时缓存（建议在真正请求渠道后）。
-func LockOrderExt(ctx context.Context, call *contract.CallRequest, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
+func LockOrderExt(ctx context.Context, call *contract.InvokeRequestV2, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
 	if call == nil {
 		return nil, fmt.Errorf("call 不能为空")
 	}
@@ -66,7 +66,7 @@ type lockOrderDataResponse struct {
 	Ext string `json:"ext,omitempty"`
 }
 
-func lockOrderData(ctx context.Context, call *contract.CallRequest, tradeNo string, stats RequestStats, ext any) (string, error) {
+func lockOrderData(ctx context.Context, call *contract.InvokeRequestV2, tradeNo string, stats RequestStats, ext any) (string, error) {
 	extStr := ""
 	if ext != nil {
 		b, err := json.Marshal(ext)
@@ -134,7 +134,7 @@ func errorPayloadMsg(value any) (string, bool) {
 	if !ok || t != "error" {
 		return "", false
 	}
-	msg := String(payload["msg"])
+	msg := stringValue(payload["msg"])
 	if msg == "" {
 		msg = "支付通道返回错误"
 	}

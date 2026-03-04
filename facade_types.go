@@ -11,12 +11,19 @@ import (
 type PaymentChannel = contract.PaymentChannel
 type PluginInfo = contract.PluginInfo
 type InputField = contract.InputField
-type CallRequest = contract.CallRequest
-type HTTPRequest = contract.HTTPRequest
 type RPCPlugin = contract.RPCPlugin
 type RPCServer = contract.RPCServer
 type RPCClient = contract.RPCClient
-type InvokeArgs = contract.InvokeArgs
+type InvokeV2Args = contract.InvokeV2Args
+type InvokeRequestV2 = contract.InvokeRequestV2
+type InvokeResponseV2 = contract.InvokeResponseV2
+type PluginError = contract.PluginError
+type RawEnvelope = contract.RawEnvelope
+type ParsedEnvelope = contract.ParsedEnvelope
+type HeaderKV = contract.HeaderKV
+type Value = contract.Value
+type ValueKind = contract.ValueKind
+type ObjectValue = contract.ObjectValue
 
 const (
 	PluginName = contract.PluginName
@@ -63,6 +70,28 @@ const (
 	ResponseTypeJSON  = sdk.ResponseTypeJSON
 	ResponseTypePage  = sdk.ResponseTypePage
 	ResponseTypeError = sdk.ResponseTypeError
+)
+
+const (
+	EventPayCreate      = contract.EventPayCreate
+	EventPayNotify      = contract.EventPayNotify
+	EventPayQuery       = contract.EventPayQuery
+	EventRefundCreate   = contract.EventRefundCreate
+	EventRefundNotify   = contract.EventRefundNotify
+	EventTransferCreate = contract.EventTransferCreate
+	EventTransferNotify = contract.EventTransferNotify
+)
+
+const (
+	ValueKindNull    = contract.ValueKindNull
+	ValueKindString  = contract.ValueKindString
+	ValueKindBool    = contract.ValueKindBool
+	ValueKindInt64   = contract.ValueKindInt64
+	ValueKindUInt64  = contract.ValueKindUInt64
+	ValueKindDecimal = contract.ValueKindDecimal
+	ValueKindBytes   = contract.ValueKindBytes
+	ValueKindObject  = contract.ValueKindObject
+	ValueKindArray   = contract.ValueKindArray
 )
 
 // ---- Host types -------------------------------------------------------

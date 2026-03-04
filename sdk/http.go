@@ -32,21 +32,12 @@ var callbackHTTPClient = NewHTTPClient(HTTPClientConfig{
 	Retry:   1,
 })
 
-func getConfigString(conf map[string]any, key string) string {
-	if conf == nil {
-		return ""
-	}
-	if val, ok := conf[key]; ok {
-		return String(val)
-	}
-	return ""
-}
-
-func completeViaHTTP(ctx context.Context, call *contract.CallRequest, path string, payload any) error {
+func completeViaHTTP(ctx context.Context, call *contract.InvokeRequestV2, path string, payload any) error {
 	if call == nil {
 		return fmt.Errorf("call 为空")
 	}
-	base := getConfigString(call.Config, paymentConfigKey)
+	globalCfg := GlobalConfig(call)
+	base := MapString(globalCfg, paymentConfigKey)
 	if base == "" {
 		return fmt.Errorf("payment 地址未配置")
 	}
@@ -68,7 +59,7 @@ func completeViaHTTP(ctx context.Context, call *contract.CallRequest, path strin
 		return fmt.Errorf("解析响应失败: %w", err)
 	}
 	if out.Code != 0 {
-		msg := String(out.Message)
+		msg := stringValue(out.Message)
 		if msg == "" {
 			msg = "payment 返回错误"
 		}
@@ -77,11 +68,12 @@ func completeViaHTTP(ctx context.Context, call *contract.CallRequest, path strin
 	return nil
 }
 
-func completeViaHTTPWithData(ctx context.Context, call *contract.CallRequest, path string, payload any, out any) error {
+func completeViaHTTPWithData(ctx context.Context, call *contract.InvokeRequestV2, path string, payload any, out any) error {
 	if call == nil {
 		return fmt.Errorf("call 为空")
 	}
-	base := getConfigString(call.Config, paymentConfigKey)
+	globalCfg := GlobalConfig(call)
+	base := MapString(globalCfg, paymentConfigKey)
 	if base == "" {
 		return fmt.Errorf("payment 地址未配置")
 	}
@@ -103,7 +95,7 @@ func completeViaHTTPWithData(ctx context.Context, call *contract.CallRequest, pa
 		return fmt.Errorf("解析响应失败: %w", err)
 	}
 	if envelope.Code != 0 {
-		msg := String(envelope.Message)
+		msg := stringValue(envelope.Message)
 		if msg == "" {
 			msg = "payment 返回错误"
 		}
@@ -117,11 +109,12 @@ func completeViaHTTPWithData(ctx context.Context, call *contract.CallRequest, pa
 	return nil
 }
 
-func encodeCallbackPayload(call *contract.CallRequest, payload any) ([]byte, error) {
+func encodeCallbackPayload(call *contract.InvokeRequestV2, payload any) ([]byte, error) {
 	if call == nil {
 		return json.Marshal(payload)
 	}
-	secret := getConfigString(call.Config, callbackSecretKey)
+	globalCfg := GlobalConfig(call)
+	secret := MapString(globalCfg, callbackSecretKey)
 	if secret == "" {
 		return nil, fmt.Errorf("complete secret 未配置")
 	}

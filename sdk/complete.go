@@ -48,7 +48,7 @@ type CompleteCNotifyRequest struct {
 }
 
 // CompleteOrder 通过反向 RPC 通知核心完成订单。
-func CompleteOrder(ctx context.Context, call *contract.CallRequest, req CompleteOrderRequest) error {
+func CompleteOrder(ctx context.Context, call *contract.InvokeRequestV2, req CompleteOrderRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/order", map[string]any{
 		"tradeNo":    req.TradeNo,
 		"apiTradeNo": req.APITradeNo,
@@ -57,7 +57,7 @@ func CompleteOrder(ctx context.Context, call *contract.CallRequest, req Complete
 }
 
 // CompleteRefund 通过反向 RPC 通知核心完成退款。
-func CompleteRefund(ctx context.Context, call *contract.CallRequest, req CompleteRefundRequest) error {
+func CompleteRefund(ctx context.Context, call *contract.InvokeRequestV2, req CompleteRefundRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/refund", map[string]any{
 		"refundNo":    req.RefundNo,
 		"status":      req.Status,
@@ -67,7 +67,7 @@ func CompleteRefund(ctx context.Context, call *contract.CallRequest, req Complet
 }
 
 // CompleteTransfer 通过反向 RPC 通知核心完成代付。
-func CompleteTransfer(ctx context.Context, call *contract.CallRequest, req CompleteTransferRequest) error {
+func CompleteTransfer(ctx context.Context, call *contract.InvokeRequestV2, req CompleteTransferRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/transfer", map[string]any{
 		"tradeNo":    req.TradeNo,
 		"status":     req.Status,
@@ -77,7 +77,7 @@ func CompleteTransfer(ctx context.Context, call *contract.CallRequest, req Compl
 }
 
 // CompleteCNotify 通过反向 RPC 通知核心记录渠道回调日志。
-func CompleteCNotify(ctx context.Context, call *contract.CallRequest, req CompleteCNotifyRequest) error {
+func CompleteCNotify(ctx context.Context, call *contract.InvokeRequestV2, req CompleteCNotifyRequest) error {
 	return completeViaHTTP(ctx, call, "/api/complete/cnotify", map[string]any{
 		"bizType":      req.BizType,
 		"tradeNo":      req.TradeNo,

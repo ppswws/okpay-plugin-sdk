@@ -12,15 +12,15 @@ import (
 )
 
 // CreateWithHandlers 通用 create：优先直跳渠道，否则回退本地中转。
-func CreateWithHandlers(ctx context.Context, req *contract.CallRequest, handlers map[string]HandlerFunc) (map[string]any, error) {
+func CreateWithHandlers(ctx context.Context, req *contract.InvokeRequestV2, handlers map[string]HandlerFunc) (map[string]any, error) {
 	if req == nil {
 		return nil, fmt.Errorf("request 为空")
 	}
-	order := DecodeOrder(req.Order)
+	order := Order(req)
 	if order == nil {
 		return nil, fmt.Errorf("订单为空")
 	}
-	payType := String(order.Type)
+	payType := stringValue(order.Type)
 	if payType == "" {
 		return nil, fmt.Errorf("支付方式为空")
 	}
@@ -28,7 +28,9 @@ func CreateWithHandlers(ctx context.Context, req *contract.CallRequest, handlers
 	if handler == nil {
 		return nil, fmt.Errorf("不支持的支付方式")
 	}
-	siteDomain := strings.TrimRight(String(req.Config["sitedomain"]), "/")
+	globalCfg := GlobalConfig(req)
+	siteDomain := MapString(globalCfg, "sitedomain")
+	siteDomain = strings.TrimRight(siteDomain, "/")
 	if siteDomain == "" {
 		return nil, fmt.Errorf("缺少 sitedomain")
 	}
@@ -38,15 +40,15 @@ func CreateWithHandlers(ctx context.Context, req *contract.CallRequest, handlers
 	if err != nil {
 		return nil, err
 	}
-	resType := String(res["type"])
+	resType := stringValue(res["type"])
 	if strings.EqualFold(resType, "jump") {
-		if url := String(res["url"]); url != "" {
+		if url := stringValue(res["url"]); url != "" {
 			return RespJump(url), nil
 		}
 		return nil, fmt.Errorf("插件返回缺少 url")
 	}
 	if strings.EqualFold(resType, "error") {
-		if msg := String(res["msg"]); msg != "" {
+		if msg := stringValue(res["msg"]); msg != "" {
 			return nil, fmt.Errorf("%s", msg)
 		}
 		return nil, fmt.Errorf("渠道返回失败")
@@ -91,6 +93,70 @@ func IsMobile(ua string) bool {
 	return false
 }
 
+// ParseRequestParams reads parsed.request.params as a unified string map.
+func ParseRequestParams(req *contract.InvokeRequestV2) map[string]string {
+	return parsedStringMap(req, "params")
+}
+
+// QueryParam returns parsed.request.query[key].
+func QueryParam(req *contract.InvokeRequestV2, key string) string {
+	key = strings.TrimSpace(key)
+	if req == nil || key == "" {
+		return ""
+	}
+	return parsedStringMap(req, "query")[key]
+}
+
+// MapString reads a string-like field from map[string]any in a single place.
+// It avoids plugin-local duplicates like docStringField/mapDoc.
+func MapString(m map[string]any, key string) string {
+	if len(m) == 0 || strings.TrimSpace(key) == "" {
+		return ""
+	}
+	val, ok := m[key]
+	if !ok {
+		return ""
+	}
+	switch v := val.(type) {
+	case string:
+		return strings.TrimSpace(v)
+	case json.Number:
+		return strings.TrimSpace(v.String())
+	default:
+		return stringValue(v)
+	}
+}
+
+func parsedStringMap(req *contract.InvokeRequestV2, field string) map[string]string {
+	out := map[string]string{}
+	if req == nil || strings.TrimSpace(field) == "" {
+		return out
+	}
+	root, ok := req.Parsed.Data.Fields["request"]
+	if !ok || root.Kind != contract.ValueKindObject || root.Object == nil {
+		return out
+	}
+	node, ok := root.Object.Fields[field]
+	if !ok || node.Kind != contract.ValueKindObject || node.Object == nil {
+		return out
+	}
+	for key, val := range node.Object.Fields {
+		switch val.Kind {
+		case contract.ValueKindString:
+			out[key] = val.String
+		case contract.ValueKindInt64:
+			out[key] = strconv.FormatInt(val.Int64, 10)
+		case contract.ValueKindUInt64:
+			out[key] = strconv.FormatUint(val.UInt64, 10)
+		case contract.ValueKindDecimal:
+			out[key] = val.Decimal
+		case contract.ValueKindBool:
+			out[key] = strconv.FormatBool(val.Bool)
+		}
+	}
+	return out
+}
+
 // ReadStringSlice normalizes config value into a string slice.
 func ReadStringSlice(value any) []string {
 	out := []string{}
@@ -103,7 +169,7 @@ func ReadStringSlice(value any) []string {
 		}
 	case []any:
 		for _, item := range v {
-			val := String(item)
+			val := stringValue(item)
 			if val != "" {
 				out = append(out, val)
 			}
@@ -126,7 +192,7 @@ func ReadStringSlice(value any) []string {
 
 // String converts value to string and returns empty when value is nil/typed-nil.
 // It also filters the literal "<nil>" to avoid leaking typed-nil via fmt.Sprint.
-func String(value any) string {
+func stringValue(value any) string {
 	if value == nil {
 		return ""
 	}
@@ -191,18 +257,6 @@ func String(value any) string {
 	}
 }
 
-// DecodeJSONMap decodes JSON object and keeps number lexemes as json.Number.
-// This preserves numeric text style (e.g. 1.00 vs 1) for signature scenarios.
-func DecodeJSONMap(raw string) (map[string]any, error) {
-	out := map[string]any{}
-	dec := json.NewDecoder(strings.NewReader(raw))
-	dec.UseNumber()
-	if err := dec.Decode(&out); err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ModeSet converts a string slice into a lookup set.
 func ModeSet(values []string) map[string]bool {
 	out := map[string]bool{}
@@ -220,4 +274,44 @@ func AllowMode(modes map[string]bool, code string) bool {
 		return true
 	}
 	return modes[code]
+}
+
+// Read returns value at dot path from req.Parsed (single read entry).
+func Read(req *contract.InvokeRequestV2, path string) (contract.Value, bool) {
+	if req == nil {
+		return contract.Value{}, false
+	}
+	parts := splitPath(path)
+	if len(parts) == 0 {
+		return contract.Value{}, false
+	}
+	cur := contract.Value{Kind: contract.ValueKindObject, Object: &req.Parsed.Data}
+	for _, key := range parts {
+		if cur.Kind != contract.ValueKindObject || cur.Object == nil || cur.Object.Fields == nil {
+			return contract.Value{}, false
+		}
+		next, ok := cur.Object.Fields[key]
+		if !ok {
+			return contract.Value{}, false
+		}
+		cur = next
+	}
+	return cur, true
+}
+
+func splitPath(path string) []string {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return nil
+	}
+	parts := strings.Split(path, ".")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		out = append(out, p)
+	}
+	return out
 }

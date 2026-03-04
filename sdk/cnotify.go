@@ -15,10 +15,10 @@ type NotifyResponse struct {
 }
 
 // RespNotify records cnotify and returns the response result.
-func RespNotify(ctx context.Context, call *contract.CallRequest, data NotifyResponse) (map[string]any, error) {
+func RespNotify(ctx context.Context, call *contract.InvokeRequestV2, data NotifyResponse) (map[string]any, error) {
 	tradeNo := inferNotifyTradeNo(call, data.BizType)
 	req := CompleteCNotifyRequest{
-		BizType:      String(data.BizType),
+		BizType:      stringValue(data.BizType),
 		TradeNo:      tradeNo,
 		RequestIP:    "",
 		RequestURL:   "",
@@ -28,8 +28,8 @@ func RespNotify(ctx context.Context, call *contract.CallRequest, data NotifyResp
 	resultMap := toResponseMap(data.Result)
 	req.ResponseBody = encodeResponseBody(resultMap)
 	if call != nil {
-		req.RequestIP = String(call.Request.IP)
-		req.RequestURL = String(call.Request.URL)
+		req.RequestIP = stringValue(call.Raw.RequestIP)
+		req.RequestURL = stringValue(call.Raw.HTTPURL)
 		req.RequestBody = encodeRequestBody(call)
 	}
 	if err := CompleteCNotify(ctx, call, req); err != nil {
@@ -38,42 +38,42 @@ func RespNotify(ctx context.Context, call *contract.CallRequest, data NotifyResp
 	return resultMap, nil
 }
 
-func inferNotifyTradeNo(call *contract.CallRequest, bizType string) string {
+func inferNotifyTradeNo(call *contract.InvokeRequestV2, bizType string) string {
 	if call == nil {
 		return ""
 	}
-	switch strings.ToLower(String(bizType)) {
+	switch strings.ToLower(stringValue(bizType)) {
 	case contract.BizTypeOrder:
-		if order := DecodeOrder(call.Order); order != nil {
-			return String(order.TradeNo)
+		if order := Order(call); order != nil {
+			return stringValue(order.TradeNo)
 		}
 	case contract.BizTypeRefund:
-		if refund := DecodeRefund(call.Refund); refund != nil {
-			return String(refund.RefundNo)
+		if refund := Refund(call); refund != nil {
+			return stringValue(refund.RefundNo)
 		}
 	case contract.BizTypeTransfer:
-		if transfer := DecodeTransfer(call.Transfer); transfer != nil {
-			return String(transfer.TradeNo)
+		if transfer := Transfer(call); transfer != nil {
+			return stringValue(transfer.TradeNo)
 		}
 	}
 	// Fallback: try all known payloads when bizType is empty/unknown.
-	if order := DecodeOrder(call.Order); order != nil && String(order.TradeNo) != "" {
-		return String(order.TradeNo)
+	if order := Order(call); order != nil && stringValue(order.TradeNo) != "" {
+		return stringValue(order.TradeNo)
 	}
-	if refund := DecodeRefund(call.Refund); refund != nil && String(refund.RefundNo) != "" {
-		return String(refund.RefundNo)
+	if refund := Refund(call); refund != nil && stringValue(refund.RefundNo) != "" {
+		return stringValue(refund.RefundNo)
 	}
-	if transfer := DecodeTransfer(call.Transfer); transfer != nil && String(transfer.TradeNo) != "" {
-		return String(transfer.TradeNo)
+	if transfer := Transfer(call); transfer != nil && stringValue(transfer.TradeNo) != "" {
+		return stringValue(transfer.TradeNo)
 	}
 	return ""
 }
 
-func encodeRequestBody(call *contract.CallRequest) string {
+func encodeRequestBody(call *contract.InvokeRequestV2) string {
 	if call == nil {
 		return ""
 	}
-	if raw := String(call.Request.Body); raw != "" {
+	if raw := stringValue(string(call.Raw.HTTPBodyRaw)); raw != "" {
 		return raw
 	}
 	return ""
@@ -83,10 +83,10 @@ func encodeResponseBody(result map[string]any) string {
 	if result == nil {
 		return ""
 	}
-	typ := strings.ToLower(String(result["type"]))
+	typ := strings.ToLower(stringValue(result["type"]))
 	switch typ {
 	case "html":
-		if v := String(result["data"]); v != "" {
+		if v := stringValue(result["data"]); v != "" {
 			return v
 		}
 	case "json":
@@ -94,7 +94,7 @@ func encodeResponseBody(result map[string]any) string {
 			return string(data)
 		}
 	case "error":
-		if v := String(result["msg"]); v != "" {
+		if v := stringValue(result["msg"]); v != "" {
 			return v
 		}
 	}

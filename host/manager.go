@@ -15,6 +15,7 @@ import (
 	"github.com/hashicorp/go-hclog"
 	hplugin "github.com/hashicorp/go-plugin"
 	"okpay/payment/plugin/contract"
+	"okpay/payment/plugin/sdk"
 )
 
 const (
@@ -284,12 +285,18 @@ func (m *Manager) Inspect(ctx context.Context, path string) (*contract.PluginInf
 	return info, nil
 }
 
-// Call 直接调用指定函数名并返回结果，免去手写 Invoke 包装。
-func (m *Manager) Call(ctx context.Context, id, funcName string, req *contract.CallRequest) (map[string]any, error) {
-	// 对 InvokeFunc 的薄包装，处理返回值收集。
-	var resp map[string]any
+// InvokeV2 使用 lossless 协议调用插件。
+func (m *Manager) InvokeV2(ctx context.Context, id string, req *contract.InvokeRequestV2) (*contract.InvokeResponseV2, error) {
+	if req == nil {
+		req = &contract.InvokeRequestV2{}
+	}
+	funcName := strings.TrimSpace(req.Action)
+	if funcName == "" {
+		funcName = "invoke_v2"
+	}
+	var resp *contract.InvokeResponseV2
 	err := m.InvokeFunc(ctx, id, funcName, func(ctx context.Context, ch contract.PaymentChannel) error {
-		out, err := ch.Call(ctx, funcName, req)
+		out, err := ch.InvokeV2(ctx, req)
 		if err != nil {
 			return err
 		}
@@ -451,7 +458,14 @@ func (m *Manager) invokeInfo(ctx context.Context, channel contract.PaymentChanne
 	if channel == nil {
 		return nil, fmt.Errorf("实例为空")
 	}
-	result, err := channel.Call(ctx, "info", &contract.CallRequest{})
+	resp, err := channel.InvokeV2(ctx, &contract.InvokeRequestV2{
+		Version: "v2",
+		Action:  "info",
+	})
+	if err != nil {
+		return nil, err
+	}
+	result, err := flattenValueMap(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -519,6 +533,39 @@ func (m *Manager) invokeInfo(ctx context.Context, channel contract.PaymentChanne
 		return nil, fmt.Errorf("info 缺少 inputs")
 	}
 	return info, nil
+}
+
+func flattenValueMap(resp *contract.InvokeResponseV2) (map[string]any, error) {
+	if resp == nil {
+		return map[string]any{}, nil
+	}
+	out := map[string]any{}
+	appendValues := func(values map[string]contract.Value) error {
+		for key, val := range values {
+			anyVal, err := sdk.ValueToAny(val)
+			if err != nil {
+				return fmt.Errorf("字段 %s 解析失败: %w", key, err)
+			}
+			out[key] = anyVal
+		}
+		return nil
+	}
+	if err := appendValues(resp.Result); err != nil {
+		return nil, err
+	}
+	if err := appendValues(resp.Present); err != nil {
+		return nil, err
+	}
+	if err := appendValues(resp.Effect); err != nil {
+		return nil, err
+	}
+	if !resp.OK {
+		if resp.Error != nil && strings.TrimSpace(resp.Error.Message) != "" {
+			return nil, errors.New(resp.Error.Message)
+		}
+		return nil, fmt.Errorf("插件返回失败")
+	}
+	return out, nil
 }
 
 // Close 关闭所有复用的插件进程。

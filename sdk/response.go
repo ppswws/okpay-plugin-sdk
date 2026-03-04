@@ -151,3 +151,10 @@ func RespTransfer(data TransferStateResponse) map[string]any {
 		"req_ms":       data.ReqMs,
 	}
 }
+
+// RespBalance builds a channel balance response payload.
+func RespBalance(balance string) map[string]any {
+	return map[string]any{
+		"balance": balance,
+	}
+}

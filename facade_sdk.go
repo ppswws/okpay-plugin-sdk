@@ -19,24 +19,28 @@ func WithServeCallTimeout(timeout time.Duration) ServeOption {
 
 // ---- Decode helpers ---------------------------------------------------
 
-func DecodeOrder(raw any) *OrderPayload {
-	return sdk.DecodeOrder(raw)
+func Order(req *InvokeRequestV2) *OrderPayload {
+	return sdk.Order(req)
 }
 
-func DecodeRefund(raw any) *RefundPayload {
-	return sdk.DecodeRefund(raw)
+func Refund(req *InvokeRequestV2) *RefundPayload {
+	return sdk.Refund(req)
 }
 
-func DecodeTransfer(raw any) *TransferPayload {
-	return sdk.DecodeTransfer(raw)
+func Transfer(req *InvokeRequestV2) *TransferPayload {
+	return sdk.Transfer(req)
 }
 
-func DecodeChannel(raw any) *ChannelPayload {
-	return sdk.DecodeChannel(raw)
+func Channel(req *InvokeRequestV2) *ChannelPayload {
+	return sdk.Channel(req)
 }
 
-func DecodeConfig(req *CallRequest) map[string]any {
-	return sdk.DecodeConfig(req)
+func ChannelConfig(req *InvokeRequestV2) map[string]any {
+	return sdk.ChannelConfig(req)
+}
+
+func GlobalConfig(req *InvokeRequestV2) map[string]any {
+	return sdk.GlobalConfig(req)
 }
 
 // ---- Response helpers -------------------------------------------------
@@ -93,35 +97,39 @@ func RespTransfer(data TransferStateResponse) map[string]any {
 	return sdk.RespTransfer(data)
 }
 
-func RespNotify(ctx context.Context, call *CallRequest, data NotifyResponse) (map[string]any, error) {
+func RespBalance(balance string) map[string]any {
+	return sdk.RespBalance(balance)
+}
+
+func RespNotify(ctx context.Context, call *InvokeRequestV2, data NotifyResponse) (map[string]any, error) {
 	return sdk.RespNotify(ctx, call, data)
 }
 
 // ---- Create & lock helpers -------------------------------------------
 
-func CreateWithHandlers(ctx context.Context, req *CallRequest, handlers map[string]HandlerFunc) (map[string]any, error) {
+func CreateWithHandlers(ctx context.Context, req *InvokeRequestV2, handlers map[string]HandlerFunc) (map[string]any, error) {
 	return sdk.CreateWithHandlers(ctx, req, handlers)
 }
 
-func LockOrderExt(ctx context.Context, call *CallRequest, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
+func LockOrderExt(ctx context.Context, call *InvokeRequestV2, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
 	return sdk.LockOrderExt(ctx, call, tradeNo, fetch)
 }
 
 // ---- Complete callbacks ----------------------------------------------
 
-func CompleteOrder(ctx context.Context, call *CallRequest, req CompleteOrderRequest) error {
+func CompleteOrder(ctx context.Context, call *InvokeRequestV2, req CompleteOrderRequest) error {
 	return sdk.CompleteOrder(ctx, call, req)
 }
 
-func CompleteRefund(ctx context.Context, call *CallRequest, req CompleteRefundRequest) error {
+func CompleteRefund(ctx context.Context, call *InvokeRequestV2, req CompleteRefundRequest) error {
 	return sdk.CompleteRefund(ctx, call, req)
 }
 
-func CompleteTransfer(ctx context.Context, call *CallRequest, req CompleteTransferRequest) error {
+func CompleteTransfer(ctx context.Context, call *InvokeRequestV2, req CompleteTransferRequest) error {
 	return sdk.CompleteTransfer(ctx, call, req)
 }
 
-func CompleteCNotify(ctx context.Context, call *CallRequest, req CompleteCNotifyRequest) error {
+func CompleteCNotify(ctx context.Context, call *InvokeRequestV2, req CompleteCNotifyRequest) error {
 	return sdk.CompleteCNotify(ctx, call, req)
 }
 
@@ -149,16 +157,44 @@ func IsMobile(ua string) bool {
 	return sdk.IsMobile(ua)
 }
 
+func ParseRequestParams(req *InvokeRequestV2) map[string]string {
+	return sdk.ParseRequestParams(req)
+}
+
+func QueryParam(req *InvokeRequestV2, key string) string {
+	return sdk.QueryParam(req, key)
+}
+
+func MapString(m map[string]any, key string) string {
+	return sdk.MapString(m, key)
+}
+
+func Read(req *InvokeRequestV2, path string) (Value, bool) {
+	return sdk.Read(req, path)
+}
+
 func ReadStringSlice(value any) []string {
 	return sdk.ReadStringSlice(value)
 }
 
-func String(value any) string {
-	return sdk.String(value)
+func DecodeLosslessJSON(raw []byte) (Value, error) {
+	return sdk.DecodeLosslessJSON(raw)
 }
 
-func DecodeJSONMap(raw string) (map[string]any, error) {
-	return sdk.DecodeJSONMap(raw)
+func DecodeLosslessJSONObject(raw []byte) (*ObjectValue, error) {
+	return sdk.DecodeLosslessJSONObject(raw)
+}
+
+func ValueToAny(v Value) (any, error) {
+	return sdk.ValueToAny(v)
+}
+
+func AnyToValue(v any) (Value, error) {
+	return sdk.AnyToValue(v)
+}
+
+func ValueMapToAnyMap(in map[string]Value) (map[string]any, error) {
+	return sdk.ValueMapToAnyMap(in)
 }
 
 func ModeSet(values []string) map[string]bool {

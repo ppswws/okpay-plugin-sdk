@@ -1,7 +1,10 @@
 package sdk
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"time"
 
 	"okpay/payment/plugin/contract"
@@ -68,6 +71,7 @@ type TransferPayload struct {
 	APITradeNo string    `json:"api_trade_no"`
 	OutTradeNo string    `json:"out_trade_no"`
 	UID        int64     `json:"uid"`
+	Business   int16     `json:"business"`
 	Channel    int64     `json:"channel"`
 	Amount     int64     `json:"amount"`
 	Fee        int64     `json:"fee"`
@@ -93,7 +97,7 @@ type ChannelPayload struct {
 	Type      string          `json:"type"`
 	Plugin    string          `json:"plugin"`
 	Name      string          `json:"name"`
-	Rate      float64         `json:"rate"`
+	Rate      json.Number     `json:"rate"`
 	Status    int16           `json:"status"`
 	Config    json.RawMessage `json:"config"`
 	Daylimit  int64           `json:"daylimit"`
@@ -105,61 +109,99 @@ type ChannelPayload struct {
 	UpdatedAt time.Time       `json:"updated_at"`
 }
 
-// DecodeOrder 将 map 转为 OrderPayload（失败返回 nil）。
-func DecodeOrder(raw any) *OrderPayload {
-	return decodeAnyTo[OrderPayload](raw)
+// Order 从 InvokeRequestV2 的 parsed.order 解析订单。
+func Order(req *contract.InvokeRequestV2) *OrderPayload {
+	return decodeFromRequest[OrderPayload](req, "order")
 }
 
-// DecodeRefund 将 map 转为 RefundPayload（失败返回 nil）。
-func DecodeRefund(raw any) *RefundPayload {
-	return decodeAnyTo[RefundPayload](raw)
+// Refund 从 InvokeRequestV2 的 parsed.refund 解析退款。
+func Refund(req *contract.InvokeRequestV2) *RefundPayload {
+	return decodeFromRequest[RefundPayload](req, "refund")
 }
 
-// DecodeTransfer 将 map 转为 TransferPayload（失败返回 nil）。
-func DecodeTransfer(raw any) *TransferPayload {
-	return decodeAnyTo[TransferPayload](raw)
+// Transfer 从 InvokeRequestV2 的 parsed.transfer 解析代付。
+func Transfer(req *contract.InvokeRequestV2) *TransferPayload {
+	return decodeFromRequest[TransferPayload](req, "transfer")
 }
 
-// DecodeChannel 将 map 转为 ChannelPayload（失败返回 nil）。
-func DecodeChannel(raw any) *ChannelPayload {
-	return decodeAnyTo[ChannelPayload](raw)
+// Channel 从 InvokeRequestV2 的 parsed.channel 解析通道。
+func Channel(req *contract.InvokeRequestV2) *ChannelPayload {
+	return decodeFromRequest[ChannelPayload](req, "channel")
 }
 
-func decodeAnyTo[T any](raw any) *T {
-	if raw == nil {
-		return nil
+func decodeJSONBytesTo[T any](data []byte) (*T, error) {
+	if len(bytes.TrimSpace(data)) == 0 {
+		return nil, fmt.Errorf("empty json")
 	}
-	var data []byte
-	switch v := raw.(type) {
-	case []byte:
-		data = v
-	case string:
-		data = []byte(v)
-	default:
-		encoded, err := json.Marshal(v)
-		if err != nil {
-			return nil
-		}
-		data = encoded
-	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.UseNumber()
 	var out T
-	if err := json.Unmarshal(data, &out); err != nil {
-		return nil
+	if err := dec.Decode(&out); err != nil {
+		return nil, fmt.Errorf("decode failed: %w", err)
 	}
-	return &out
+	// Reject trailing tokens to avoid partial/ambiguous payloads.
+	if err := dec.Decode(&struct{}{}); err != io.EOF {
+		if err == nil {
+			return nil, fmt.Errorf("unexpected trailing json data")
+		}
+		return nil, fmt.Errorf("decode trailing failed: %w", err)
+	}
+	return &out, nil
 }
 
-// DecodeConfig parses req.Channel["config"] into a map.
-func DecodeConfig(req *contract.CallRequest) map[string]any {
+func decodeFromRequest[T any](req *contract.InvokeRequestV2, key string) *T {
 	if req == nil {
+		return nil
+	}
+	v, ok := req.Parsed.Data.Fields[key]
+	if !ok {
+		return nil
+	}
+	anyVal, err := ValueToAny(v)
+	if err != nil {
+		return nil
+	}
+	raw, err := json.Marshal(anyVal)
+	if err != nil {
+		return nil
+	}
+	out, err := decodeJSONBytesTo[T](raw)
+	if err != nil {
+		return nil
+	}
+	return out
+}
+
+// ChannelConfig parses parsed.channel.config into a map.
+func ChannelConfig(req *contract.InvokeRequestV2) map[string]any {
+	channelCfg := readMapFromPath(req, "channel.config")
+	if len(channelCfg) == 0 {
 		return map[string]any{}
 	}
-	channel := DecodeChannel(req.Channel)
-	if channel == nil || len(channel.Config) == 0 {
+	return channelCfg
+}
+
+// GlobalConfig parses parsed.config (global config) into map.
+func GlobalConfig(req *contract.InvokeRequestV2) map[string]any {
+	cfg := readMapFromPath(req, "config")
+	if len(cfg) == 0 {
 		return map[string]any{}
 	}
-	if cfg, err := DecodeJSONMap(string(channel.Config)); err == nil && cfg != nil {
-		return cfg
+	return cfg
+}
+
+func readMapFromPath(req *contract.InvokeRequestV2, path string) map[string]any {
+	v, ok := Read(req, path)
+	if !ok {
+		return map[string]any{}
 	}
-	return map[string]any{}
+	anyVal, err := ValueToAny(v)
+	if err != nil {
+		return map[string]any{}
+	}
+	m, ok := anyVal.(map[string]any)
+	if !ok || m == nil {
+		return map[string]any{}
+	}
+	return m
 }
