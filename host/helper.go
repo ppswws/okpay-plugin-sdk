@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"okpay/payment/plugin/contract"
 )
 
 var pluginIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
@@ -86,48 +84,4 @@ func validatePluginID(id string) error {
 		return fmt.Errorf("插件 ID 只允许字母、数字、下划线或中划线")
 	}
 	return nil
-}
-
-func toInputField(val any) *contract.InputField {
-	obj, ok := val.(map[string]any)
-	if !ok {
-		return nil
-	}
-	field := contract.InputField{}
-	if name, ok := obj["name"].(string); ok {
-		field.Name = name
-	}
-	if t, ok := obj["type"].(string); ok {
-		field.Type = t
-	}
-	if note, ok := obj["note"].(string); ok {
-		field.Note = note
-	}
-	if required, ok := obj["required"].(bool); ok {
-		field.Required = required
-	}
-	if defVal, ok := obj["default"]; ok {
-		field.Default = defVal
-	}
-	if opts, ok := obj["options"].(map[string]string); ok {
-		field.Options = opts
-	} else if optsAny, ok := obj["options"].(map[string]any); ok {
-		field.Options = make(map[string]string, len(optsAny))
-		for k, v := range optsAny {
-			if str, ok := v.(string); ok {
-				field.Options[k] = str
-			}
-		}
-	}
-	return &field
-}
-
-func toStringSlice(arr []any) []string {
-	res := make([]string, 0, len(arr))
-	for _, v := range arr {
-		if str, ok := v.(string); ok {
-			res = append(res, str)
-		}
-	}
-	return res
 }

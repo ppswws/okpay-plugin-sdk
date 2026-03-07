@@ -1,5 +1,11 @@
 package sdk
 
+import (
+	"encoding/json"
+
+	"okpay/payment/plugin/proto"
+)
+
 // Response type constants.
 const (
 	ResponseTypeJump  = "jump"
@@ -9,152 +15,75 @@ const (
 	ResponseTypeError = "error"
 )
 
-// RespHTML builds a typed html response payload.
-func RespHTML(data string) map[string]any {
-	return map[string]any{
-		"type": ResponseTypeHTML,
-		"data": data,
+func RespHTML(data string) *proto.PageResponse {
+	return &proto.PageResponse{Type: ResponseTypeHTML, DataText: data}
+}
+
+// BuildSubmitHTML wraps a form HTML payload with auto-submit script.
+func BuildSubmitHTML(data string) string {
+	return "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" +
+		data +
+		"<script>document.forms[0] && document.forms[0].submit();</script>" +
+		"</body></html>"
+}
+
+func RespJSON(data any) *proto.PageResponse {
+	raw, _ := json.Marshal(data)
+	return &proto.PageResponse{Type: ResponseTypeJSON, DataJsonRaw: raw}
+}
+
+func RespError(msg string) *proto.PageResponse {
+	return &proto.PageResponse{Type: ResponseTypeError, Msg: msg}
+}
+
+func RespPage(page string) *proto.PageResponse {
+	return &proto.PageResponse{Type: ResponseTypePage, Page: page}
+}
+
+func RespJump(url string) *proto.PageResponse {
+	return &proto.PageResponse{Type: ResponseTypeJump, Url: url}
+}
+
+func RespPageURL(page, url string) *proto.PageResponse {
+	return &proto.PageResponse{Type: ResponseTypePage, Page: page, Url: url}
+}
+
+func RespPageData(page string, data any) *proto.PageResponse {
+	raw, _ := json.Marshal(data)
+	return &proto.PageResponse{Type: ResponseTypePage, Page: page, DataJsonRaw: raw}
+}
+
+func RespPageFull(page, url string, data any) *proto.PageResponse {
+	raw, _ := json.Marshal(data)
+	return &proto.PageResponse{Type: ResponseTypePage, Page: page, Url: url, DataJsonRaw: raw}
+}
+
+func RespQuery(state int, apiTradeNo string) *proto.QueryResponse {
+	return &proto.QueryResponse{State: int32(state), ApiTradeNo: apiTradeNo}
+}
+
+func RespRefund(state int, apiRefundNo, reqBody, respBody, result string, reqMs int32) *proto.RefundResponse {
+	return &proto.RefundResponse{
+		State:       int32(state),
+		ApiRefundNo: apiRefundNo,
+		ReqBody:     reqBody,
+		RespBody:    respBody,
+		Result:      result,
+		ReqMs:       reqMs,
 	}
 }
 
-// RespHTMLWithSubmit builds a typed html response payload with submit flag.
-func RespHTMLWithSubmit(data string, submit bool) map[string]any {
-	out := RespHTML(data)
-	if submit {
-		out["submit"] = true
-	}
-	return out
-}
-
-// RespJSON builds a typed json response payload.
-func RespJSON(data any) map[string]any {
-	return map[string]any{
-		"type": ResponseTypeJSON,
-		"data": data,
+func RespTransfer(state int, apiTradeNo, reqBody, respBody, result string, reqMs int32) *proto.TransferResponse {
+	return &proto.TransferResponse{
+		State:      int32(state),
+		ApiTradeNo: apiTradeNo,
+		ReqBody:    reqBody,
+		RespBody:   respBody,
+		Result:     result,
+		ReqMs:      reqMs,
 	}
 }
 
-// RespError builds a typed error response payload.
-func RespError(msg string) map[string]any {
-	return map[string]any{
-		"type": ResponseTypeError,
-		"msg":  msg,
-	}
-}
-
-// RespPage builds a typed page response payload.
-func RespPage(page string) map[string]any {
-	return map[string]any{
-		"type": ResponseTypePage,
-		"page": page,
-	}
-}
-
-// RespJump builds a typed jump response payload.
-func RespJump(url string) map[string]any {
-	return map[string]any{
-		"type": ResponseTypeJump,
-		"url":  url,
-	}
-}
-
-// RespJumpWithSubmit builds a typed jump payload with submit flag.
-func RespJumpWithSubmit(url string, submit bool) map[string]any {
-	out := RespJump(url)
-	if submit {
-		out["submit"] = true
-	}
-	return out
-}
-
-// RespPageURL builds a typed page payload with url.
-func RespPageURL(page, url string) map[string]any {
-	out := RespPage(page)
-	if url != "" {
-		out["url"] = url
-	}
-	return out
-}
-
-// RespPageData builds a typed page payload with data.
-func RespPageData(page string, data any) map[string]any {
-	out := RespPage(page)
-	if data != nil {
-		out["data"] = data
-	}
-	return out
-}
-
-// RespPageFull builds a typed page payload with url and data.
-func RespPageFull(page, url string, data any) map[string]any {
-	out := RespPageURL(page, url)
-	if data != nil {
-		out["data"] = data
-	}
-	return out
-}
-
-// QueryStateResponse is the payload model for query state.
-type QueryStateResponse struct {
-	State      int
-	APITradeNo string
-}
-
-// RespQuery builds a query state response payload.
-func RespQuery(data QueryStateResponse) map[string]any {
-	return map[string]any{
-		"state":        data.State,
-		"api_trade_no": data.APITradeNo,
-	}
-}
-
-// RefundStateResponse is the payload model for refund state.
-type RefundStateResponse struct {
-	State       int
-	APIRefundNo string
-	ReqBody     string
-	RespBody    string
-	Result      string
-	ReqMs       int32
-}
-
-// RespRefund builds a refund state response payload.
-func RespRefund(data RefundStateResponse) map[string]any {
-	return map[string]any{
-		"state":         data.State,
-		"api_refund_no": data.APIRefundNo,
-		"req_body":      data.ReqBody,
-		"resp_body":     data.RespBody,
-		"result":        data.Result,
-		"req_ms":        data.ReqMs,
-	}
-}
-
-// TransferStateResponse is the payload model for transfer state.
-type TransferStateResponse struct {
-	State      int
-	APITradeNo string
-	ReqBody    string
-	RespBody   string
-	Result     string
-	ReqMs      int32
-}
-
-// RespTransfer builds a transfer state response payload.
-func RespTransfer(data TransferStateResponse) map[string]any {
-	return map[string]any{
-		"state":        data.State,
-		"api_trade_no": data.APITradeNo,
-		"req_body":     data.ReqBody,
-		"resp_body":    data.RespBody,
-		"result":       data.Result,
-		"req_ms":       data.ReqMs,
-	}
-}
-
-// RespBalance builds a channel balance response payload.
-func RespBalance(balance string) map[string]any {
-	return map[string]any{
-		"balance": balance,
-	}
+func RespBalance(balance string) *proto.BalanceResponse {
+	return &proto.BalanceResponse{Balance: balance}
 }

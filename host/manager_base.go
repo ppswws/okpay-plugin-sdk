@@ -6,16 +6,14 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/hashicorp/go-hclog"
-	hplugin "github.com/hashicorp/go-plugin"
+	"github.com/hashicorp/go-plugin"
 	"okpay/payment/plugin/contract"
-	"okpay/payment/plugin/sdk"
 )
 
 const (
@@ -28,13 +26,15 @@ type Manager struct {
 	dir         string
 	callTimeout time.Duration
 	observer    CallObserver
+	kernel      contract.KernelService
 	stdout      io.Writer
 	stderr      io.Writer
 	logger      hclog.Logger
 
-	mu      sync.Mutex
-	clients map[string]*clientHolder
-	metrics map[string]*pluginMetrics
+	mu       sync.Mutex
+	brokerMu sync.Mutex
+	clients  map[string]*clientHolder
+	metrics  map[string]*pluginMetrics
 }
 
 // Option 配置 Manager。
@@ -91,6 +91,13 @@ func WithPluginLogger(logger hclog.Logger) Option {
 	}
 }
 
+// WithKernelService sets plugin -> kernel callback implementation for grpc version calls.
+func WithKernelService(kernel contract.KernelService) Option {
+	return func(m *Manager) {
+		m.kernel = kernel
+	}
+}
+
 // NewManager 创建插件管理器，默认使用 ./plugins 作为存储目录。
 func NewManager(opts ...Option) (*Manager, error) {
 	mgr := &Manager{
@@ -98,6 +105,7 @@ func NewManager(opts ...Option) (*Manager, error) {
 		callTimeout: CallTimeout,
 		stdout:      io.Discard,
 		stderr:      io.Discard,
+		logger:      hclog.NewNullLogger(),
 		clients:     make(map[string]*clientHolder),
 		metrics:     make(map[string]*pluginMetrics),
 	}
@@ -113,6 +121,16 @@ func NewManager(opts ...Option) (*Manager, error) {
 		return nil, fmt.Errorf("创建插件目录失败: %w", err)
 	}
 	return mgr, nil
+}
+
+// SetKernelService updates plugin -> kernel callback implementation at runtime.
+func (m *Manager) SetKernelService(kernel contract.KernelService) {
+	if m == nil {
+		return
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.kernel = kernel
 }
 
 // SaveAndInspect 将上传的二进制写入磁盘（按 info.ID 命名），并返回插件信息，上传相同 ID 时直接覆盖原文件。
@@ -230,7 +248,6 @@ func (m *Manager) Remove(id string) error {
 	if err := ensureInsideDir(destPath, m.dir); err != nil {
 		return err
 	}
-	// 删除文件，即便不存在也不视为致命错误
 	if err := os.Remove(destPath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("删除插件文件失败: %w", err)
 	}
@@ -240,120 +257,7 @@ func (m *Manager) Remove(id string) error {
 
 // Inspect 读取指定路径的插件信息（不落盘、不缓存）。
 func (m *Manager) Inspect(ctx context.Context, path string) (*contract.PluginInfo, error) {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if strings.TrimSpace(path) == "" {
-		return nil, fmt.Errorf("插件路径为空")
-	}
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return nil, fmt.Errorf("无法访问插件文件: %w", err)
-	}
-	if fileInfo.IsDir() {
-		return nil, fmt.Errorf("路径 %s 是目录", path)
-	}
-	ctx, cancel := context.WithTimeout(ctx, m.callTimeout)
-	defer cancel()
-
-	if err := ensurePluginPath(path, m.dir); err != nil {
-		return nil, err
-	}
-	client, err := m.newClient(path)
-	if err != nil {
-		return nil, err
-	}
-	defer client.Kill()
-
-	rpcClient, err := client.Client()
-	if err != nil {
-		return nil, fmt.Errorf("启动插件失败: %w", err)
-	}
-
-	raw, err := rpcClient.Dispense(contract.PluginName)
-	if err != nil {
-		return nil, fmt.Errorf("获取插件实例失败: %w", err)
-	}
-	channel, ok := raw.(contract.PaymentChannel)
-	if !ok {
-		return nil, fmt.Errorf("插件实例类型不匹配")
-	}
-	info, err := m.invokeInfo(ctx, channel)
-	if err != nil {
-		return nil, fmt.Errorf("获取info失败: %w", err)
-	}
-	return info, nil
-}
-
-// InvokeV2 使用 lossless 协议调用插件。
-func (m *Manager) InvokeV2(ctx context.Context, id string, req *contract.InvokeRequestV2) (*contract.InvokeResponseV2, error) {
-	if req == nil {
-		req = &contract.InvokeRequestV2{}
-	}
-	funcName := strings.TrimSpace(req.Action)
-	if funcName == "" {
-		funcName = "invoke_v2"
-	}
-	var resp *contract.InvokeResponseV2
-	err := m.InvokeFunc(ctx, id, funcName, func(ctx context.Context, ch contract.PaymentChannel) error {
-		out, err := ch.InvokeV2(ctx, req)
-		if err != nil {
-			return err
-		}
-		resp = out
-		return nil
-	})
-	return resp, err
-}
-
-// InvokeFunc 执行带函数名的插件操作。
-func (m *Manager) InvokeFunc(ctx context.Context, id, funcName string, call func(context.Context, contract.PaymentChannel) error) error {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if err := validatePluginID(id); err != nil {
-		return err
-	}
-	pluginPath := filepath.Join(m.dir, id)
-	ctx, cancel := m.applyTimeout(ctx)
-	defer cancel()
-
-	client, release, err := m.getClient(id, pluginPath)
-	if err != nil {
-		return err
-	}
-	defer release(false)
-
-	rpcClient, err := client.Client()
-	if err != nil {
-		release(true)
-		return fmt.Errorf("启动插件失败: %w", err)
-	}
-
-	raw, err := rpcClient.Dispense(contract.PluginName)
-	if err != nil {
-		release(true)
-		return fmt.Errorf("获取插件实例失败: %w", err)
-	}
-	channel, ok := raw.(contract.PaymentChannel)
-	if !ok {
-		release(true)
-		return fmt.Errorf("插件实例类型不匹配")
-	}
-	start := time.Now()
-	err = wrapCall(funcName, func() error {
-		return call(ctx, channel)
-	})
-	duration := time.Since(start)
-	if m.observer != nil {
-		m.observer(id, funcName, duration, err)
-	}
-	m.recordMetrics(id, duration)
-	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) || errors.Is(ctx.Err(), context.DeadlineExceeded) {
-		release(true)
-		return err
-	}
-	return err
+	return m.InspectRuntime(ctx, path)
 }
 
 func wrapCall(funcName string, fn func() error) (err error) {
@@ -363,83 +267,6 @@ func wrapCall(funcName string, fn func() error) (err error) {
 		}
 	}()
 	return fn()
-}
-
-func (m *Manager) newClient(path string) (*hplugin.Client, error) {
-	if err := ensurePluginPath(path, m.dir); err != nil {
-		return nil, err
-	}
-	cfg := &hplugin.ClientConfig{
-		HandshakeConfig:  contract.HandshakeConfig,
-		Plugins:          map[string]hplugin.Plugin{contract.PluginName: &contract.RPCPlugin{}},
-		Cmd:              exec.Command(path),
-		AllowedProtocols: []hplugin.Protocol{hplugin.ProtocolNetRPC},
-		Stderr:           m.stderr,
-		Logger:           m.logger,
-		StartTimeout:     2 * time.Second,
-	}
-	if cfg.Logger == nil {
-		cfg.Logger = hclog.NewNullLogger()
-	}
-	client := hplugin.NewClient(cfg)
-	if _, err := client.Client(); err != nil {
-		client.Kill()
-		return nil, fmt.Errorf("启动插件失败: %w", err)
-	}
-	return client, nil
-}
-
-func (m *Manager) getClient(id, path string) (*hplugin.Client, func(bool), error) {
-	if err := ensurePluginPath(path, m.dir); err != nil {
-		return nil, nil, err
-	}
-
-	m.mu.Lock()
-	holder := m.clients[id]
-	if holder != nil {
-		if holder.client == nil || holder.client.Exited() {
-			if holder.client != nil {
-				holder.client.Kill()
-			}
-			holder = nil
-		} else {
-			holder.lastUsed = time.Now()
-			client := holder.client
-			m.mu.Unlock()
-			return client, func(bool) {}, nil
-		}
-	}
-	m.mu.Unlock()
-
-	client, err := m.newClient(path)
-	if err != nil {
-		return nil, nil, err
-	}
-	now := time.Now()
-	newHolder := &clientHolder{client: client, createdAt: now, lastUsed: now}
-	m.mu.Lock()
-	// 若并发下已有存活的，则复用已有的，关闭新建的。
-	if exist := m.clients[id]; exist != nil && exist.client != nil && !exist.client.Exited() {
-		client.Kill()
-		client = exist.client
-		exist.lastUsed = time.Now()
-	} else {
-		m.clients[id] = newHolder
-	}
-	m.mu.Unlock()
-
-	release := func(drop bool) {
-		if !drop {
-			return
-		}
-		m.mu.Lock()
-		defer m.mu.Unlock()
-		if cur := m.clients[id]; cur != nil && cur.client == client {
-			client.Kill()
-			delete(m.clients, id)
-		}
-	}
-	return client, release, nil
 }
 
 func (m *Manager) recordMetrics(id string, d time.Duration) {
@@ -452,120 +279,6 @@ func (m *Manager) recordMetrics(id string, d time.Duration) {
 	}
 	mt.calls++
 	mt.total += d
-}
-
-func (m *Manager) invokeInfo(ctx context.Context, channel contract.PaymentChannel) (*contract.PluginInfo, error) {
-	if channel == nil {
-		return nil, fmt.Errorf("实例为空")
-	}
-	resp, err := channel.InvokeV2(ctx, &contract.InvokeRequestV2{
-		Version: "v2",
-		Action:  "info",
-	})
-	if err != nil {
-		return nil, err
-	}
-	result, err := flattenValueMap(resp)
-	if err != nil {
-		return nil, err
-	}
-	if result == nil {
-		return nil, fmt.Errorf("info 返回为空")
-	}
-	info := &contract.PluginInfo{}
-	if len(result) > 0 {
-		info.Raw = make(map[string]any, len(result))
-		for key, val := range result {
-			info.Raw[key] = val
-		}
-	}
-	if id, ok := result["id"].(string); ok {
-		info.ID = id
-	}
-	if name, ok := result["name"].(string); ok {
-		info.Name = name
-	}
-	if link, ok := result["link"].(string); ok {
-		info.Link = link
-	}
-	if types, ok := result["paytypes"]; ok {
-		if paytypes, ok := types.([]string); ok {
-			info.Paytypes = paytypes
-		} else if typesAny, ok := types.([]any); ok {
-			info.Paytypes = toStringSlice(typesAny)
-		} else {
-			return nil, fmt.Errorf("info paytypes 类型错误")
-		}
-	}
-	if types, ok := result["transtypes"]; ok {
-		if transtypes, ok := types.([]string); ok {
-			info.Transtypes = transtypes
-		} else if typesAny, ok := types.([]any); ok {
-			info.Transtypes = toStringSlice(typesAny)
-		} else {
-			return nil, fmt.Errorf("info transtypes 类型错误")
-		}
-	}
-	if inputs, ok := result["inputs"]; ok {
-		if inputMap, ok := inputs.(map[string]contract.InputField); ok {
-			info.Inputs = inputMap
-		} else if rawInputs, ok := inputs.(map[string]any); ok {
-			info.Inputs = make(map[string]contract.InputField, len(rawInputs))
-			for key, val := range rawInputs {
-				if m := toInputField(val); m != nil {
-					info.Inputs[key] = *m
-				}
-			}
-		} else {
-			return nil, fmt.Errorf("info inputs 类型错误")
-		}
-	}
-	if note, ok := result["note"].(string); ok {
-		info.Note = note
-	}
-	if info.ID == "" || info.Name == "" {
-		return nil, fmt.Errorf("info 缺少 id/name")
-	}
-	if len(info.Paytypes) == 0 {
-		return nil, fmt.Errorf("info 缺少 paytypes")
-	}
-	if len(info.Inputs) == 0 {
-		return nil, fmt.Errorf("info 缺少 inputs")
-	}
-	return info, nil
-}
-
-func flattenValueMap(resp *contract.InvokeResponseV2) (map[string]any, error) {
-	if resp == nil {
-		return map[string]any{}, nil
-	}
-	out := map[string]any{}
-	appendValues := func(values map[string]contract.Value) error {
-		for key, val := range values {
-			anyVal, err := sdk.ValueToAny(val)
-			if err != nil {
-				return fmt.Errorf("字段 %s 解析失败: %w", key, err)
-			}
-			out[key] = anyVal
-		}
-		return nil
-	}
-	if err := appendValues(resp.Result); err != nil {
-		return nil, err
-	}
-	if err := appendValues(resp.Present); err != nil {
-		return nil, err
-	}
-	if err := appendValues(resp.Effect); err != nil {
-		return nil, err
-	}
-	if !resp.OK {
-		if resp.Error != nil && strings.TrimSpace(resp.Error.Message) != "" {
-			return nil, errors.New(resp.Error.Message)
-		}
-		return nil, fmt.Errorf("插件返回失败")
-	}
-	return out, nil
 }
 
 // Close 关闭所有复用的插件进程。
@@ -618,7 +331,7 @@ func (m *Manager) applyTimeout(ctx context.Context) (context.Context, context.Ca
 }
 
 type clientHolder struct {
-	client    *hplugin.Client
+	client    *plugin.Client
 	createdAt time.Time
 	lastUsed  time.Time
 }

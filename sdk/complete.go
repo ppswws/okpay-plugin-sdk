@@ -2,12 +2,16 @@ package sdk
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"time"
 
 	"okpay/payment/plugin/contract"
+	"okpay/payment/plugin/proto"
 )
 
-// CompleteOrderRequest 表示订单完成回调参数。
-type CompleteOrderRequest struct {
+// CompleteOrderInput 表示订单完成回调参数。
+type CompleteOrderInput struct {
 	TradeNo    string `json:"tradeNo"`
 	APITradeNo string `json:"apiTradeNo,omitempty"`
 	Buyer      string `json:"buyer,omitempty"`
@@ -15,8 +19,8 @@ type CompleteOrderRequest struct {
 	Sign       string `json:"sign,omitempty"`
 }
 
-// CompleteRefundRequest 表示退款完成回调参数。
-type CompleteRefundRequest struct {
+// CompleteRefundInput 表示退款完成回调参数。
+type CompleteRefundInput struct {
 	RefundNo    string `json:"refundNo"`
 	Status      int16  `json:"status"`
 	APIRefundNo string `json:"apiRefundNo,omitempty"`
@@ -25,8 +29,8 @@ type CompleteRefundRequest struct {
 	Sign        string `json:"sign,omitempty"`
 }
 
-// CompleteTransferRequest 表示代付完成回调参数。
-type CompleteTransferRequest struct {
+// CompleteTransferInput 表示代付完成回调参数。
+type CompleteTransferInput struct {
 	TradeNo    string `json:"tradeNo"`
 	Status     int16  `json:"status"`
 	APITradeNo string `json:"apiTradeNo,omitempty"`
@@ -35,8 +39,8 @@ type CompleteTransferRequest struct {
 	Sign       string `json:"sign,omitempty"`
 }
 
-// CompleteCNotifyRequest 表示渠道回调日志参数。
-type CompleteCNotifyRequest struct {
+// CompleteCNotifyInput 表示渠道回调日志参数。
+type CompleteCNotifyInput struct {
 	BizType      string `json:"bizType"`
 	TradeNo      string `json:"tradeNo"`
 	RequestIP    string `json:"requestIp,omitempty"`
@@ -48,42 +52,102 @@ type CompleteCNotifyRequest struct {
 }
 
 // CompleteOrder 通过反向 RPC 通知核心完成订单。
-func CompleteOrder(ctx context.Context, call *contract.InvokeRequestV2, req CompleteOrderRequest) error {
-	return completeViaHTTP(ctx, call, "/api/complete/order", map[string]any{
-		"tradeNo":    req.TradeNo,
-		"apiTradeNo": req.APITradeNo,
-		"buyer":      req.Buyer,
+func CompleteOrder(ctx context.Context, req CompleteOrderInput) error {
+	kernel, conn, err := contract.DialKernelServiceFromContext(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	requestID := callbackRequestID(req.TradeNo)
+	ack, err := kernel.CompleteOrder(ctx, &proto.CompleteOrderRequest{
+		RequestId:  requestID,
+		TradeNo:    req.TradeNo,
+		ApiTradeNo: req.APITradeNo,
+		Buyer:      req.Buyer,
 	})
+	if err != nil {
+		return err
+	}
+	if ack == nil || !ack.Accepted {
+		return fmt.Errorf("kernel complete order rejected")
+	}
+	return nil
 }
 
 // CompleteRefund 通过反向 RPC 通知核心完成退款。
-func CompleteRefund(ctx context.Context, call *contract.InvokeRequestV2, req CompleteRefundRequest) error {
-	return completeViaHTTP(ctx, call, "/api/complete/refund", map[string]any{
-		"refundNo":    req.RefundNo,
-		"status":      req.Status,
-		"apiRefundNo": req.APIRefundNo,
-		"respBody":    req.RespBody,
+func CompleteRefund(ctx context.Context, req CompleteRefundInput) error {
+	kernel, conn, err := contract.DialKernelServiceFromContext(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	requestID := callbackRequestID(req.RefundNo)
+	ack, err := kernel.CompleteRefund(ctx, &proto.CompleteRefundRequest{
+		RequestId:   requestID,
+		RefundNo:    req.RefundNo,
+		Status:      int32(req.Status),
+		ApiRefundNo: req.APIRefundNo,
+		RespBody:    req.RespBody,
 	})
+	if err != nil {
+		return err
+	}
+	if ack == nil || !ack.Accepted {
+		return fmt.Errorf("kernel complete refund rejected")
+	}
+	return nil
 }
 
 // CompleteTransfer 通过反向 RPC 通知核心完成代付。
-func CompleteTransfer(ctx context.Context, call *contract.InvokeRequestV2, req CompleteTransferRequest) error {
-	return completeViaHTTP(ctx, call, "/api/complete/transfer", map[string]any{
-		"tradeNo":    req.TradeNo,
-		"status":     req.Status,
-		"apiTradeNo": req.APITradeNo,
-		"result":     req.Result,
+func CompleteTransfer(ctx context.Context, req CompleteTransferInput) error {
+	kernel, conn, err := contract.DialKernelServiceFromContext(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	requestID := callbackRequestID(req.TradeNo)
+	ack, err := kernel.CompleteTransfer(ctx, &proto.CompleteTransferRequest{
+		RequestId:  requestID,
+		TradeNo:    req.TradeNo,
+		Status:     int32(req.Status),
+		ApiTradeNo: req.APITradeNo,
+		Result:     req.Result,
 	})
+	if err != nil {
+		return err
+	}
+	if ack == nil || !ack.Accepted {
+		return fmt.Errorf("kernel complete transfer rejected")
+	}
+	return nil
 }
 
 // CompleteCNotify 通过反向 RPC 通知核心记录渠道回调日志。
-func CompleteCNotify(ctx context.Context, call *contract.InvokeRequestV2, req CompleteCNotifyRequest) error {
-	return completeViaHTTP(ctx, call, "/api/complete/cnotify", map[string]any{
-		"bizType":      req.BizType,
-		"tradeNo":      req.TradeNo,
-		"requestIp":    req.RequestIP,
-		"requestUrl":   req.RequestURL,
-		"requestBody":  req.RequestBody,
-		"responseBody": req.ResponseBody,
+func CompleteCNotify(ctx context.Context, req CompleteCNotifyInput) error {
+	kernel, conn, err := contract.DialKernelServiceFromContext(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	requestID := callbackRequestID(req.TradeNo)
+	ack, err := kernel.RecordCNotify(ctx, &proto.RecordCNotifyRequest{
+		RequestId:       requestID,
+		BizType:         req.BizType,
+		TradeNo:         req.TradeNo,
+		RequestIp:       req.RequestIP,
+		RequestUrl:      req.RequestURL,
+		RequestBodyRaw:  []byte(req.RequestBody),
+		ResponseBodyRaw: []byte(req.ResponseBody),
 	})
+	if err != nil {
+		return err
+	}
+	if ack == nil || !ack.Accepted {
+		return fmt.Errorf("kernel record cnotify rejected")
+	}
+	return nil
+}
+
+func callbackRequestID(bizNo string) string {
+	return "cb:" + bizNo + ":" + strconv.FormatInt(time.Now().UnixNano(), 10)
 }

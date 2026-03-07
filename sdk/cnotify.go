@@ -7,94 +7,84 @@ import (
 	"strings"
 
 	"okpay/payment/plugin/contract"
+	"okpay/payment/plugin/proto"
 )
 
-type NotifyResponse struct {
-	BizType string
-	Result  any
+// RecordNotify records cnotify and returns the original payload.
+func RecordNotify(ctx context.Context, req *proto.InvokeContext, bizType string, result *proto.PageResponse) *proto.PageResponse {
+	if result == nil {
+		result = RespError("invalid notify response payload")
+	}
+	notifyReq := CompleteCNotifyInput{
+		BizType:      normalizeBizType(bizType),
+		TradeNo:      inferNotifyTradeNo(req, bizType),
+		RequestIP:    req.GetRequest().GetIp(),
+		RequestURL:   req.GetRequest().GetUrl(),
+		RequestBody:  string(req.GetRequest().GetBodyRaw()),
+		ResponseBody: encodeResponseBody(result),
+	}
+	if err := CompleteCNotify(ctx, notifyReq); err != nil {
+		log.Printf("[plugin-sdk] complete cnotify failed bizType=%s tradeNo=%s err=%v", notifyReq.BizType, notifyReq.TradeNo, err)
+	}
+	return result
 }
 
-// RespNotify records cnotify and returns the response result.
-func RespNotify(ctx context.Context, call *contract.InvokeRequestV2, data NotifyResponse) (map[string]any, error) {
-	tradeNo := inferNotifyTradeNo(call, data.BizType)
-	req := CompleteCNotifyRequest{
-		BizType:      stringValue(data.BizType),
-		TradeNo:      tradeNo,
-		RequestIP:    "",
-		RequestURL:   "",
-		RequestBody:  "",
-		ResponseBody: "",
-	}
-	resultMap := toResponseMap(data.Result)
-	req.ResponseBody = encodeResponseBody(resultMap)
-	if call != nil {
-		req.RequestIP = stringValue(call.Raw.RequestIP)
-		req.RequestURL = stringValue(call.Raw.HTTPURL)
-		req.RequestBody = encodeRequestBody(call)
-	}
-	if err := CompleteCNotify(ctx, call, req); err != nil {
-		log.Printf("[plugin-sdk] complete cnotify failed bizType=%s tradeNo=%s err=%v", req.BizType, req.TradeNo, err)
-	}
-	return resultMap, nil
-}
-
-func inferNotifyTradeNo(call *contract.InvokeRequestV2, bizType string) string {
-	if call == nil {
-		return ""
-	}
-	switch strings.ToLower(stringValue(bizType)) {
+func normalizeBizType(in string) string {
+	switch strings.ToLower(strings.TrimSpace(in)) {
 	case contract.BizTypeOrder:
-		if order := Order(call); order != nil {
-			return stringValue(order.TradeNo)
-		}
+		return contract.BizTypeOrder
 	case contract.BizTypeRefund:
-		if refund := Refund(call); refund != nil {
-			return stringValue(refund.RefundNo)
-		}
+		return contract.BizTypeRefund
 	case contract.BizTypeTransfer:
-		if transfer := Transfer(call); transfer != nil {
-			return stringValue(transfer.TradeNo)
-		}
-	}
-	// Fallback: try all known payloads when bizType is empty/unknown.
-	if order := Order(call); order != nil && stringValue(order.TradeNo) != "" {
-		return stringValue(order.TradeNo)
-	}
-	if refund := Refund(call); refund != nil && stringValue(refund.RefundNo) != "" {
-		return stringValue(refund.RefundNo)
-	}
-	if transfer := Transfer(call); transfer != nil && stringValue(transfer.TradeNo) != "" {
-		return stringValue(transfer.TradeNo)
-	}
-	return ""
-}
-
-func encodeRequestBody(call *contract.InvokeRequestV2) string {
-	if call == nil {
+		return contract.BizTypeTransfer
+	default:
 		return ""
 	}
-	if raw := stringValue(string(call.Raw.HTTPBodyRaw)); raw != "" {
-		return raw
+}
+
+func inferNotifyTradeNo(req *proto.InvokeContext, bizType string) string {
+	if req == nil {
+		return ""
+	}
+	switch bizType {
+	case contract.BizTypeOrder:
+		return req.GetOrder().GetTradeNo()
+	case contract.BizTypeRefund:
+		return req.GetRefund().GetRefundNo()
+	case contract.BizTypeTransfer:
+		return req.GetTransfer().GetTradeNo()
+	}
+	if tradeNo := strings.TrimSpace(req.GetTradeNo()); tradeNo != "" {
+		return tradeNo
+	}
+	if tradeNo := strings.TrimSpace(req.GetOrder().GetTradeNo()); tradeNo != "" {
+		return tradeNo
+	}
+	if refundNo := strings.TrimSpace(req.GetRefund().GetRefundNo()); refundNo != "" {
+		return refundNo
+	}
+	if tradeNo := strings.TrimSpace(req.GetTransfer().GetTradeNo()); tradeNo != "" {
+		return tradeNo
 	}
 	return ""
 }
 
-func encodeResponseBody(result map[string]any) string {
+func encodeResponseBody(result *proto.PageResponse) string {
 	if result == nil {
 		return ""
 	}
-	typ := strings.ToLower(stringValue(result["type"]))
+	typ := strings.ToLower(strings.TrimSpace(result.GetType()))
 	switch typ {
-	case "html":
-		if v := stringValue(result["data"]); v != "" {
+	case ResponseTypeHTML:
+		if v := strings.TrimSpace(result.GetDataText()); v != "" {
 			return v
 		}
-	case "json":
-		if data, err := json.Marshal(result["data"]); err == nil {
-			return string(data)
+	case ResponseTypeJSON:
+		if len(result.GetDataJsonRaw()) > 0 {
+			return string(result.GetDataJsonRaw())
 		}
-	case "error":
-		if v := stringValue(result["msg"]); v != "" {
+	case ResponseTypeError:
+		if v := strings.TrimSpace(result.GetMsg()); v != "" {
 			return v
 		}
 	}
@@ -102,17 +92,4 @@ func encodeResponseBody(result map[string]any) string {
 		return string(data)
 	}
 	return ""
-}
-
-func toResponseMap(result any) map[string]any {
-	switch v := result.(type) {
-	case map[string]any:
-		if v == nil {
-			return RespError("notify response is nil")
-		}
-		return v
-	default:
-		log.Printf("[plugin-sdk] invalid notify response payload type=%T", result)
-		return RespError("invalid notify response payload")
-	}
 }

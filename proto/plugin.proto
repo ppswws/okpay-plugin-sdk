@@ -1,0 +1,324 @@
+syntax = "proto3";
+
+package okpay.plugin;
+
+option go_package = "okpay/payment/plugin/proto;proto";
+
+import "google/protobuf/timestamp.proto";
+
+message HeaderKV {
+  string key = 1;
+  string value = 2;
+}
+
+message RawHTTP {
+  string method = 1;
+  string url = 2;
+  string query_raw = 3;
+  bytes body_raw = 4;
+  repeated HeaderKV headers_raw = 5;
+  string request_ip = 6;
+  string user_agent = 7;
+}
+
+message OrderSnapshot {
+  string trade_no = 1;
+  string out_trade_no = 2;
+  string api_trade_no = 3;
+  int64 uid = 4;
+  string type = 5;
+  string plugin = 6;
+  int64 channel = 7;
+  int64 cid = 8;
+  int64 code = 9;
+  string subject = 10;
+  int64 amount = 11;
+  int64 real = 12;
+  int64 fee = 13;
+  int64 get = 14;
+  string notify_url = 15;
+  string return_url = 16;
+  string param = 17;
+  string domain = 18;
+  string ip_buyer = 19;
+  string ip_source = 20;
+  string buyer = 21;
+  int32 status = 22;
+  int32 notify = 23;
+  int32 req_ms = 24;
+  int32 req_count = 25;
+  string req_body = 26;
+  string resp_body = 27;
+  string ext = 28;
+  string result = 29;
+  google.protobuf.Timestamp endtime = 30;
+  google.protobuf.Timestamp created_at = 31;
+  google.protobuf.Timestamp updated_at = 32;
+}
+
+message RefundSnapshot {
+  string refund_no = 1;
+  string trade_no = 2;
+  string out_refund_no = 3;
+  string api_refund_no = 4;
+  int64 uid = 5;
+  int64 channel = 6;
+  int64 cid = 7;
+  int64 amount = 8;
+  string notify_url = 9;
+  int32 req_ms = 10;
+  string req_body = 11;
+  string resp_body = 12;
+  int32 notify = 13;
+  int32 status = 14;
+  string remark = 15;
+  string result = 16;
+  google.protobuf.Timestamp endtime = 17;
+  google.protobuf.Timestamp created_at = 18;
+  google.protobuf.Timestamp updated_at = 19;
+}
+
+message TransferSnapshot {
+  string trade_no = 1;
+  string api_trade_no = 2;
+  string out_trade_no = 3;
+  int64 uid = 4;
+  int32 business = 5;
+  string type = 6;
+  int64 channel = 7;
+  int64 cid = 8;
+  int64 code = 9;
+  int64 amount = 10;
+  int64 fee = 11;
+  int64 cost = 12;
+  string bank_name = 13;
+  string card_name = 14;
+  string card_no = 15;
+  string branch_name = 16;
+  string notify_url = 17;
+  int32 req_ms = 18;
+  string req_body = 19;
+  string resp_body = 20;
+  int32 notify = 21;
+  int32 status = 22;
+  string remark = 23;
+  string result = 24;
+  google.protobuf.Timestamp endtime = 25;
+  google.protobuf.Timestamp created_at = 26;
+  google.protobuf.Timestamp updated_at = 27;
+}
+
+message ChannelSnapshot {
+  int64 id = 1;
+  string type = 2;
+  string plugin = 3;
+  string name = 4;
+  string rate = 5;
+  int64 fixed_fee = 6;
+  int32 status = 7;
+  int32 action = 8;
+  string domain = 9;
+  bytes config_json_raw = 10;
+  int64 daylimit = 11;
+  int64 daynumber = 12;
+  int64 paymin = 13;
+  int64 paymax = 14;
+  int64 author = 15;
+  google.protobuf.Timestamp created_at = 16;
+  google.protobuf.Timestamp updated_at = 17;
+}
+
+message ConfigSnapshot {
+  string site_domain = 1;
+  string notify_domain = 2;
+  string localhost = 3;
+  string goods_name = 4;
+  string create_timeout = 5;
+  reserved 6;
+}
+
+message RequestSnapshot {
+  string method = 1;
+  string url = 2;
+  string ip = 3;
+  string ua = 4;
+  string query_raw = 5;
+  bytes body_raw = 6;
+  map<string, string> query = 7;
+  map<string, string> body_form = 8;
+  bytes body_json_raw = 9;
+  map<string, string> params = 10;
+}
+
+message InvokeContext {
+  string version = 1;
+  string request_id = 2;
+  string trace_id = 3;
+  string action = 4;
+  string event = 5;
+  string route = 6;
+  string func_name = 7;
+  string trade_no = 8;
+  RawHTTP raw_http = 9;
+  OrderSnapshot order = 10;
+  RefundSnapshot refund = 11;
+  TransferSnapshot transfer = 12;
+  ChannelSnapshot channel = 13;
+  ConfigSnapshot config = 14;
+  RequestSnapshot request = 15;
+  uint32 kernel_broker_id = 16;
+}
+
+message Empty {}
+
+message PluginInfoRequest {}
+
+message InputField {
+  string name = 1;
+  string type = 2;
+  string note = 3;
+  bool required = 4;
+  string default_value = 5;
+  map<string, string> options = 6;
+}
+
+message PluginInfoResponse {
+  string id = 1;
+  string name = 2;
+  string link = 3;
+  repeated string paytypes = 4;
+  repeated string transtypes = 5;
+  map<string, InputField> inputs = 6;
+  string note = 7;
+}
+
+message PageResponse {
+  string type = 1;
+  string page = 2;
+  string url = 3;
+  string msg = 4;
+  bytes data_json_raw = 5;
+  string data_text = 6;
+}
+
+message CreateRequest { InvokeContext ctx = 1; }
+message CreateResponse { PageResponse page = 1; }
+
+message QueryRequest { InvokeContext ctx = 1; }
+message QueryResponse {
+  int32 state = 1;
+  string api_trade_no = 2;
+}
+
+message RefundRequest { InvokeContext ctx = 1; }
+message RefundResponse {
+  int32 state = 1;
+  string api_refund_no = 2;
+  int32 req_ms = 3;
+  string req_body = 4;
+  string resp_body = 5;
+  string result = 6;
+}
+
+message TransferRequest { InvokeContext ctx = 1; }
+message TransferResponse {
+  int32 state = 1;
+  string api_trade_no = 2;
+  int32 req_ms = 3;
+  string req_body = 4;
+  string resp_body = 5;
+  string result = 6;
+}
+
+message BalanceRequest { InvokeContext ctx = 1; }
+message BalanceResponse { string balance = 1; }
+
+message InvokeFuncRequest { InvokeContext ctx = 1; }
+message InvokeFuncResponse { PageResponse page = 1; }
+
+message PluginError {
+  string code = 1;
+  string message = 2;
+  bool retryable = 3;
+}
+
+message Ack {
+  bool accepted = 1;
+  string request_id = 2;
+  PluginError error = 3;
+}
+
+message CompleteOrderRequest {
+  string request_id = 1;
+  string trace_id = 2;
+  string plugin_id = 3;
+  string trade_no = 4;
+  string api_trade_no = 5;
+  string buyer = 6;
+}
+
+message CompleteRefundRequest {
+  string request_id = 1;
+  string trace_id = 2;
+  string plugin_id = 3;
+  string refund_no = 4;
+  int32 status = 5;
+  string api_refund_no = 6;
+  string resp_body = 7;
+}
+
+message CompleteTransferRequest {
+  string request_id = 1;
+  string trace_id = 2;
+  string plugin_id = 3;
+  string trade_no = 4;
+  int32 status = 5;
+  string api_trade_no = 6;
+  string result = 7;
+}
+
+message RecordCNotifyRequest {
+  string request_id = 1;
+  string trace_id = 2;
+  string plugin_id = 3;
+  string biz_type = 4;
+  string trade_no = 5;
+  string request_ip = 6;
+  string request_url = 7;
+  bytes request_body_raw = 8;
+  bytes response_body_raw = 9;
+}
+
+message LockOrderExtRequest {
+  string request_id = 1;
+  string trace_id = 2;
+  string plugin_id = 3;
+  string trade_no = 4;
+  string req_body = 5;
+  string resp_body = 6;
+  int32 req_count = 7;
+  int32 req_ms = 8;
+  bytes ext_json_raw = 9;
+}
+
+message LockOrderExtResponse {
+  bytes ext_json_raw = 1;
+}
+
+service PluginService {
+  rpc Info(PluginInfoRequest) returns (PluginInfoResponse);
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Query(QueryRequest) returns (QueryResponse);
+  rpc Refund(RefundRequest) returns (RefundResponse);
+  rpc Transfer(TransferRequest) returns (TransferResponse);
+  rpc Balance(BalanceRequest) returns (BalanceResponse);
+  rpc InvokeFunc(InvokeFuncRequest) returns (InvokeFuncResponse);
+}
+
+service KernelService {
+  rpc CompleteOrder(CompleteOrderRequest) returns (Ack);
+  rpc CompleteRefund(CompleteRefundRequest) returns (Ack);
+  rpc CompleteTransfer(CompleteTransferRequest) returns (Ack);
+  rpc RecordCNotify(RecordCNotifyRequest) returns (Ack);
+  rpc LockOrderExt(LockOrderExtRequest) returns (LockOrderExtResponse);
+}

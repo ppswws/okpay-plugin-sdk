@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	"okpay/payment/plugin/contract"
+	"okpay/payment/plugin/proto"
 )
 
 type RequestStats struct {
@@ -19,17 +19,20 @@ type RequestStats struct {
 
 // LockOrderExt 仅在 Ext 为空时执行 fetch 并写入 Ext；存在则直接复用 Ext。
 // 插件自行决定何时缓存（建议在真正请求渠道后）。
-func LockOrderExt(ctx context.Context, call *contract.InvokeRequestV2, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
-	if call == nil {
-		return nil, fmt.Errorf("call 不能为空")
-	}
-	if strings.TrimSpace(tradeNo) == "" {
+func LockOrderExt(ctx context.Context, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
+	if tradeNo == "" {
 		return nil, fmt.Errorf("tradeNo 不能为空")
 	}
 	if fetch == nil {
 		return nil, fmt.Errorf("fetch 不能为空")
 	}
-	cachedExt, err := lockOrderData(ctx, call, tradeNo, RequestStats{}, nil)
+	kernel, conn, err := contract.DialKernelServiceFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	cachedExt, err := lockOrderData(ctx, kernel, tradeNo, RequestStats{}, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -40,14 +43,12 @@ func LockOrderExt(ctx context.Context, call *contract.InvokeRequestV2, tradeNo s
 	}
 	result, stats, err := fetch()
 	if err != nil {
-		_, _ = lockOrderData(ctx, call, tradeNo, stats, nil)
 		return nil, err
 	}
 	if msg, ok := errorPayloadMsg(result); ok {
-		_, _ = lockOrderData(ctx, call, tradeNo, stats, nil)
 		return nil, errors.New(msg)
 	}
-	lockedExt, err := lockOrderData(ctx, call, tradeNo, stats, result)
+	lockedExt, err := lockOrderData(ctx, kernel, tradeNo, stats, result)
 	if err != nil {
 		return nil, err
 	}
@@ -62,31 +63,28 @@ func LockOrderExt(ctx context.Context, call *contract.InvokeRequestV2, tradeNo s
 	return nil, nil
 }
 
-type lockOrderDataResponse struct {
-	Ext string `json:"ext,omitempty"`
-}
-
-func lockOrderData(ctx context.Context, call *contract.InvokeRequestV2, tradeNo string, stats RequestStats, ext any) (string, error) {
-	extStr := ""
+func lockOrderData(ctx context.Context, kernel contract.KernelService, tradeNo string, stats RequestStats, ext any) (string, error) {
+	extRaw := []byte(nil)
 	if ext != nil {
 		b, err := json.Marshal(ext)
 		if err != nil {
 			return "", err
 		}
-		extStr = string(b)
+		extRaw = b
 	}
-	var resp lockOrderDataResponse
-	if err := completeViaHTTPWithData(ctx, call, "/api/complete/orderdata/lock", map[string]any{
-		"tradeNo":  tradeNo,
-		"reqBody":  stats.ReqBody,
-		"respBody": stats.RespBody,
-		"reqCount": stats.ReqCount,
-		"reqMs":    stats.ReqMs,
-		"ext":      extStr,
-	}, &resp); err != nil {
+	resp, err := kernel.LockOrderExt(ctx, &proto.LockOrderExtRequest{
+		RequestId:  callbackRequestID(tradeNo),
+		TradeNo:    tradeNo,
+		ReqBody:    stats.ReqBody,
+		RespBody:   stats.RespBody,
+		ReqCount:   int32(stats.ReqCount),
+		ReqMs:      stats.ReqMs,
+		ExtJsonRaw: extRaw,
+	})
+	if err != nil {
 		return "", err
 	}
-	return resp.Ext, nil
+	return string(resp.GetExtJsonRaw()), nil
 }
 
 func extractPayloadFromAny(value any) (map[string]any, bool) {
@@ -112,7 +110,7 @@ func extractPayloadFromAny(value any) (map[string]any, bool) {
 		}
 		return out, true
 	case string:
-		if strings.TrimSpace(v) == "" {
+		if v == "" {
 			return nil, false
 		}
 		var out map[string]any
@@ -139,4 +137,17 @@ func errorPayloadMsg(value any) (string, bool) {
 		msg = "支付通道返回错误"
 	}
 	return msg, true
+}
+
+func stringValue(val any) string {
+	switch v := val.(type) {
+	case string:
+		return v
+	case []byte:
+		return string(v)
+	case json.RawMessage:
+		return string(v)
+	default:
+		return ""
+	}
 }
