@@ -11,16 +11,6 @@ message HeaderKV {
   string value = 2;
 }
 
-message RawHTTP {
-  string method = 1;
-  string url = 2;
-  string query_raw = 3;
-  bytes body_raw = 4;
-  repeated HeaderKV headers_raw = 5;
-  string request_ip = 6;
-  string user_agent = 7;
-}
-
 message OrderSnapshot {
   string trade_no = 1;
   string out_trade_no = 2;
@@ -137,39 +127,30 @@ message ConfigSnapshot {
   reserved 6;
 }
 
-message RequestSnapshot {
+message Request {
   string method = 1;
   string url = 2;
   string ip = 3;
   string ua = 4;
-  string query_raw = 5;
-  bytes body_raw = 6;
-  map<string, string> query = 7;
-  map<string, string> body_form = 8;
-  bytes body_json_raw = 9;
-  map<string, string> params = 10;
+  string query = 5;
+  bytes body = 6;
+  repeated HeaderKV headers = 7;
+  reserved 8 to 10;
 }
 
 message InvokeContext {
-  string version = 1;
-  string request_id = 2;
-  string trace_id = 3;
-  string action = 4;
-  string event = 5;
-  string route = 6;
-  string func_name = 7;
-  string trade_no = 8;
-  RawHTTP raw_http = 9;
-  OrderSnapshot order = 10;
-  RefundSnapshot refund = 11;
-  TransferSnapshot transfer = 12;
-  ChannelSnapshot channel = 13;
-  ConfigSnapshot config = 14;
-  RequestSnapshot request = 15;
-  uint32 kernel_broker_id = 16;
+  string request_id = 1;
+  string action = 2;
+  string func_name = 3;
+  string trade_no = 4;
+  OrderSnapshot order = 5;
+  RefundSnapshot refund = 6;
+  TransferSnapshot transfer = 7;
+  ChannelSnapshot channel = 8;
+  ConfigSnapshot config = 9;
+  Request request = 10;
+  uint32 kernel_broker_id = 11;
 }
-
-message Empty {}
 
 message PluginInfoRequest {}
 
@@ -250,55 +231,50 @@ message Ack {
 
 message CompleteOrderRequest {
   string request_id = 1;
-  string trace_id = 2;
-  string plugin_id = 3;
-  string trade_no = 4;
-  string api_trade_no = 5;
-  string buyer = 6;
+  string plugin_id = 2;
+  string trade_no = 3;
+  string api_trade_no = 4;
+  string buyer = 5;
 }
 
 message CompleteRefundRequest {
   string request_id = 1;
-  string trace_id = 2;
-  string plugin_id = 3;
-  string refund_no = 4;
-  int32 status = 5;
-  string api_refund_no = 6;
-  string resp_body = 7;
+  string plugin_id = 2;
+  string refund_no = 3;
+  int32 status = 4;
+  string api_refund_no = 5;
+  string resp_body = 6;
 }
 
 message CompleteTransferRequest {
   string request_id = 1;
-  string trace_id = 2;
-  string plugin_id = 3;
-  string trade_no = 4;
-  int32 status = 5;
-  string api_trade_no = 6;
-  string result = 7;
+  string plugin_id = 2;
+  string trade_no = 3;
+  int32 status = 4;
+  string api_trade_no = 5;
+  string result = 6;
 }
 
 message RecordCNotifyRequest {
   string request_id = 1;
-  string trace_id = 2;
-  string plugin_id = 3;
-  string biz_type = 4;
-  string trade_no = 5;
-  string request_ip = 6;
-  string request_url = 7;
-  bytes request_body_raw = 8;
-  bytes response_body_raw = 9;
+  string plugin_id = 2;
+  string biz_type = 3;
+  string trade_no = 4;
+  string request_ip = 5;
+  string request_url = 6;
+  bytes request_body_raw = 7;
+  bytes response_body_raw = 8;
 }
 
 message LockOrderExtRequest {
   string request_id = 1;
-  string trace_id = 2;
-  string plugin_id = 3;
-  string trade_no = 4;
-  string req_body = 5;
-  string resp_body = 6;
-  int32 req_count = 7;
-  int32 req_ms = 8;
-  bytes ext_json_raw = 9;
+  string plugin_id = 2;
+  string trade_no = 3;
+  string req_body = 4;
+  string resp_body = 5;
+  int32 req_count = 6;
+  int32 req_ms = 7;
+  bytes ext_json_raw = 8;
 }
 
 message LockOrderExtResponse {

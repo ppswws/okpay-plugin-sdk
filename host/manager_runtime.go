@@ -47,7 +47,11 @@ func (m *Manager) Create(ctx context.Context, id string, req *proto.CreateReques
 func (m *Manager) Query(ctx context.Context, id string, req *proto.QueryRequest) (*proto.QueryResponse, error) {
 	var out *proto.QueryResponse
 	err := m.Invoke(ctx, id, "query", func(ctx context.Context, ch contract.PluginService) error {
-		m.attachKernelBroker(ch, req.GetCtx())
+		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
+		if err != nil {
+			return err
+		}
+		defer cleanup()
 		resp, err := ch.Query(ctx, req)
 		if err != nil {
 			return err
@@ -97,7 +101,11 @@ func (m *Manager) Transfer(ctx context.Context, id string, req *proto.TransferRe
 func (m *Manager) Balance(ctx context.Context, id string, req *proto.BalanceRequest) (*proto.BalanceResponse, error) {
 	var out *proto.BalanceResponse
 	err := m.Invoke(ctx, id, "balance", func(ctx context.Context, ch contract.PluginService) error {
-		m.attachKernelBroker(ch, req.GetCtx())
+		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
+		if err != nil {
+			return err
+		}
+		defer cleanup()
 		resp, err := ch.Balance(ctx, req)
 		if err != nil {
 			return err

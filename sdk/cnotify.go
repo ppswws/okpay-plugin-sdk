@@ -20,7 +20,7 @@ func RecordNotify(ctx context.Context, req *proto.InvokeContext, bizType string,
 		TradeNo:      inferNotifyTradeNo(req, bizType),
 		RequestIP:    req.GetRequest().GetIp(),
 		RequestURL:   req.GetRequest().GetUrl(),
-		RequestBody:  string(req.GetRequest().GetBodyRaw()),
+		RequestBody:  string(req.GetRequest().GetBody()),
 		ResponseBody: encodeResponseBody(result),
 	}
 	if err := CompleteCNotify(ctx, notifyReq); err != nil {

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.9
 // 	protoc        (unknown)
-// source: plugin/proto/plugin.proto
+// source: plugin.proto
 
 package proto
 
@@ -32,7 +32,7 @@ type HeaderKV struct {
 
 func (x *HeaderKV) Reset() {
 	*x = HeaderKV{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[0]
+	mi := &file_plugin_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +44,7 @@ func (x *HeaderKV) String() string {
 func (*HeaderKV) ProtoMessage() {}
 
 func (x *HeaderKV) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[0]
+	mi := &file_plugin_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *HeaderKV) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HeaderKV.ProtoReflect.Descriptor instead.
 func (*HeaderKV) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{0}
+	return file_plugin_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HeaderKV) GetKey() string {
@@ -70,98 +70,6 @@ func (x *HeaderKV) GetKey() string {
 func (x *HeaderKV) GetValue() string {
 	if x != nil {
 		return x.Value
-	}
-	return ""
-}
-
-type RawHTTP struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Method        string                 `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
-	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	QueryRaw      string                 `protobuf:"bytes,3,opt,name=query_raw,json=queryRaw,proto3" json:"query_raw,omitempty"`
-	BodyRaw       []byte                 `protobuf:"bytes,4,opt,name=body_raw,json=bodyRaw,proto3" json:"body_raw,omitempty"`
-	HeadersRaw    []*HeaderKV            `protobuf:"bytes,5,rep,name=headers_raw,json=headersRaw,proto3" json:"headers_raw,omitempty"`
-	RequestIp     string                 `protobuf:"bytes,6,opt,name=request_ip,json=requestIp,proto3" json:"request_ip,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,7,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RawHTTP) Reset() {
-	*x = RawHTTP{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RawHTTP) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RawHTTP) ProtoMessage() {}
-
-func (x *RawHTTP) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RawHTTP.ProtoReflect.Descriptor instead.
-func (*RawHTTP) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *RawHTTP) GetMethod() string {
-	if x != nil {
-		return x.Method
-	}
-	return ""
-}
-
-func (x *RawHTTP) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
-func (x *RawHTTP) GetQueryRaw() string {
-	if x != nil {
-		return x.QueryRaw
-	}
-	return ""
-}
-
-func (x *RawHTTP) GetBodyRaw() []byte {
-	if x != nil {
-		return x.BodyRaw
-	}
-	return nil
-}
-
-func (x *RawHTTP) GetHeadersRaw() []*HeaderKV {
-	if x != nil {
-		return x.HeadersRaw
-	}
-	return nil
-}
-
-func (x *RawHTTP) GetRequestIp() string {
-	if x != nil {
-		return x.RequestIp
-	}
-	return ""
-}
-
-func (x *RawHTTP) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
 	}
 	return ""
 }
@@ -206,7 +114,7 @@ type OrderSnapshot struct {
 
 func (x *OrderSnapshot) Reset() {
 	*x = OrderSnapshot{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[2]
+	mi := &file_plugin_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -218,7 +126,7 @@ func (x *OrderSnapshot) String() string {
 func (*OrderSnapshot) ProtoMessage() {}
 
 func (x *OrderSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[2]
+	mi := &file_plugin_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -231,7 +139,7 @@ func (x *OrderSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrderSnapshot.ProtoReflect.Descriptor instead.
 func (*OrderSnapshot) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{2}
+	return file_plugin_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *OrderSnapshot) GetTradeNo() string {
@@ -485,7 +393,7 @@ type RefundSnapshot struct {
 
 func (x *RefundSnapshot) Reset() {
 	*x = RefundSnapshot{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[3]
+	mi := &file_plugin_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -497,7 +405,7 @@ func (x *RefundSnapshot) String() string {
 func (*RefundSnapshot) ProtoMessage() {}
 
 func (x *RefundSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[3]
+	mi := &file_plugin_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -510,7 +418,7 @@ func (x *RefundSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefundSnapshot.ProtoReflect.Descriptor instead.
 func (*RefundSnapshot) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{3}
+	return file_plugin_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RefundSnapshot) GetRefundNo() string {
@@ -681,7 +589,7 @@ type TransferSnapshot struct {
 
 func (x *TransferSnapshot) Reset() {
 	*x = TransferSnapshot{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[4]
+	mi := &file_plugin_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -693,7 +601,7 @@ func (x *TransferSnapshot) String() string {
 func (*TransferSnapshot) ProtoMessage() {}
 
 func (x *TransferSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[4]
+	mi := &file_plugin_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -706,7 +614,7 @@ func (x *TransferSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransferSnapshot.ProtoReflect.Descriptor instead.
 func (*TransferSnapshot) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{4}
+	return file_plugin_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TransferSnapshot) GetTradeNo() string {
@@ -923,7 +831,7 @@ type ChannelSnapshot struct {
 
 func (x *ChannelSnapshot) Reset() {
 	*x = ChannelSnapshot{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[5]
+	mi := &file_plugin_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -935,7 +843,7 @@ func (x *ChannelSnapshot) String() string {
 func (*ChannelSnapshot) ProtoMessage() {}
 
 func (x *ChannelSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[5]
+	mi := &file_plugin_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -948,7 +856,7 @@ func (x *ChannelSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChannelSnapshot.ProtoReflect.Descriptor instead.
 func (*ChannelSnapshot) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{5}
+	return file_plugin_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ChannelSnapshot) GetId() int64 {
@@ -1083,7 +991,7 @@ type ConfigSnapshot struct {
 
 func (x *ConfigSnapshot) Reset() {
 	*x = ConfigSnapshot{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[6]
+	mi := &file_plugin_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1095,7 +1003,7 @@ func (x *ConfigSnapshot) String() string {
 func (*ConfigSnapshot) ProtoMessage() {}
 
 func (x *ConfigSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[6]
+	mi := &file_plugin_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1108,7 +1016,7 @@ func (x *ConfigSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConfigSnapshot.ProtoReflect.Descriptor instead.
 func (*ConfigSnapshot) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{6}
+	return file_plugin_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ConfigSnapshot) GetSiteDomain() string {
@@ -1146,37 +1054,34 @@ func (x *ConfigSnapshot) GetCreateTimeout() string {
 	return ""
 }
 
-type RequestSnapshot struct {
+type Request struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Method        string                 `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	Ip            string                 `protobuf:"bytes,3,opt,name=ip,proto3" json:"ip,omitempty"`
 	Ua            string                 `protobuf:"bytes,4,opt,name=ua,proto3" json:"ua,omitempty"`
-	QueryRaw      string                 `protobuf:"bytes,5,opt,name=query_raw,json=queryRaw,proto3" json:"query_raw,omitempty"`
-	BodyRaw       []byte                 `protobuf:"bytes,6,opt,name=body_raw,json=bodyRaw,proto3" json:"body_raw,omitempty"`
-	Query         map[string]string      `protobuf:"bytes,7,rep,name=query,proto3" json:"query,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	BodyForm      map[string]string      `protobuf:"bytes,8,rep,name=body_form,json=bodyForm,proto3" json:"body_form,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	BodyJsonRaw   []byte                 `protobuf:"bytes,9,opt,name=body_json_raw,json=bodyJsonRaw,proto3" json:"body_json_raw,omitempty"`
-	Params        map[string]string      `protobuf:"bytes,10,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Query         string                 `protobuf:"bytes,5,opt,name=query,proto3" json:"query,omitempty"`
+	Body          []byte                 `protobuf:"bytes,6,opt,name=body,proto3" json:"body,omitempty"`
+	Headers       []*HeaderKV            `protobuf:"bytes,7,rep,name=headers,proto3" json:"headers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *RequestSnapshot) Reset() {
-	*x = RequestSnapshot{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[7]
+func (x *Request) Reset() {
+	*x = Request{}
+	mi := &file_plugin_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *RequestSnapshot) String() string {
+func (x *Request) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*RequestSnapshot) ProtoMessage() {}
+func (*Request) ProtoMessage() {}
 
-func (x *RequestSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[7]
+func (x *Request) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1187,106 +1092,80 @@ func (x *RequestSnapshot) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RequestSnapshot.ProtoReflect.Descriptor instead.
-func (*RequestSnapshot) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{7}
+// Deprecated: Use Request.ProtoReflect.Descriptor instead.
+func (*Request) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *RequestSnapshot) GetMethod() string {
+func (x *Request) GetMethod() string {
 	if x != nil {
 		return x.Method
 	}
 	return ""
 }
 
-func (x *RequestSnapshot) GetUrl() string {
+func (x *Request) GetUrl() string {
 	if x != nil {
 		return x.Url
 	}
 	return ""
 }
 
-func (x *RequestSnapshot) GetIp() string {
+func (x *Request) GetIp() string {
 	if x != nil {
 		return x.Ip
 	}
 	return ""
 }
 
-func (x *RequestSnapshot) GetUa() string {
+func (x *Request) GetUa() string {
 	if x != nil {
 		return x.Ua
 	}
 	return ""
 }
 
-func (x *RequestSnapshot) GetQueryRaw() string {
+func (x *Request) GetQuery() string {
 	if x != nil {
-		return x.QueryRaw
+		return x.Query
 	}
 	return ""
 }
 
-func (x *RequestSnapshot) GetBodyRaw() []byte {
+func (x *Request) GetBody() []byte {
 	if x != nil {
-		return x.BodyRaw
+		return x.Body
 	}
 	return nil
 }
 
-func (x *RequestSnapshot) GetQuery() map[string]string {
+func (x *Request) GetHeaders() []*HeaderKV {
 	if x != nil {
-		return x.Query
-	}
-	return nil
-}
-
-func (x *RequestSnapshot) GetBodyForm() map[string]string {
-	if x != nil {
-		return x.BodyForm
-	}
-	return nil
-}
-
-func (x *RequestSnapshot) GetBodyJsonRaw() []byte {
-	if x != nil {
-		return x.BodyJsonRaw
-	}
-	return nil
-}
-
-func (x *RequestSnapshot) GetParams() map[string]string {
-	if x != nil {
-		return x.Params
+		return x.Headers
 	}
 	return nil
 }
 
 type InvokeContext struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Version        string                 `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	RequestId      string                 `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	TraceId        string                 `protobuf:"bytes,3,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
-	Action         string                 `protobuf:"bytes,4,opt,name=action,proto3" json:"action,omitempty"`
-	Event          string                 `protobuf:"bytes,5,opt,name=event,proto3" json:"event,omitempty"`
-	Route          string                 `protobuf:"bytes,6,opt,name=route,proto3" json:"route,omitempty"`
-	FuncName       string                 `protobuf:"bytes,7,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
-	TradeNo        string                 `protobuf:"bytes,8,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	RawHttp        *RawHTTP               `protobuf:"bytes,9,opt,name=raw_http,json=rawHttp,proto3" json:"raw_http,omitempty"`
-	Order          *OrderSnapshot         `protobuf:"bytes,10,opt,name=order,proto3" json:"order,omitempty"`
-	Refund         *RefundSnapshot        `protobuf:"bytes,11,opt,name=refund,proto3" json:"refund,omitempty"`
-	Transfer       *TransferSnapshot      `protobuf:"bytes,12,opt,name=transfer,proto3" json:"transfer,omitempty"`
-	Channel        *ChannelSnapshot       `protobuf:"bytes,13,opt,name=channel,proto3" json:"channel,omitempty"`
-	Config         *ConfigSnapshot        `protobuf:"bytes,14,opt,name=config,proto3" json:"config,omitempty"`
-	Request        *RequestSnapshot       `protobuf:"bytes,15,opt,name=request,proto3" json:"request,omitempty"`
-	KernelBrokerId uint32                 `protobuf:"varint,16,opt,name=kernel_broker_id,json=kernelBrokerId,proto3" json:"kernel_broker_id,omitempty"`
+	RequestId      string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Action         string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	FuncName       string                 `protobuf:"bytes,3,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
+	TradeNo        string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
+	Order          *OrderSnapshot         `protobuf:"bytes,5,opt,name=order,proto3" json:"order,omitempty"`
+	Refund         *RefundSnapshot        `protobuf:"bytes,6,opt,name=refund,proto3" json:"refund,omitempty"`
+	Transfer       *TransferSnapshot      `protobuf:"bytes,7,opt,name=transfer,proto3" json:"transfer,omitempty"`
+	Channel        *ChannelSnapshot       `protobuf:"bytes,8,opt,name=channel,proto3" json:"channel,omitempty"`
+	Config         *ConfigSnapshot        `protobuf:"bytes,9,opt,name=config,proto3" json:"config,omitempty"`
+	Request        *Request               `protobuf:"bytes,10,opt,name=request,proto3" json:"request,omitempty"`
+	KernelBrokerId uint32                 `protobuf:"varint,11,opt,name=kernel_broker_id,json=kernelBrokerId,proto3" json:"kernel_broker_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *InvokeContext) Reset() {
 	*x = InvokeContext{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[8]
+	mi := &file_plugin_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1298,7 +1177,7 @@ func (x *InvokeContext) String() string {
 func (*InvokeContext) ProtoMessage() {}
 
 func (x *InvokeContext) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[8]
+	mi := &file_plugin_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1311,14 +1190,7 @@ func (x *InvokeContext) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InvokeContext.ProtoReflect.Descriptor instead.
 func (*InvokeContext) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *InvokeContext) GetVersion() string {
-	if x != nil {
-		return x.Version
-	}
-	return ""
+	return file_plugin_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *InvokeContext) GetRequestId() string {
@@ -1328,30 +1200,9 @@ func (x *InvokeContext) GetRequestId() string {
 	return ""
 }
 
-func (x *InvokeContext) GetTraceId() string {
-	if x != nil {
-		return x.TraceId
-	}
-	return ""
-}
-
 func (x *InvokeContext) GetAction() string {
 	if x != nil {
 		return x.Action
-	}
-	return ""
-}
-
-func (x *InvokeContext) GetEvent() string {
-	if x != nil {
-		return x.Event
-	}
-	return ""
-}
-
-func (x *InvokeContext) GetRoute() string {
-	if x != nil {
-		return x.Route
 	}
 	return ""
 }
@@ -1368,13 +1219,6 @@ func (x *InvokeContext) GetTradeNo() string {
 		return x.TradeNo
 	}
 	return ""
-}
-
-func (x *InvokeContext) GetRawHttp() *RawHTTP {
-	if x != nil {
-		return x.RawHttp
-	}
-	return nil
 }
 
 func (x *InvokeContext) GetOrder() *OrderSnapshot {
@@ -1412,7 +1256,7 @@ func (x *InvokeContext) GetConfig() *ConfigSnapshot {
 	return nil
 }
 
-func (x *InvokeContext) GetRequest() *RequestSnapshot {
+func (x *InvokeContext) GetRequest() *Request {
 	if x != nil {
 		return x.Request
 	}
@@ -1426,42 +1270,6 @@ func (x *InvokeContext) GetKernelBrokerId() uint32 {
 	return 0
 }
 
-type Empty struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Empty) Reset() {
-	*x = Empty{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Empty) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Empty) ProtoMessage() {}
-
-func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
-func (*Empty) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{9}
-}
-
 type PluginInfoRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1470,7 +1278,7 @@ type PluginInfoRequest struct {
 
 func (x *PluginInfoRequest) Reset() {
 	*x = PluginInfoRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[10]
+	mi := &file_plugin_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1482,7 +1290,7 @@ func (x *PluginInfoRequest) String() string {
 func (*PluginInfoRequest) ProtoMessage() {}
 
 func (x *PluginInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[10]
+	mi := &file_plugin_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1495,7 +1303,7 @@ func (x *PluginInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PluginInfoRequest.ProtoReflect.Descriptor instead.
 func (*PluginInfoRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{10}
+	return file_plugin_proto_rawDescGZIP(), []int{8}
 }
 
 type InputField struct {
@@ -1512,7 +1320,7 @@ type InputField struct {
 
 func (x *InputField) Reset() {
 	*x = InputField{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[11]
+	mi := &file_plugin_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1524,7 +1332,7 @@ func (x *InputField) String() string {
 func (*InputField) ProtoMessage() {}
 
 func (x *InputField) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[11]
+	mi := &file_plugin_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1537,7 +1345,7 @@ func (x *InputField) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InputField.ProtoReflect.Descriptor instead.
 func (*InputField) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{11}
+	return file_plugin_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *InputField) GetName() string {
@@ -1597,7 +1405,7 @@ type PluginInfoResponse struct {
 
 func (x *PluginInfoResponse) Reset() {
 	*x = PluginInfoResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[12]
+	mi := &file_plugin_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1609,7 +1417,7 @@ func (x *PluginInfoResponse) String() string {
 func (*PluginInfoResponse) ProtoMessage() {}
 
 func (x *PluginInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[12]
+	mi := &file_plugin_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1622,7 +1430,7 @@ func (x *PluginInfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PluginInfoResponse.ProtoReflect.Descriptor instead.
 func (*PluginInfoResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{12}
+	return file_plugin_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PluginInfoResponse) GetId() string {
@@ -1688,7 +1496,7 @@ type PageResponse struct {
 
 func (x *PageResponse) Reset() {
 	*x = PageResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[13]
+	mi := &file_plugin_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1700,7 +1508,7 @@ func (x *PageResponse) String() string {
 func (*PageResponse) ProtoMessage() {}
 
 func (x *PageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[13]
+	mi := &file_plugin_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1713,7 +1521,7 @@ func (x *PageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PageResponse.ProtoReflect.Descriptor instead.
 func (*PageResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{13}
+	return file_plugin_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *PageResponse) GetType() string {
@@ -1767,7 +1575,7 @@ type CreateRequest struct {
 
 func (x *CreateRequest) Reset() {
 	*x = CreateRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[14]
+	mi := &file_plugin_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1779,7 +1587,7 @@ func (x *CreateRequest) String() string {
 func (*CreateRequest) ProtoMessage() {}
 
 func (x *CreateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[14]
+	mi := &file_plugin_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1792,7 +1600,7 @@ func (x *CreateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRequest.ProtoReflect.Descriptor instead.
 func (*CreateRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{14}
+	return file_plugin_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CreateRequest) GetCtx() *InvokeContext {
@@ -1811,7 +1619,7 @@ type CreateResponse struct {
 
 func (x *CreateResponse) Reset() {
 	*x = CreateResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[15]
+	mi := &file_plugin_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1823,7 +1631,7 @@ func (x *CreateResponse) String() string {
 func (*CreateResponse) ProtoMessage() {}
 
 func (x *CreateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[15]
+	mi := &file_plugin_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1836,7 +1644,7 @@ func (x *CreateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateResponse.ProtoReflect.Descriptor instead.
 func (*CreateResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{15}
+	return file_plugin_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreateResponse) GetPage() *PageResponse {
@@ -1855,7 +1663,7 @@ type QueryRequest struct {
 
 func (x *QueryRequest) Reset() {
 	*x = QueryRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[16]
+	mi := &file_plugin_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1867,7 +1675,7 @@ func (x *QueryRequest) String() string {
 func (*QueryRequest) ProtoMessage() {}
 
 func (x *QueryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[16]
+	mi := &file_plugin_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1880,7 +1688,7 @@ func (x *QueryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryRequest.ProtoReflect.Descriptor instead.
 func (*QueryRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{16}
+	return file_plugin_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *QueryRequest) GetCtx() *InvokeContext {
@@ -1900,7 +1708,7 @@ type QueryResponse struct {
 
 func (x *QueryResponse) Reset() {
 	*x = QueryResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[17]
+	mi := &file_plugin_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1912,7 +1720,7 @@ func (x *QueryResponse) String() string {
 func (*QueryResponse) ProtoMessage() {}
 
 func (x *QueryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[17]
+	mi := &file_plugin_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1925,7 +1733,7 @@ func (x *QueryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryResponse.ProtoReflect.Descriptor instead.
 func (*QueryResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{17}
+	return file_plugin_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *QueryResponse) GetState() int32 {
@@ -1951,7 +1759,7 @@ type RefundRequest struct {
 
 func (x *RefundRequest) Reset() {
 	*x = RefundRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[18]
+	mi := &file_plugin_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1963,7 +1771,7 @@ func (x *RefundRequest) String() string {
 func (*RefundRequest) ProtoMessage() {}
 
 func (x *RefundRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[18]
+	mi := &file_plugin_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1976,7 +1784,7 @@ func (x *RefundRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefundRequest.ProtoReflect.Descriptor instead.
 func (*RefundRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{18}
+	return file_plugin_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *RefundRequest) GetCtx() *InvokeContext {
@@ -2000,7 +1808,7 @@ type RefundResponse struct {
 
 func (x *RefundResponse) Reset() {
 	*x = RefundResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[19]
+	mi := &file_plugin_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2012,7 +1820,7 @@ func (x *RefundResponse) String() string {
 func (*RefundResponse) ProtoMessage() {}
 
 func (x *RefundResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[19]
+	mi := &file_plugin_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2025,7 +1833,7 @@ func (x *RefundResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefundResponse.ProtoReflect.Descriptor instead.
 func (*RefundResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{19}
+	return file_plugin_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *RefundResponse) GetState() int32 {
@@ -2079,7 +1887,7 @@ type TransferRequest struct {
 
 func (x *TransferRequest) Reset() {
 	*x = TransferRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[20]
+	mi := &file_plugin_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2091,7 +1899,7 @@ func (x *TransferRequest) String() string {
 func (*TransferRequest) ProtoMessage() {}
 
 func (x *TransferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[20]
+	mi := &file_plugin_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2104,7 +1912,7 @@ func (x *TransferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransferRequest.ProtoReflect.Descriptor instead.
 func (*TransferRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{20}
+	return file_plugin_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *TransferRequest) GetCtx() *InvokeContext {
@@ -2128,7 +1936,7 @@ type TransferResponse struct {
 
 func (x *TransferResponse) Reset() {
 	*x = TransferResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[21]
+	mi := &file_plugin_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2140,7 +1948,7 @@ func (x *TransferResponse) String() string {
 func (*TransferResponse) ProtoMessage() {}
 
 func (x *TransferResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[21]
+	mi := &file_plugin_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2153,7 +1961,7 @@ func (x *TransferResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransferResponse.ProtoReflect.Descriptor instead.
 func (*TransferResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{21}
+	return file_plugin_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *TransferResponse) GetState() int32 {
@@ -2207,7 +2015,7 @@ type BalanceRequest struct {
 
 func (x *BalanceRequest) Reset() {
 	*x = BalanceRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[22]
+	mi := &file_plugin_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2219,7 +2027,7 @@ func (x *BalanceRequest) String() string {
 func (*BalanceRequest) ProtoMessage() {}
 
 func (x *BalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[22]
+	mi := &file_plugin_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2232,7 +2040,7 @@ func (x *BalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BalanceRequest.ProtoReflect.Descriptor instead.
 func (*BalanceRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{22}
+	return file_plugin_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *BalanceRequest) GetCtx() *InvokeContext {
@@ -2251,7 +2059,7 @@ type BalanceResponse struct {
 
 func (x *BalanceResponse) Reset() {
 	*x = BalanceResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[23]
+	mi := &file_plugin_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2263,7 +2071,7 @@ func (x *BalanceResponse) String() string {
 func (*BalanceResponse) ProtoMessage() {}
 
 func (x *BalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[23]
+	mi := &file_plugin_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2276,7 +2084,7 @@ func (x *BalanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BalanceResponse.ProtoReflect.Descriptor instead.
 func (*BalanceResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{23}
+	return file_plugin_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *BalanceResponse) GetBalance() string {
@@ -2295,7 +2103,7 @@ type InvokeFuncRequest struct {
 
 func (x *InvokeFuncRequest) Reset() {
 	*x = InvokeFuncRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[24]
+	mi := &file_plugin_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2307,7 +2115,7 @@ func (x *InvokeFuncRequest) String() string {
 func (*InvokeFuncRequest) ProtoMessage() {}
 
 func (x *InvokeFuncRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[24]
+	mi := &file_plugin_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2320,7 +2128,7 @@ func (x *InvokeFuncRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InvokeFuncRequest.ProtoReflect.Descriptor instead.
 func (*InvokeFuncRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{24}
+	return file_plugin_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *InvokeFuncRequest) GetCtx() *InvokeContext {
@@ -2339,7 +2147,7 @@ type InvokeFuncResponse struct {
 
 func (x *InvokeFuncResponse) Reset() {
 	*x = InvokeFuncResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[25]
+	mi := &file_plugin_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2351,7 +2159,7 @@ func (x *InvokeFuncResponse) String() string {
 func (*InvokeFuncResponse) ProtoMessage() {}
 
 func (x *InvokeFuncResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[25]
+	mi := &file_plugin_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2364,7 +2172,7 @@ func (x *InvokeFuncResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InvokeFuncResponse.ProtoReflect.Descriptor instead.
 func (*InvokeFuncResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{25}
+	return file_plugin_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *InvokeFuncResponse) GetPage() *PageResponse {
@@ -2385,7 +2193,7 @@ type PluginError struct {
 
 func (x *PluginError) Reset() {
 	*x = PluginError{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[26]
+	mi := &file_plugin_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2397,7 +2205,7 @@ func (x *PluginError) String() string {
 func (*PluginError) ProtoMessage() {}
 
 func (x *PluginError) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[26]
+	mi := &file_plugin_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2410,7 +2218,7 @@ func (x *PluginError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PluginError.ProtoReflect.Descriptor instead.
 func (*PluginError) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{26}
+	return file_plugin_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *PluginError) GetCode() string {
@@ -2445,7 +2253,7 @@ type Ack struct {
 
 func (x *Ack) Reset() {
 	*x = Ack{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[27]
+	mi := &file_plugin_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2457,7 +2265,7 @@ func (x *Ack) String() string {
 func (*Ack) ProtoMessage() {}
 
 func (x *Ack) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[27]
+	mi := &file_plugin_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2470,7 +2278,7 @@ func (x *Ack) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ack.ProtoReflect.Descriptor instead.
 func (*Ack) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{27}
+	return file_plugin_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *Ack) GetAccepted() bool {
@@ -2497,18 +2305,17 @@ func (x *Ack) GetError() *PluginError {
 type CompleteOrderRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	TraceId       string                 `protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,3,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	TradeNo       string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	ApiTradeNo    string                 `protobuf:"bytes,5,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
-	Buyer         string                 `protobuf:"bytes,6,opt,name=buyer,proto3" json:"buyer,omitempty"`
+	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
+	TradeNo       string                 `protobuf:"bytes,3,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
+	ApiTradeNo    string                 `protobuf:"bytes,4,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
+	Buyer         string                 `protobuf:"bytes,5,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CompleteOrderRequest) Reset() {
 	*x = CompleteOrderRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[28]
+	mi := &file_plugin_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2520,7 +2327,7 @@ func (x *CompleteOrderRequest) String() string {
 func (*CompleteOrderRequest) ProtoMessage() {}
 
 func (x *CompleteOrderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[28]
+	mi := &file_plugin_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2533,19 +2340,12 @@ func (x *CompleteOrderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteOrderRequest.ProtoReflect.Descriptor instead.
 func (*CompleteOrderRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{28}
+	return file_plugin_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *CompleteOrderRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
-	}
-	return ""
-}
-
-func (x *CompleteOrderRequest) GetTraceId() string {
-	if x != nil {
-		return x.TraceId
 	}
 	return ""
 }
@@ -2581,19 +2381,18 @@ func (x *CompleteOrderRequest) GetBuyer() string {
 type CompleteRefundRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	TraceId       string                 `protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,3,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	RefundNo      string                 `protobuf:"bytes,4,opt,name=refund_no,json=refundNo,proto3" json:"refund_no,omitempty"`
-	Status        int32                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
-	ApiRefundNo   string                 `protobuf:"bytes,6,opt,name=api_refund_no,json=apiRefundNo,proto3" json:"api_refund_no,omitempty"`
-	RespBody      string                 `protobuf:"bytes,7,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
+	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
+	RefundNo      string                 `protobuf:"bytes,3,opt,name=refund_no,json=refundNo,proto3" json:"refund_no,omitempty"`
+	Status        int32                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	ApiRefundNo   string                 `protobuf:"bytes,5,opt,name=api_refund_no,json=apiRefundNo,proto3" json:"api_refund_no,omitempty"`
+	RespBody      string                 `protobuf:"bytes,6,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CompleteRefundRequest) Reset() {
 	*x = CompleteRefundRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[29]
+	mi := &file_plugin_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2605,7 +2404,7 @@ func (x *CompleteRefundRequest) String() string {
 func (*CompleteRefundRequest) ProtoMessage() {}
 
 func (x *CompleteRefundRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[29]
+	mi := &file_plugin_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2618,19 +2417,12 @@ func (x *CompleteRefundRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteRefundRequest.ProtoReflect.Descriptor instead.
 func (*CompleteRefundRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{29}
+	return file_plugin_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *CompleteRefundRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
-	}
-	return ""
-}
-
-func (x *CompleteRefundRequest) GetTraceId() string {
-	if x != nil {
-		return x.TraceId
 	}
 	return ""
 }
@@ -2673,19 +2465,18 @@ func (x *CompleteRefundRequest) GetRespBody() string {
 type CompleteTransferRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	TraceId       string                 `protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,3,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	TradeNo       string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	Status        int32                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
-	ApiTradeNo    string                 `protobuf:"bytes,6,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
-	Result        string                 `protobuf:"bytes,7,opt,name=result,proto3" json:"result,omitempty"`
+	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
+	TradeNo       string                 `protobuf:"bytes,3,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
+	Status        int32                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
+	ApiTradeNo    string                 `protobuf:"bytes,5,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
+	Result        string                 `protobuf:"bytes,6,opt,name=result,proto3" json:"result,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CompleteTransferRequest) Reset() {
 	*x = CompleteTransferRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[30]
+	mi := &file_plugin_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2697,7 +2488,7 @@ func (x *CompleteTransferRequest) String() string {
 func (*CompleteTransferRequest) ProtoMessage() {}
 
 func (x *CompleteTransferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[30]
+	mi := &file_plugin_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2710,19 +2501,12 @@ func (x *CompleteTransferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteTransferRequest.ProtoReflect.Descriptor instead.
 func (*CompleteTransferRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{30}
+	return file_plugin_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *CompleteTransferRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
-	}
-	return ""
-}
-
-func (x *CompleteTransferRequest) GetTraceId() string {
-	if x != nil {
-		return x.TraceId
 	}
 	return ""
 }
@@ -2765,21 +2549,20 @@ func (x *CompleteTransferRequest) GetResult() string {
 type RecordCNotifyRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	RequestId       string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	TraceId         string                 `protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
-	PluginId        string                 `protobuf:"bytes,3,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	BizType         string                 `protobuf:"bytes,4,opt,name=biz_type,json=bizType,proto3" json:"biz_type,omitempty"`
-	TradeNo         string                 `protobuf:"bytes,5,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	RequestIp       string                 `protobuf:"bytes,6,opt,name=request_ip,json=requestIp,proto3" json:"request_ip,omitempty"`
-	RequestUrl      string                 `protobuf:"bytes,7,opt,name=request_url,json=requestUrl,proto3" json:"request_url,omitempty"`
-	RequestBodyRaw  []byte                 `protobuf:"bytes,8,opt,name=request_body_raw,json=requestBodyRaw,proto3" json:"request_body_raw,omitempty"`
-	ResponseBodyRaw []byte                 `protobuf:"bytes,9,opt,name=response_body_raw,json=responseBodyRaw,proto3" json:"response_body_raw,omitempty"`
+	PluginId        string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
+	BizType         string                 `protobuf:"bytes,3,opt,name=biz_type,json=bizType,proto3" json:"biz_type,omitempty"`
+	TradeNo         string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
+	RequestIp       string                 `protobuf:"bytes,5,opt,name=request_ip,json=requestIp,proto3" json:"request_ip,omitempty"`
+	RequestUrl      string                 `protobuf:"bytes,6,opt,name=request_url,json=requestUrl,proto3" json:"request_url,omitempty"`
+	RequestBodyRaw  []byte                 `protobuf:"bytes,7,opt,name=request_body_raw,json=requestBodyRaw,proto3" json:"request_body_raw,omitempty"`
+	ResponseBodyRaw []byte                 `protobuf:"bytes,8,opt,name=response_body_raw,json=responseBodyRaw,proto3" json:"response_body_raw,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *RecordCNotifyRequest) Reset() {
 	*x = RecordCNotifyRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[31]
+	mi := &file_plugin_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2791,7 +2574,7 @@ func (x *RecordCNotifyRequest) String() string {
 func (*RecordCNotifyRequest) ProtoMessage() {}
 
 func (x *RecordCNotifyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[31]
+	mi := &file_plugin_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2804,19 +2587,12 @@ func (x *RecordCNotifyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordCNotifyRequest.ProtoReflect.Descriptor instead.
 func (*RecordCNotifyRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{31}
+	return file_plugin_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *RecordCNotifyRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetTraceId() string {
-	if x != nil {
-		return x.TraceId
 	}
 	return ""
 }
@@ -2873,21 +2649,20 @@ func (x *RecordCNotifyRequest) GetResponseBodyRaw() []byte {
 type LockOrderExtRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	TraceId       string                 `protobuf:"bytes,2,opt,name=trace_id,json=traceId,proto3" json:"trace_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,3,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	TradeNo       string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	ReqBody       string                 `protobuf:"bytes,5,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
-	RespBody      string                 `protobuf:"bytes,6,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
-	ReqCount      int32                  `protobuf:"varint,7,opt,name=req_count,json=reqCount,proto3" json:"req_count,omitempty"`
-	ReqMs         int32                  `protobuf:"varint,8,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
-	ExtJsonRaw    []byte                 `protobuf:"bytes,9,opt,name=ext_json_raw,json=extJsonRaw,proto3" json:"ext_json_raw,omitempty"`
+	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
+	TradeNo       string                 `protobuf:"bytes,3,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
+	ReqBody       string                 `protobuf:"bytes,4,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
+	RespBody      string                 `protobuf:"bytes,5,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
+	ReqCount      int32                  `protobuf:"varint,6,opt,name=req_count,json=reqCount,proto3" json:"req_count,omitempty"`
+	ReqMs         int32                  `protobuf:"varint,7,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
+	ExtJsonRaw    []byte                 `protobuf:"bytes,8,opt,name=ext_json_raw,json=extJsonRaw,proto3" json:"ext_json_raw,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LockOrderExtRequest) Reset() {
 	*x = LockOrderExtRequest{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[32]
+	mi := &file_plugin_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2899,7 +2674,7 @@ func (x *LockOrderExtRequest) String() string {
 func (*LockOrderExtRequest) ProtoMessage() {}
 
 func (x *LockOrderExtRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[32]
+	mi := &file_plugin_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2912,19 +2687,12 @@ func (x *LockOrderExtRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockOrderExtRequest.ProtoReflect.Descriptor instead.
 func (*LockOrderExtRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{32}
+	return file_plugin_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *LockOrderExtRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
-	}
-	return ""
-}
-
-func (x *LockOrderExtRequest) GetTraceId() string {
-	if x != nil {
-		return x.TraceId
 	}
 	return ""
 }
@@ -2987,7 +2755,7 @@ type LockOrderExtResponse struct {
 
 func (x *LockOrderExtResponse) Reset() {
 	*x = LockOrderExtResponse{}
-	mi := &file_plugin_proto_plugin_proto_msgTypes[33]
+	mi := &file_plugin_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2999,7 +2767,7 @@ func (x *LockOrderExtResponse) String() string {
 func (*LockOrderExtResponse) ProtoMessage() {}
 
 func (x *LockOrderExtResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_plugin_proto_msgTypes[33]
+	mi := &file_plugin_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3012,7 +2780,7 @@ func (x *LockOrderExtResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockOrderExtResponse.ProtoReflect.Descriptor instead.
 func (*LockOrderExtResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_plugin_proto_rawDescGZIP(), []int{33}
+	return file_plugin_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *LockOrderExtResponse) GetExtJsonRaw() []byte {
@@ -3022,25 +2790,14 @@ func (x *LockOrderExtResponse) GetExtJsonRaw() []byte {
 	return nil
 }
 
-var File_plugin_proto_plugin_proto protoreflect.FileDescriptor
+var File_plugin_proto protoreflect.FileDescriptor
 
-const file_plugin_proto_plugin_proto_rawDesc = "" +
+const file_plugin_proto_rawDesc = "" +
 	"\n" +
-	"\x19plugin/proto/plugin.proto\x12\fokpay.plugin\x1a\x1fgoogle/protobuf/timestamp.proto\"2\n" +
+	"\fplugin.proto\x12\fokpay.plugin\x1a\x1fgoogle/protobuf/timestamp.proto\"2\n" +
 	"\bHeaderKV\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value\"\xe2\x01\n" +
-	"\aRawHTTP\x12\x16\n" +
-	"\x06method\x18\x01 \x01(\tR\x06method\x12\x10\n" +
-	"\x03url\x18\x02 \x01(\tR\x03url\x12\x1b\n" +
-	"\tquery_raw\x18\x03 \x01(\tR\bqueryRaw\x12\x19\n" +
-	"\bbody_raw\x18\x04 \x01(\fR\abodyRaw\x127\n" +
-	"\vheaders_raw\x18\x05 \x03(\v2\x16.okpay.plugin.HeaderKVR\n" +
-	"headersRaw\x12\x1d\n" +
-	"\n" +
-	"request_ip\x18\x06 \x01(\tR\trequestIp\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\a \x01(\tR\tuserAgent\"\x82\a\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\"\x82\a\n" +
 	"\rOrderSnapshot\x12\x19\n" +
 	"\btrade_no\x18\x01 \x01(\tR\atradeNo\x12 \n" +
 	"\fout_trade_no\x18\x02 \x01(\tR\n" +
@@ -3168,49 +2925,29 @@ const file_plugin_proto_plugin_proto_rawDesc = "" +
 	"\tlocalhost\x18\x03 \x01(\tR\tlocalhost\x12\x1d\n" +
 	"\n" +
 	"goods_name\x18\x04 \x01(\tR\tgoodsName\x12%\n" +
-	"\x0ecreate_timeout\x18\x05 \x01(\tR\rcreateTimeoutJ\x04\b\x06\x10\a\"\xb6\x04\n" +
-	"\x0fRequestSnapshot\x12\x16\n" +
+	"\x0ecreate_timeout\x18\x05 \x01(\tR\rcreateTimeoutJ\x04\b\x06\x10\a\"\xb5\x01\n" +
+	"\aRequest\x12\x16\n" +
 	"\x06method\x18\x01 \x01(\tR\x06method\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x0e\n" +
 	"\x02ip\x18\x03 \x01(\tR\x02ip\x12\x0e\n" +
-	"\x02ua\x18\x04 \x01(\tR\x02ua\x12\x1b\n" +
-	"\tquery_raw\x18\x05 \x01(\tR\bqueryRaw\x12\x19\n" +
-	"\bbody_raw\x18\x06 \x01(\fR\abodyRaw\x12>\n" +
-	"\x05query\x18\a \x03(\v2(.okpay.plugin.RequestSnapshot.QueryEntryR\x05query\x12H\n" +
-	"\tbody_form\x18\b \x03(\v2+.okpay.plugin.RequestSnapshot.BodyFormEntryR\bbodyForm\x12\"\n" +
-	"\rbody_json_raw\x18\t \x01(\fR\vbodyJsonRaw\x12A\n" +
-	"\x06params\x18\n" +
-	" \x03(\v2).okpay.plugin.RequestSnapshot.ParamsEntryR\x06params\x1a8\n" +
+	"\x02ua\x18\x04 \x01(\tR\x02ua\x12\x14\n" +
+	"\x05query\x18\x05 \x01(\tR\x05query\x12\x12\n" +
+	"\x04body\x18\x06 \x01(\fR\x04body\x120\n" +
+	"\aheaders\x18\a \x03(\v2\x16.okpay.plugin.HeaderKVR\aheadersJ\x04\b\b\x10\v\"\xed\x03\n" +
+	"\rInvokeContext\x12\x1d\n" +
 	"\n" +
-	"QueryEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
-	"\rBodyFormEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
-	"\vParamsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x05\n" +
-	"\rInvokeContext\x12\x18\n" +
-	"\aversion\x18\x01 \x01(\tR\aversion\x12\x1d\n" +
-	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\x12\x19\n" +
-	"\btrace_id\x18\x03 \x01(\tR\atraceId\x12\x16\n" +
-	"\x06action\x18\x04 \x01(\tR\x06action\x12\x14\n" +
-	"\x05event\x18\x05 \x01(\tR\x05event\x12\x14\n" +
-	"\x05route\x18\x06 \x01(\tR\x05route\x12\x1b\n" +
-	"\tfunc_name\x18\a \x01(\tR\bfuncName\x12\x19\n" +
-	"\btrade_no\x18\b \x01(\tR\atradeNo\x120\n" +
-	"\braw_http\x18\t \x01(\v2\x15.okpay.plugin.RawHTTPR\arawHttp\x121\n" +
-	"\x05order\x18\n" +
-	" \x01(\v2\x1b.okpay.plugin.OrderSnapshotR\x05order\x124\n" +
-	"\x06refund\x18\v \x01(\v2\x1c.okpay.plugin.RefundSnapshotR\x06refund\x12:\n" +
-	"\btransfer\x18\f \x01(\v2\x1e.okpay.plugin.TransferSnapshotR\btransfer\x127\n" +
-	"\achannel\x18\r \x01(\v2\x1d.okpay.plugin.ChannelSnapshotR\achannel\x124\n" +
-	"\x06config\x18\x0e \x01(\v2\x1c.okpay.plugin.ConfigSnapshotR\x06config\x127\n" +
-	"\arequest\x18\x0f \x01(\v2\x1d.okpay.plugin.RequestSnapshotR\arequest\x12(\n" +
-	"\x10kernel_broker_id\x18\x10 \x01(\rR\x0ekernelBrokerId\"\a\n" +
-	"\x05Empty\"\x13\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x16\n" +
+	"\x06action\x18\x02 \x01(\tR\x06action\x12\x1b\n" +
+	"\tfunc_name\x18\x03 \x01(\tR\bfuncName\x12\x19\n" +
+	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x121\n" +
+	"\x05order\x18\x05 \x01(\v2\x1b.okpay.plugin.OrderSnapshotR\x05order\x124\n" +
+	"\x06refund\x18\x06 \x01(\v2\x1c.okpay.plugin.RefundSnapshotR\x06refund\x12:\n" +
+	"\btransfer\x18\a \x01(\v2\x1e.okpay.plugin.TransferSnapshotR\btransfer\x127\n" +
+	"\achannel\x18\b \x01(\v2\x1d.okpay.plugin.ChannelSnapshotR\achannel\x124\n" +
+	"\x06config\x18\t \x01(\v2\x1c.okpay.plugin.ConfigSnapshotR\x06config\x12/\n" +
+	"\arequest\x18\n" +
+	" \x01(\v2\x15.okpay.plugin.RequestR\arequest\x12(\n" +
+	"\x10kernel_broker_id\x18\v \x01(\rR\x0ekernelBrokerId\"\x13\n" +
 	"\x11PluginInfoRequest\"\x86\x02\n" +
 	"\n" +
 	"InputField\x12\x12\n" +
@@ -3288,59 +3025,54 @@ const file_plugin_proto_plugin_proto_rawDesc = "" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12/\n" +
-	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\xc0\x01\n" +
+	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\xa5\x01\n" +
 	"\x14CompleteOrderRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
-	"\btrace_id\x18\x02 \x01(\tR\atraceId\x12\x1b\n" +
-	"\tplugin_id\x18\x03 \x01(\tR\bpluginId\x12\x19\n" +
-	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x12 \n" +
-	"\fapi_trade_no\x18\x05 \x01(\tR\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
+	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
+	"\btrade_no\x18\x03 \x01(\tR\atradeNo\x12 \n" +
+	"\fapi_trade_no\x18\x04 \x01(\tR\n" +
 	"apiTradeNo\x12\x14\n" +
-	"\x05buyer\x18\x06 \x01(\tR\x05buyer\"\xe4\x01\n" +
+	"\x05buyer\x18\x05 \x01(\tR\x05buyer\"\xc9\x01\n" +
 	"\x15CompleteRefundRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
-	"\btrace_id\x18\x02 \x01(\tR\atraceId\x12\x1b\n" +
-	"\tplugin_id\x18\x03 \x01(\tR\bpluginId\x12\x1b\n" +
-	"\trefund_no\x18\x04 \x01(\tR\brefundNo\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\x05R\x06status\x12\"\n" +
-	"\rapi_refund_no\x18\x06 \x01(\tR\vapiRefundNo\x12\x1b\n" +
-	"\tresp_body\x18\a \x01(\tR\brespBody\"\xdd\x01\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
+	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x1b\n" +
+	"\trefund_no\x18\x03 \x01(\tR\brefundNo\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\x05R\x06status\x12\"\n" +
+	"\rapi_refund_no\x18\x05 \x01(\tR\vapiRefundNo\x12\x1b\n" +
+	"\tresp_body\x18\x06 \x01(\tR\brespBody\"\xc2\x01\n" +
 	"\x17CompleteTransferRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
-	"\btrace_id\x18\x02 \x01(\tR\atraceId\x12\x1b\n" +
-	"\tplugin_id\x18\x03 \x01(\tR\bpluginId\x12\x19\n" +
-	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\x05R\x06status\x12 \n" +
-	"\fapi_trade_no\x18\x06 \x01(\tR\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
+	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
+	"\btrade_no\x18\x03 \x01(\tR\atradeNo\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\x05R\x06status\x12 \n" +
+	"\fapi_trade_no\x18\x05 \x01(\tR\n" +
 	"apiTradeNo\x12\x16\n" +
-	"\x06result\x18\a \x01(\tR\x06result\"\xb9\x02\n" +
+	"\x06result\x18\x06 \x01(\tR\x06result\"\x9e\x02\n" +
 	"\x14RecordCNotifyRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
-	"\btrace_id\x18\x02 \x01(\tR\atraceId\x12\x1b\n" +
-	"\tplugin_id\x18\x03 \x01(\tR\bpluginId\x12\x19\n" +
-	"\bbiz_type\x18\x04 \x01(\tR\abizType\x12\x19\n" +
-	"\btrade_no\x18\x05 \x01(\tR\atradeNo\x12\x1d\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
+	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
+	"\bbiz_type\x18\x03 \x01(\tR\abizType\x12\x19\n" +
+	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x12\x1d\n" +
 	"\n" +
-	"request_ip\x18\x06 \x01(\tR\trequestIp\x12\x1f\n" +
-	"\vrequest_url\x18\a \x01(\tR\n" +
+	"request_ip\x18\x05 \x01(\tR\trequestIp\x12\x1f\n" +
+	"\vrequest_url\x18\x06 \x01(\tR\n" +
 	"requestUrl\x12(\n" +
-	"\x10request_body_raw\x18\b \x01(\fR\x0erequestBodyRaw\x12*\n" +
-	"\x11response_body_raw\x18\t \x01(\fR\x0fresponseBodyRaw\"\x95\x02\n" +
+	"\x10request_body_raw\x18\a \x01(\fR\x0erequestBodyRaw\x12*\n" +
+	"\x11response_body_raw\x18\b \x01(\fR\x0fresponseBodyRaw\"\xfa\x01\n" +
 	"\x13LockOrderExtRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
-	"\btrace_id\x18\x02 \x01(\tR\atraceId\x12\x1b\n" +
-	"\tplugin_id\x18\x03 \x01(\tR\bpluginId\x12\x19\n" +
-	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x12\x19\n" +
-	"\breq_body\x18\x05 \x01(\tR\areqBody\x12\x1b\n" +
-	"\tresp_body\x18\x06 \x01(\tR\brespBody\x12\x1b\n" +
-	"\treq_count\x18\a \x01(\x05R\breqCount\x12\x15\n" +
-	"\x06req_ms\x18\b \x01(\x05R\x05reqMs\x12 \n" +
-	"\fext_json_raw\x18\t \x01(\fR\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
+	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
+	"\btrade_no\x18\x03 \x01(\tR\atradeNo\x12\x19\n" +
+	"\breq_body\x18\x04 \x01(\tR\areqBody\x12\x1b\n" +
+	"\tresp_body\x18\x05 \x01(\tR\brespBody\x12\x1b\n" +
+	"\treq_count\x18\x06 \x01(\x05R\breqCount\x12\x15\n" +
+	"\x06req_ms\x18\a \x01(\x05R\x05reqMs\x12 \n" +
+	"\fext_json_raw\x18\b \x01(\fR\n" +
 	"extJsonRaw\"8\n" +
 	"\x14LockOrderExtResponse\x12 \n" +
 	"\fext_json_raw\x18\x01 \x01(\fR\n" +
@@ -3362,146 +3094,137 @@ const file_plugin_proto_plugin_proto_rawDesc = "" +
 	"\fLockOrderExt\x12!.okpay.plugin.LockOrderExtRequest\x1a\".okpay.plugin.LockOrderExtResponseB\"Z okpay/payment/plugin/proto;protob\x06proto3"
 
 var (
-	file_plugin_proto_plugin_proto_rawDescOnce sync.Once
-	file_plugin_proto_plugin_proto_rawDescData []byte
+	file_plugin_proto_rawDescOnce sync.Once
+	file_plugin_proto_rawDescData []byte
 )
 
-func file_plugin_proto_plugin_proto_rawDescGZIP() []byte {
-	file_plugin_proto_plugin_proto_rawDescOnce.Do(func() {
-		file_plugin_proto_plugin_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_plugin_proto_plugin_proto_rawDesc), len(file_plugin_proto_plugin_proto_rawDesc)))
+func file_plugin_proto_rawDescGZIP() []byte {
+	file_plugin_proto_rawDescOnce.Do(func() {
+		file_plugin_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_plugin_proto_rawDesc), len(file_plugin_proto_rawDesc)))
 	})
-	return file_plugin_proto_plugin_proto_rawDescData
+	return file_plugin_proto_rawDescData
 }
 
-var file_plugin_proto_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 39)
-var file_plugin_proto_plugin_proto_goTypes = []any{
+var file_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
+var file_plugin_proto_goTypes = []any{
 	(*HeaderKV)(nil),                // 0: okpay.plugin.HeaderKV
-	(*RawHTTP)(nil),                 // 1: okpay.plugin.RawHTTP
-	(*OrderSnapshot)(nil),           // 2: okpay.plugin.OrderSnapshot
-	(*RefundSnapshot)(nil),          // 3: okpay.plugin.RefundSnapshot
-	(*TransferSnapshot)(nil),        // 4: okpay.plugin.TransferSnapshot
-	(*ChannelSnapshot)(nil),         // 5: okpay.plugin.ChannelSnapshot
-	(*ConfigSnapshot)(nil),          // 6: okpay.plugin.ConfigSnapshot
-	(*RequestSnapshot)(nil),         // 7: okpay.plugin.RequestSnapshot
-	(*InvokeContext)(nil),           // 8: okpay.plugin.InvokeContext
-	(*Empty)(nil),                   // 9: okpay.plugin.Empty
-	(*PluginInfoRequest)(nil),       // 10: okpay.plugin.PluginInfoRequest
-	(*InputField)(nil),              // 11: okpay.plugin.InputField
-	(*PluginInfoResponse)(nil),      // 12: okpay.plugin.PluginInfoResponse
-	(*PageResponse)(nil),            // 13: okpay.plugin.PageResponse
-	(*CreateRequest)(nil),           // 14: okpay.plugin.CreateRequest
-	(*CreateResponse)(nil),          // 15: okpay.plugin.CreateResponse
-	(*QueryRequest)(nil),            // 16: okpay.plugin.QueryRequest
-	(*QueryResponse)(nil),           // 17: okpay.plugin.QueryResponse
-	(*RefundRequest)(nil),           // 18: okpay.plugin.RefundRequest
-	(*RefundResponse)(nil),          // 19: okpay.plugin.RefundResponse
-	(*TransferRequest)(nil),         // 20: okpay.plugin.TransferRequest
-	(*TransferResponse)(nil),        // 21: okpay.plugin.TransferResponse
-	(*BalanceRequest)(nil),          // 22: okpay.plugin.BalanceRequest
-	(*BalanceResponse)(nil),         // 23: okpay.plugin.BalanceResponse
-	(*InvokeFuncRequest)(nil),       // 24: okpay.plugin.InvokeFuncRequest
-	(*InvokeFuncResponse)(nil),      // 25: okpay.plugin.InvokeFuncResponse
-	(*PluginError)(nil),             // 26: okpay.plugin.PluginError
-	(*Ack)(nil),                     // 27: okpay.plugin.Ack
-	(*CompleteOrderRequest)(nil),    // 28: okpay.plugin.CompleteOrderRequest
-	(*CompleteRefundRequest)(nil),   // 29: okpay.plugin.CompleteRefundRequest
-	(*CompleteTransferRequest)(nil), // 30: okpay.plugin.CompleteTransferRequest
-	(*RecordCNotifyRequest)(nil),    // 31: okpay.plugin.RecordCNotifyRequest
-	(*LockOrderExtRequest)(nil),     // 32: okpay.plugin.LockOrderExtRequest
-	(*LockOrderExtResponse)(nil),    // 33: okpay.plugin.LockOrderExtResponse
-	nil,                             // 34: okpay.plugin.RequestSnapshot.QueryEntry
-	nil,                             // 35: okpay.plugin.RequestSnapshot.BodyFormEntry
-	nil,                             // 36: okpay.plugin.RequestSnapshot.ParamsEntry
-	nil,                             // 37: okpay.plugin.InputField.OptionsEntry
-	nil,                             // 38: okpay.plugin.PluginInfoResponse.InputsEntry
-	(*timestamppb.Timestamp)(nil),   // 39: google.protobuf.Timestamp
+	(*OrderSnapshot)(nil),           // 1: okpay.plugin.OrderSnapshot
+	(*RefundSnapshot)(nil),          // 2: okpay.plugin.RefundSnapshot
+	(*TransferSnapshot)(nil),        // 3: okpay.plugin.TransferSnapshot
+	(*ChannelSnapshot)(nil),         // 4: okpay.plugin.ChannelSnapshot
+	(*ConfigSnapshot)(nil),          // 5: okpay.plugin.ConfigSnapshot
+	(*Request)(nil),                 // 6: okpay.plugin.Request
+	(*InvokeContext)(nil),           // 7: okpay.plugin.InvokeContext
+	(*PluginInfoRequest)(nil),       // 8: okpay.plugin.PluginInfoRequest
+	(*InputField)(nil),              // 9: okpay.plugin.InputField
+	(*PluginInfoResponse)(nil),      // 10: okpay.plugin.PluginInfoResponse
+	(*PageResponse)(nil),            // 11: okpay.plugin.PageResponse
+	(*CreateRequest)(nil),           // 12: okpay.plugin.CreateRequest
+	(*CreateResponse)(nil),          // 13: okpay.plugin.CreateResponse
+	(*QueryRequest)(nil),            // 14: okpay.plugin.QueryRequest
+	(*QueryResponse)(nil),           // 15: okpay.plugin.QueryResponse
+	(*RefundRequest)(nil),           // 16: okpay.plugin.RefundRequest
+	(*RefundResponse)(nil),          // 17: okpay.plugin.RefundResponse
+	(*TransferRequest)(nil),         // 18: okpay.plugin.TransferRequest
+	(*TransferResponse)(nil),        // 19: okpay.plugin.TransferResponse
+	(*BalanceRequest)(nil),          // 20: okpay.plugin.BalanceRequest
+	(*BalanceResponse)(nil),         // 21: okpay.plugin.BalanceResponse
+	(*InvokeFuncRequest)(nil),       // 22: okpay.plugin.InvokeFuncRequest
+	(*InvokeFuncResponse)(nil),      // 23: okpay.plugin.InvokeFuncResponse
+	(*PluginError)(nil),             // 24: okpay.plugin.PluginError
+	(*Ack)(nil),                     // 25: okpay.plugin.Ack
+	(*CompleteOrderRequest)(nil),    // 26: okpay.plugin.CompleteOrderRequest
+	(*CompleteRefundRequest)(nil),   // 27: okpay.plugin.CompleteRefundRequest
+	(*CompleteTransferRequest)(nil), // 28: okpay.plugin.CompleteTransferRequest
+	(*RecordCNotifyRequest)(nil),    // 29: okpay.plugin.RecordCNotifyRequest
+	(*LockOrderExtRequest)(nil),     // 30: okpay.plugin.LockOrderExtRequest
+	(*LockOrderExtResponse)(nil),    // 31: okpay.plugin.LockOrderExtResponse
+	nil,                             // 32: okpay.plugin.InputField.OptionsEntry
+	nil,                             // 33: okpay.plugin.PluginInfoResponse.InputsEntry
+	(*timestamppb.Timestamp)(nil),   // 34: google.protobuf.Timestamp
 }
-var file_plugin_proto_plugin_proto_depIdxs = []int32{
-	0,  // 0: okpay.plugin.RawHTTP.headers_raw:type_name -> okpay.plugin.HeaderKV
-	39, // 1: okpay.plugin.OrderSnapshot.endtime:type_name -> google.protobuf.Timestamp
-	39, // 2: okpay.plugin.OrderSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	39, // 3: okpay.plugin.OrderSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	39, // 4: okpay.plugin.RefundSnapshot.endtime:type_name -> google.protobuf.Timestamp
-	39, // 5: okpay.plugin.RefundSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	39, // 6: okpay.plugin.RefundSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	39, // 7: okpay.plugin.TransferSnapshot.endtime:type_name -> google.protobuf.Timestamp
-	39, // 8: okpay.plugin.TransferSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	39, // 9: okpay.plugin.TransferSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	39, // 10: okpay.plugin.ChannelSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	39, // 11: okpay.plugin.ChannelSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	34, // 12: okpay.plugin.RequestSnapshot.query:type_name -> okpay.plugin.RequestSnapshot.QueryEntry
-	35, // 13: okpay.plugin.RequestSnapshot.body_form:type_name -> okpay.plugin.RequestSnapshot.BodyFormEntry
-	36, // 14: okpay.plugin.RequestSnapshot.params:type_name -> okpay.plugin.RequestSnapshot.ParamsEntry
-	1,  // 15: okpay.plugin.InvokeContext.raw_http:type_name -> okpay.plugin.RawHTTP
-	2,  // 16: okpay.plugin.InvokeContext.order:type_name -> okpay.plugin.OrderSnapshot
-	3,  // 17: okpay.plugin.InvokeContext.refund:type_name -> okpay.plugin.RefundSnapshot
-	4,  // 18: okpay.plugin.InvokeContext.transfer:type_name -> okpay.plugin.TransferSnapshot
-	5,  // 19: okpay.plugin.InvokeContext.channel:type_name -> okpay.plugin.ChannelSnapshot
-	6,  // 20: okpay.plugin.InvokeContext.config:type_name -> okpay.plugin.ConfigSnapshot
-	7,  // 21: okpay.plugin.InvokeContext.request:type_name -> okpay.plugin.RequestSnapshot
-	37, // 22: okpay.plugin.InputField.options:type_name -> okpay.plugin.InputField.OptionsEntry
-	38, // 23: okpay.plugin.PluginInfoResponse.inputs:type_name -> okpay.plugin.PluginInfoResponse.InputsEntry
-	8,  // 24: okpay.plugin.CreateRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	13, // 25: okpay.plugin.CreateResponse.page:type_name -> okpay.plugin.PageResponse
-	8,  // 26: okpay.plugin.QueryRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	8,  // 27: okpay.plugin.RefundRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	8,  // 28: okpay.plugin.TransferRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	8,  // 29: okpay.plugin.BalanceRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	8,  // 30: okpay.plugin.InvokeFuncRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	13, // 31: okpay.plugin.InvokeFuncResponse.page:type_name -> okpay.plugin.PageResponse
-	26, // 32: okpay.plugin.Ack.error:type_name -> okpay.plugin.PluginError
-	11, // 33: okpay.plugin.PluginInfoResponse.InputsEntry.value:type_name -> okpay.plugin.InputField
-	10, // 34: okpay.plugin.PluginService.Info:input_type -> okpay.plugin.PluginInfoRequest
-	14, // 35: okpay.plugin.PluginService.Create:input_type -> okpay.plugin.CreateRequest
-	16, // 36: okpay.plugin.PluginService.Query:input_type -> okpay.plugin.QueryRequest
-	18, // 37: okpay.plugin.PluginService.Refund:input_type -> okpay.plugin.RefundRequest
-	20, // 38: okpay.plugin.PluginService.Transfer:input_type -> okpay.plugin.TransferRequest
-	22, // 39: okpay.plugin.PluginService.Balance:input_type -> okpay.plugin.BalanceRequest
-	24, // 40: okpay.plugin.PluginService.InvokeFunc:input_type -> okpay.plugin.InvokeFuncRequest
-	28, // 41: okpay.plugin.KernelService.CompleteOrder:input_type -> okpay.plugin.CompleteOrderRequest
-	29, // 42: okpay.plugin.KernelService.CompleteRefund:input_type -> okpay.plugin.CompleteRefundRequest
-	30, // 43: okpay.plugin.KernelService.CompleteTransfer:input_type -> okpay.plugin.CompleteTransferRequest
-	31, // 44: okpay.plugin.KernelService.RecordCNotify:input_type -> okpay.plugin.RecordCNotifyRequest
-	32, // 45: okpay.plugin.KernelService.LockOrderExt:input_type -> okpay.plugin.LockOrderExtRequest
-	12, // 46: okpay.plugin.PluginService.Info:output_type -> okpay.plugin.PluginInfoResponse
-	15, // 47: okpay.plugin.PluginService.Create:output_type -> okpay.plugin.CreateResponse
-	17, // 48: okpay.plugin.PluginService.Query:output_type -> okpay.plugin.QueryResponse
-	19, // 49: okpay.plugin.PluginService.Refund:output_type -> okpay.plugin.RefundResponse
-	21, // 50: okpay.plugin.PluginService.Transfer:output_type -> okpay.plugin.TransferResponse
-	23, // 51: okpay.plugin.PluginService.Balance:output_type -> okpay.plugin.BalanceResponse
-	25, // 52: okpay.plugin.PluginService.InvokeFunc:output_type -> okpay.plugin.InvokeFuncResponse
-	27, // 53: okpay.plugin.KernelService.CompleteOrder:output_type -> okpay.plugin.Ack
-	27, // 54: okpay.plugin.KernelService.CompleteRefund:output_type -> okpay.plugin.Ack
-	27, // 55: okpay.plugin.KernelService.CompleteTransfer:output_type -> okpay.plugin.Ack
-	27, // 56: okpay.plugin.KernelService.RecordCNotify:output_type -> okpay.plugin.Ack
-	33, // 57: okpay.plugin.KernelService.LockOrderExt:output_type -> okpay.plugin.LockOrderExtResponse
-	46, // [46:58] is the sub-list for method output_type
-	34, // [34:46] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+var file_plugin_proto_depIdxs = []int32{
+	34, // 0: okpay.plugin.OrderSnapshot.endtime:type_name -> google.protobuf.Timestamp
+	34, // 1: okpay.plugin.OrderSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	34, // 2: okpay.plugin.OrderSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	34, // 3: okpay.plugin.RefundSnapshot.endtime:type_name -> google.protobuf.Timestamp
+	34, // 4: okpay.plugin.RefundSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	34, // 5: okpay.plugin.RefundSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	34, // 6: okpay.plugin.TransferSnapshot.endtime:type_name -> google.protobuf.Timestamp
+	34, // 7: okpay.plugin.TransferSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	34, // 8: okpay.plugin.TransferSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	34, // 9: okpay.plugin.ChannelSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	34, // 10: okpay.plugin.ChannelSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 11: okpay.plugin.Request.headers:type_name -> okpay.plugin.HeaderKV
+	1,  // 12: okpay.plugin.InvokeContext.order:type_name -> okpay.plugin.OrderSnapshot
+	2,  // 13: okpay.plugin.InvokeContext.refund:type_name -> okpay.plugin.RefundSnapshot
+	3,  // 14: okpay.plugin.InvokeContext.transfer:type_name -> okpay.plugin.TransferSnapshot
+	4,  // 15: okpay.plugin.InvokeContext.channel:type_name -> okpay.plugin.ChannelSnapshot
+	5,  // 16: okpay.plugin.InvokeContext.config:type_name -> okpay.plugin.ConfigSnapshot
+	6,  // 17: okpay.plugin.InvokeContext.request:type_name -> okpay.plugin.Request
+	32, // 18: okpay.plugin.InputField.options:type_name -> okpay.plugin.InputField.OptionsEntry
+	33, // 19: okpay.plugin.PluginInfoResponse.inputs:type_name -> okpay.plugin.PluginInfoResponse.InputsEntry
+	7,  // 20: okpay.plugin.CreateRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	11, // 21: okpay.plugin.CreateResponse.page:type_name -> okpay.plugin.PageResponse
+	7,  // 22: okpay.plugin.QueryRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	7,  // 23: okpay.plugin.RefundRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	7,  // 24: okpay.plugin.TransferRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	7,  // 25: okpay.plugin.BalanceRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	7,  // 26: okpay.plugin.InvokeFuncRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	11, // 27: okpay.plugin.InvokeFuncResponse.page:type_name -> okpay.plugin.PageResponse
+	24, // 28: okpay.plugin.Ack.error:type_name -> okpay.plugin.PluginError
+	9,  // 29: okpay.plugin.PluginInfoResponse.InputsEntry.value:type_name -> okpay.plugin.InputField
+	8,  // 30: okpay.plugin.PluginService.Info:input_type -> okpay.plugin.PluginInfoRequest
+	12, // 31: okpay.plugin.PluginService.Create:input_type -> okpay.plugin.CreateRequest
+	14, // 32: okpay.plugin.PluginService.Query:input_type -> okpay.plugin.QueryRequest
+	16, // 33: okpay.plugin.PluginService.Refund:input_type -> okpay.plugin.RefundRequest
+	18, // 34: okpay.plugin.PluginService.Transfer:input_type -> okpay.plugin.TransferRequest
+	20, // 35: okpay.plugin.PluginService.Balance:input_type -> okpay.plugin.BalanceRequest
+	22, // 36: okpay.plugin.PluginService.InvokeFunc:input_type -> okpay.plugin.InvokeFuncRequest
+	26, // 37: okpay.plugin.KernelService.CompleteOrder:input_type -> okpay.plugin.CompleteOrderRequest
+	27, // 38: okpay.plugin.KernelService.CompleteRefund:input_type -> okpay.plugin.CompleteRefundRequest
+	28, // 39: okpay.plugin.KernelService.CompleteTransfer:input_type -> okpay.plugin.CompleteTransferRequest
+	29, // 40: okpay.plugin.KernelService.RecordCNotify:input_type -> okpay.plugin.RecordCNotifyRequest
+	30, // 41: okpay.plugin.KernelService.LockOrderExt:input_type -> okpay.plugin.LockOrderExtRequest
+	10, // 42: okpay.plugin.PluginService.Info:output_type -> okpay.plugin.PluginInfoResponse
+	13, // 43: okpay.plugin.PluginService.Create:output_type -> okpay.plugin.CreateResponse
+	15, // 44: okpay.plugin.PluginService.Query:output_type -> okpay.plugin.QueryResponse
+	17, // 45: okpay.plugin.PluginService.Refund:output_type -> okpay.plugin.RefundResponse
+	19, // 46: okpay.plugin.PluginService.Transfer:output_type -> okpay.plugin.TransferResponse
+	21, // 47: okpay.plugin.PluginService.Balance:output_type -> okpay.plugin.BalanceResponse
+	23, // 48: okpay.plugin.PluginService.InvokeFunc:output_type -> okpay.plugin.InvokeFuncResponse
+	25, // 49: okpay.plugin.KernelService.CompleteOrder:output_type -> okpay.plugin.Ack
+	25, // 50: okpay.plugin.KernelService.CompleteRefund:output_type -> okpay.plugin.Ack
+	25, // 51: okpay.plugin.KernelService.CompleteTransfer:output_type -> okpay.plugin.Ack
+	25, // 52: okpay.plugin.KernelService.RecordCNotify:output_type -> okpay.plugin.Ack
+	31, // 53: okpay.plugin.KernelService.LockOrderExt:output_type -> okpay.plugin.LockOrderExtResponse
+	42, // [42:54] is the sub-list for method output_type
+	30, // [30:42] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
-func init() { file_plugin_proto_plugin_proto_init() }
-func file_plugin_proto_plugin_proto_init() {
-	if File_plugin_proto_plugin_proto != nil {
+func init() { file_plugin_proto_init() }
+func file_plugin_proto_init() {
+	if File_plugin_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_plugin_proto_plugin_proto_rawDesc), len(file_plugin_proto_plugin_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_plugin_proto_rawDesc), len(file_plugin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   39,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
-		GoTypes:           file_plugin_proto_plugin_proto_goTypes,
-		DependencyIndexes: file_plugin_proto_plugin_proto_depIdxs,
-		MessageInfos:      file_plugin_proto_plugin_proto_msgTypes,
+		GoTypes:           file_plugin_proto_goTypes,
+		DependencyIndexes: file_plugin_proto_depIdxs,
+		MessageInfos:      file_plugin_proto_msgTypes,
 	}.Build()
-	File_plugin_proto_plugin_proto = out.File
-	file_plugin_proto_plugin_proto_goTypes = nil
-	file_plugin_proto_plugin_proto_depIdxs = nil
+	File_plugin_proto = out.File
+	file_plugin_proto_goTypes = nil
+	file_plugin_proto_depIdxs = nil
 }
