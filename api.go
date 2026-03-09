@@ -89,12 +89,12 @@ func MustBuildInfoResponse(manifest Manifest) *PluginInfoResponse {
 	return sdk.MustBuildInfoResponse(manifest)
 }
 
-func RespHTML(data string) *PageResponse { return sdk.RespHTML(data) }
-func BuildSubmitHTML(data string) string { return sdk.BuildSubmitHTML(data) }
-func RespJSON(data any) *PageResponse    { return sdk.RespJSON(data) }
-func RespError(msg string) *PageResponse { return sdk.RespError(msg) }
-func RespPage(page string) *PageResponse { return sdk.RespPage(page) }
-func RespJump(url string) *PageResponse  { return sdk.RespJump(url) }
+func RespHTML(data string) *PageResponse                    { return sdk.RespHTML(data) }
+func BuildSubmitHTML(data string) string                    { return sdk.BuildSubmitHTML(data) }
+func RespJSON(data any) *PageResponse                       { return sdk.RespJSON(data) }
+func RespError(msg string) *PageResponse                    { return sdk.RespError(msg) }
+func RespPage(page string) *PageResponse                    { return sdk.RespPage(page) }
+func RespJump(url string) *PageResponse                     { return sdk.RespJump(url) }
 func RespPageURL(page, url string) *PageResponse            { return sdk.RespPageURL(page, url) }
 func RespPageData(page string, data any) *PageResponse      { return sdk.RespPageData(page, data) }
 func RespPageFull(page, url string, data any) *PageResponse { return sdk.RespPageFull(page, url, data) }
