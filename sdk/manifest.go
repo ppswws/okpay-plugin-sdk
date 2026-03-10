@@ -72,15 +72,6 @@ func BuildInfoResponse(m Manifest) (*proto.PluginInfoResponse, error) {
 	return out, nil
 }
 
-// MustBuildInfoResponse converts manifest or panics when manifest is invalid.
-func MustBuildInfoResponse(m Manifest) *proto.PluginInfoResponse {
-	out, err := BuildInfoResponse(m)
-	if err != nil {
-		panic(err)
-	}
-	return out
-}
-
 func sanitizeStringSlice(in []string) []string {
 	if len(in) == 0 {
 		return []string{}

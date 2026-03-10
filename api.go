@@ -85,10 +85,6 @@ func BuildInfoResponse(manifest Manifest) (*PluginInfoResponse, error) {
 	return sdk.BuildInfoResponse(manifest)
 }
 
-func MustBuildInfoResponse(manifest Manifest) *PluginInfoResponse {
-	return sdk.MustBuildInfoResponse(manifest)
-}
-
 func RespHTML(data string) *PageResponse                    { return sdk.RespHTML(data) }
 func BuildSubmitHTML(data string) string                    { return sdk.BuildSubmitHTML(data) }
 func RespJSON(data any) *PageResponse                       { return sdk.RespJSON(data) }
