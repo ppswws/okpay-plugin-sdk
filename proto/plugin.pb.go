@@ -3091,7 +3091,7 @@ const file_plugin_proto_rawDesc = "" +
 	"\x0eCompleteRefund\x12#.okpay.plugin.CompleteRefundRequest\x1a\x11.okpay.plugin.Ack\x12L\n" +
 	"\x10CompleteTransfer\x12%.okpay.plugin.CompleteTransferRequest\x1a\x11.okpay.plugin.Ack\x12F\n" +
 	"\rRecordCNotify\x12\".okpay.plugin.RecordCNotifyRequest\x1a\x11.okpay.plugin.Ack\x12U\n" +
-	"\fLockOrderExt\x12!.okpay.plugin.LockOrderExtRequest\x1a\".okpay.plugin.LockOrderExtResponseB\"Z okpay/payment/plugin/proto;protob\x06proto3"
+	"\fLockOrderExt\x12!.okpay.plugin.LockOrderExtRequest\x1a\".okpay.plugin.LockOrderExtResponseB\"Z github.com/ppswws/okpay-plugin-sdk/proto;protob\x06proto3"
 
 var (
 	file_plugin_proto_rawDescOnce sync.Once

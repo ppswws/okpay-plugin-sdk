@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"okpay/payment/plugin/contract"
-	"okpay/payment/plugin/proto"
+	"github.com/ppswws/okpay-plugin-sdk/contract"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
 type RequestStats struct {

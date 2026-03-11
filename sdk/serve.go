@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-hclog"
-	hplugin "github.com/hashicorp/go-plugin"
-	"okpay/payment/plugin/contract"
+	"github.com/hashicorp/go-plugin"
+	"github.com/ppswws/okpay-plugin-sdk/contract"
 )
 
 // Serve starts plugin process with strongly-typed grpc/protobuf contract.
@@ -13,12 +13,12 @@ func Serve(impl contract.PluginService) error {
 	if impl == nil {
 		return fmt.Errorf("version plugin implementation is nil")
 	}
-	hplugin.Serve(&hplugin.ServeConfig{
+	plugin.Serve(&plugin.ServeConfig{
 		HandshakeConfig: contract.HandshakeConfig,
-		Plugins: map[string]hplugin.Plugin{
+		Plugins: map[string]plugin.Plugin{
 			contract.PluginName: &contract.GRPCPlugin{Impl: impl},
 		},
-		GRPCServer: hplugin.DefaultGRPCServer,
+		GRPCServer: plugin.DefaultGRPCServer,
 		Logger:     hclog.NewNullLogger(),
 	})
 	return nil

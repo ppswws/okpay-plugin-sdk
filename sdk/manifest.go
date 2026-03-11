@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"okpay/payment/plugin/proto"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
 // InputSpec defines one plugin config input field.

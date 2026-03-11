@@ -1,4 +1,4 @@
-module okpay/payment/plugin
+module github.com/ppswws/okpay-plugin-sdk
 
 go 1.26.1
 

@@ -3,7 +3,7 @@ package sdk
 import (
 	"encoding/json"
 
-	"okpay/payment/plugin/proto"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
 // Response type constants.

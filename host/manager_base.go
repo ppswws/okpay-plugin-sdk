@@ -13,7 +13,7 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"okpay/payment/plugin/contract"
+	"github.com/ppswws/okpay-plugin-sdk/contract"
 )
 
 const (

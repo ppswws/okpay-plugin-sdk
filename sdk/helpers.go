@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"okpay/payment/plugin/proto"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
 // CreateHandlerFunc handles one pay type create flow and returns a page payload.

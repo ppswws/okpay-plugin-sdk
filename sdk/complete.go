@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"okpay/payment/plugin/contract"
-	"okpay/payment/plugin/proto"
+	"github.com/ppswws/okpay-plugin-sdk/contract"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
 // CompleteOrderInput 表示订单完成回调参数。

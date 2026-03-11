@@ -3,7 +3,7 @@ package contract
 import (
 	"errors"
 
-	hplugin "github.com/hashicorp/go-plugin"
+	"github.com/hashicorp/go-plugin"
 )
 
 const (
@@ -12,7 +12,7 @@ const (
 )
 
 // HandshakeConfig constrains host/plugin handshake.
-var HandshakeConfig = hplugin.HandshakeConfig{
+var HandshakeConfig = plugin.HandshakeConfig{
 	ProtocolVersion:  2,
 	MagicCookieKey:   "OKPAY_PLUGIN",
 	MagicCookieValue: "okpay-payment",

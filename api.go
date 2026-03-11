@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-hclog"
-	"okpay/payment/plugin/contract"
-	"okpay/payment/plugin/host"
-	"okpay/payment/plugin/proto"
-	"okpay/payment/plugin/sdk"
+	"github.com/ppswws/okpay-plugin-sdk/contract"
+	"github.com/ppswws/okpay-plugin-sdk/host"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
+	"github.com/ppswws/okpay-plugin-sdk/sdk"
 )
 
 // Contract and host types.

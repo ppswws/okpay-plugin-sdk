@@ -6,9 +6,9 @@ import (
 	"net"
 	"sync"
 
-	hplugin "github.com/hashicorp/go-plugin"
+	"github.com/hashicorp/go-plugin"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 	"google.golang.org/grpc"
-	"okpay/payment/plugin/proto"
 )
 
 // PluginService defines the strongly-typed protobuf contract between kernel and plugin.
@@ -33,11 +33,11 @@ type KernelService interface {
 
 // GRPCPlugin is the go-plugin gRPC implementation for strongly typed plugin API.
 type GRPCPlugin struct {
-	hplugin.NetRPCUnsupportedPlugin
+	plugin.NetRPCUnsupportedPlugin
 	Impl PluginService
 }
 
-func (p *GRPCPlugin) GRPCServer(broker *hplugin.GRPCBroker, s *grpc.Server) error {
+func (p *GRPCPlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) error {
 	if p == nil || p.Impl == nil {
 		return fmt.Errorf("plugin implementation is nil")
 	}
@@ -45,19 +45,19 @@ func (p *GRPCPlugin) GRPCServer(broker *hplugin.GRPCBroker, s *grpc.Server) erro
 	return nil
 }
 
-func (p *GRPCPlugin) GRPCClient(ctx context.Context, broker *hplugin.GRPCBroker, c *grpc.ClientConn) (interface{}, error) {
+func (p *GRPCPlugin) GRPCClient(ctx context.Context, broker *plugin.GRPCBroker, c *grpc.ClientConn) (interface{}, error) {
 	return &pluginServiceClient{
 		client: proto.NewPluginServiceClient(c),
 		broker: broker,
 	}, nil
 }
 
-var _ hplugin.GRPCPlugin = (*GRPCPlugin)(nil)
+var _ plugin.GRPCPlugin = (*GRPCPlugin)(nil)
 
 type pluginServiceServer struct {
 	proto.UnimplementedPluginServiceServer
 	impl   PluginService
-	broker *hplugin.GRPCBroker
+	broker *plugin.GRPCBroker
 }
 
 func (s *pluginServiceServer) Info(ctx context.Context, in *proto.PluginInfoRequest) (*proto.PluginInfoResponse, error) {
@@ -90,10 +90,10 @@ func (s *pluginServiceServer) InvokeFunc(ctx context.Context, in *proto.InvokeFu
 
 type pluginServiceClient struct {
 	client proto.PluginServiceClient
-	broker *hplugin.GRPCBroker
+	broker *plugin.GRPCBroker
 }
 
-func (c *pluginServiceClient) KernelBroker() *hplugin.GRPCBroker {
+func (c *pluginServiceClient) KernelBroker() *plugin.GRPCBroker {
 	if c == nil {
 		return nil
 	}
@@ -130,7 +130,7 @@ func (c *pluginServiceClient) InvokeFunc(ctx context.Context, in *proto.InvokeFu
 
 // ServeKernelService serves kernel callbacks for plugin side usage via GRPCBroker.
 // The returned cleanup function must be called to release broker resources.
-func ServeKernelService(broker *hplugin.GRPCBroker, brokerID uint32, impl KernelService) (func(), error) {
+func ServeKernelService(broker *plugin.GRPCBroker, brokerID uint32, impl KernelService) (func(), error) {
 	if broker == nil || impl == nil || brokerID == 0 {
 		return func() {}, nil
 	}
@@ -155,7 +155,7 @@ func ServeKernelService(broker *hplugin.GRPCBroker, brokerID uint32, impl Kernel
 }
 
 // DialKernelService dials kernel callback service from plugin side.
-func DialKernelService(broker *hplugin.GRPCBroker, brokerID uint32) (KernelService, *grpc.ClientConn, error) {
+func DialKernelService(broker *plugin.GRPCBroker, brokerID uint32) (KernelService, *grpc.ClientConn, error) {
 	if broker == nil || brokerID == 0 {
 		return nil, nil, fmt.Errorf("invalid kernel broker")
 	}
@@ -218,7 +218,7 @@ func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *proto.LockOr
 type ctxKernelBrokerKey struct{}
 type ctxKernelBrokerIDKey struct{}
 
-func withKernelDialContext(ctx context.Context, broker *hplugin.GRPCBroker, invokeCtx *proto.InvokeContext) context.Context {
+func withKernelDialContext(ctx context.Context, broker *plugin.GRPCBroker, invokeCtx *proto.InvokeContext) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -235,7 +235,7 @@ func DialKernelServiceFromContext(ctx context.Context) (KernelService, *grpc.Cli
 	if ctx == nil {
 		return nil, nil, fmt.Errorf("context is nil")
 	}
-	broker, _ := ctx.Value(ctxKernelBrokerKey{}).(*hplugin.GRPCBroker)
+	broker, _ := ctx.Value(ctxKernelBrokerKey{}).(*plugin.GRPCBroker)
 	if broker == nil {
 		return nil, nil, fmt.Errorf("kernel broker is unavailable")
 	}

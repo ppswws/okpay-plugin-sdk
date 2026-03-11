@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"okpay/payment/plugin/contract"
-	"okpay/payment/plugin/proto"
+	"github.com/ppswws/okpay-plugin-sdk/contract"
+	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
 // RecordNotify records cnotify and returns the original payload.
