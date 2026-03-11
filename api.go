@@ -133,3 +133,15 @@ func IsWeChat(ua string) bool                        { return sdk.IsWeChat(ua) }
 func IsAlipay(ua string) bool                        { return sdk.IsAlipay(ua) }
 func IsMobileQQ(ua string) bool                      { return sdk.IsMobileQQ(ua) }
 func IsMobile(ua string) bool                        { return sdk.IsMobile(ua) }
+func BuildMPOAuthURL(appID, redirectURL, state string) string {
+	return sdk.BuildMPOAuthURL(appID, redirectURL, state)
+}
+func GetMPOpenid(ctx context.Context, appID, appSecret, code string) (string, error) {
+	return sdk.GetMPOpenid(ctx, appID, appSecret, code)
+}
+func GetMiniOpenid(ctx context.Context, appID, appSecret, code string) (string, error) {
+	return sdk.GetMiniOpenid(ctx, appID, appSecret, code)
+}
+func GetMiniScheme(ctx context.Context, appID, appSecret, path, query string) (string, error) {
+	return sdk.GetMiniScheme(ctx, appID, appSecret, path, query)
+}

@@ -2,7 +2,9 @@ package sdk
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"okpay/payment/plugin/proto"
@@ -87,4 +89,172 @@ func IsMobile(ua string) bool {
 		}
 	}
 	return false
+}
+
+const defaultWeChatOAuthScope = "snsapi_base"
+
+var helperHTTPClient = NewHTTPClient(HTTPClientConfig{})
+
+type miniProgramSessionResp struct {
+	OpenID  string `json:"openid"`
+	ErrCode int    `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
+}
+
+type miniProgramAccessTokenResp struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int    `json:"expires_in"`
+	ErrCode     int    `json:"errcode"`
+	ErrMsg      string `json:"errmsg"`
+}
+
+type miniProgramSchemeResp struct {
+	OpenLink string `json:"openlink"`
+	ErrCode  int    `json:"errcode"`
+	ErrMsg   string `json:"errmsg"`
+}
+
+// BuildMPOAuthURL returns a WeChat public-account oauth authorize URL.
+func BuildMPOAuthURL(appID, redirectURL, state string) string {
+	appID = strings.TrimSpace(appID)
+	redirectURL = strings.TrimSpace(redirectURL)
+	if appID == "" || redirectURL == "" {
+		return ""
+	}
+	base := "https://open.weixin.qq.com/connect/oauth2/authorize"
+	return fmt.Sprintf(
+		"%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect",
+		base,
+		url.QueryEscape(appID),
+		url.QueryEscape(redirectURL),
+		url.QueryEscape(defaultWeChatOAuthScope),
+		url.QueryEscape(strings.TrimSpace(state)),
+	)
+}
+
+// GetMPOpenid exchanges公众号 oauth code to openid.
+func GetMPOpenid(ctx context.Context, appID, appSecret, code string) (string, error) {
+	appID = strings.TrimSpace(appID)
+	appSecret = strings.TrimSpace(appSecret)
+	code = strings.TrimSpace(code)
+	if appID == "" || appSecret == "" || code == "" {
+		return "", fmt.Errorf("公众号参数缺失")
+	}
+	endpoint := fmt.Sprintf(
+		"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
+		url.QueryEscape(appID),
+		url.QueryEscape(appSecret),
+		url.QueryEscape(code),
+	)
+	body, _, _, err := helperHTTPClient.Do(ctx, "GET", endpoint, "", "")
+	if err != nil {
+		return "", err
+	}
+	resp := struct {
+		OpenID  string `json:"openid"`
+		ErrCode int    `json:"errcode"`
+		ErrMsg  string `json:"errmsg"`
+	}{}
+	if err := json.Unmarshal([]byte(body), &resp); err != nil {
+		return "", fmt.Errorf("oauth2 响应解析失败: %w", err)
+	}
+	if resp.ErrCode != 0 {
+		return "", fmt.Errorf("获取 openid 失败: %s", resp.ErrMsg)
+	}
+	openid := strings.TrimSpace(resp.OpenID)
+	if openid == "" {
+		return "", fmt.Errorf("openid 为空")
+	}
+	return openid, nil
+}
+
+// GetMiniOpenid returns mini-program openid via jscode2session.
+func GetMiniOpenid(ctx context.Context, appID, appSecret, code string) (string, error) {
+	appID = strings.TrimSpace(appID)
+	appSecret = strings.TrimSpace(appSecret)
+	code = strings.TrimSpace(code)
+	if appID == "" || appSecret == "" || code == "" {
+		return "", fmt.Errorf("小程序参数缺失")
+	}
+	endpoint := fmt.Sprintf(
+		"https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+		url.QueryEscape(appID),
+		url.QueryEscape(appSecret),
+		url.QueryEscape(code),
+	)
+	body, _, _, err := helperHTTPClient.Do(ctx, "GET", endpoint, "", "")
+	if err != nil {
+		return "", err
+	}
+	resp := miniProgramSessionResp{}
+	if err := json.Unmarshal([]byte(body), &resp); err != nil {
+		return "", fmt.Errorf("小程序 openid 解析失败: %w", err)
+	}
+	if resp.ErrCode != 0 {
+		return "", fmt.Errorf("小程序 openid 获取失败: %s", resp.ErrMsg)
+	}
+	if strings.TrimSpace(resp.OpenID) == "" {
+		return "", fmt.Errorf("小程序 openid 为空")
+	}
+	return strings.TrimSpace(resp.OpenID), nil
+}
+
+// GetMiniScheme creates a mini-program scheme for browser jump.
+func GetMiniScheme(ctx context.Context, appID, appSecret, path, query string) (string, error) {
+	appID = strings.TrimSpace(appID)
+	appSecret = strings.TrimSpace(appSecret)
+	if appID == "" || appSecret == "" {
+		return "", fmt.Errorf("小程序参数缺失")
+	}
+	token, err := getMiniProgramAccessToken(ctx, appID, appSecret)
+	if err != nil {
+		return "", err
+	}
+	payload := map[string]any{
+		"jump_wxa": map[string]any{
+			"path":  strings.TrimSpace(path),
+			"query": strings.TrimSpace(query),
+		},
+		"is_expire": false,
+	}
+	raw, _ := json.Marshal(payload)
+	endpoint := fmt.Sprintf("https://api.weixin.qq.com/wxa/generatescheme?access_token=%s", url.QueryEscape(token))
+	respBody, _, _, err := helperHTTPClient.Do(ctx, "POST", endpoint, string(raw), "application/json")
+	if err != nil {
+		return "", err
+	}
+	resp := miniProgramSchemeResp{}
+	if err := json.Unmarshal([]byte(respBody), &resp); err != nil {
+		return "", fmt.Errorf("小程序 scheme 解析失败: %w", err)
+	}
+	if resp.ErrCode != 0 {
+		return "", fmt.Errorf("生成小程序 scheme 失败: %s", resp.ErrMsg)
+	}
+	if strings.TrimSpace(resp.OpenLink) == "" {
+		return "", fmt.Errorf("生成小程序 scheme 失败: openlink 为空")
+	}
+	return strings.TrimSpace(resp.OpenLink), nil
+}
+
+func getMiniProgramAccessToken(ctx context.Context, appID, appSecret string) (string, error) {
+	endpoint := fmt.Sprintf(
+		"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s",
+		url.QueryEscape(appID),
+		url.QueryEscape(appSecret),
+	)
+	body, _, _, err := helperHTTPClient.Do(ctx, "GET", endpoint, "", "")
+	if err != nil {
+		return "", err
+	}
+	resp := miniProgramAccessTokenResp{}
+	if err := json.Unmarshal([]byte(body), &resp); err != nil {
+		return "", fmt.Errorf("获取小程序 access_token 解析失败: %w", err)
+	}
+	if resp.ErrCode != 0 {
+		return "", fmt.Errorf("获取小程序 access_token 失败: %s", resp.ErrMsg)
+	}
+	if strings.TrimSpace(resp.AccessToken) == "" {
+		return "", fmt.Errorf("获取小程序 access_token 失败: 为空")
+	}
+	return strings.TrimSpace(resp.AccessToken), nil
 }
