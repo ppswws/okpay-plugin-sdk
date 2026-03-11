@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package okpay.plugin;
 
-option go_package = "okpay/payment/plugin/proto;proto";
+option go_package = "github.com/ppswws/okpay-plugin-sdk/proto;proto";
 
 import "google/protobuf/timestamp.proto";
 
