@@ -2,6 +2,11 @@ package sdk
 
 import (
 	"encoding/json"
+	"fmt"
+	"html"
+	"net/url"
+	"sort"
+	"strings"
 
 	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
@@ -19,12 +24,57 @@ func RespHTML(data string) *proto.PageResponse {
 	return &proto.PageResponse{Type: ResponseTypeHTML, DataText: data}
 }
 
-// BuildSubmitHTML wraps a form HTML payload with auto-submit script.
-func BuildSubmitHTML(data string) string {
-	return "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" +
-		data +
+// SubmitFormParams defines the action URL and fields for a POST auto-submit page.
+type SubmitFormParams struct {
+	ActionURL string
+	Fields    map[string][]string
+}
+
+// BuildSubmitHTML builds an auto-submit POST HTML page from structured params.
+func BuildSubmitHTML(params SubmitFormParams) (string, error) {
+	actionURL := strings.TrimSpace(params.ActionURL)
+	if actionURL == "" {
+		return "", fmt.Errorf("action url is empty")
+	}
+	u, err := url.Parse(actionURL)
+	if err != nil {
+		return "", fmt.Errorf("parse action url failed: %w", err)
+	}
+	if u.Scheme == "" || u.Host == "" {
+		return "", fmt.Errorf("action url is incomplete")
+	}
+	actionURL = (&url.URL{
+		Scheme: u.Scheme,
+		Host:   u.Host,
+		Path:   u.Path,
+	}).String()
+	if len(params.Fields) == 0 {
+		return "", fmt.Errorf("submit fields are empty")
+	}
+	keys := make([]string, 0, len(params.Fields))
+	for k := range params.Fields {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var b strings.Builder
+	b.WriteString(`<form id="okpay_submit_form" method="post" accept-charset="utf-8" enctype="application/x-www-form-urlencoded" action="`)
+	b.WriteString(html.EscapeString(actionURL))
+	b.WriteString(`">`)
+	for _, k := range keys {
+		for _, v := range params.Fields[k] {
+			b.WriteString(`<input type="hidden" name="`)
+			b.WriteString(html.EscapeString(k))
+			b.WriteString(`" value="`)
+			b.WriteString(html.EscapeString(v))
+			b.WriteString(`">`)
+		}
+	}
+	b.WriteString(`</form>`)
+	return "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>" +
+		b.String() +
 		"<script>document.forms[0] && document.forms[0].submit();</script>" +
-		"</body></html>"
+		"</body></html>", nil
 }
 
 func RespJSON(data any) *proto.PageResponse {

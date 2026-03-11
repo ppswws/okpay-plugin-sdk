@@ -1149,16 +1149,14 @@ func (x *Request) GetHeaders() []*HeaderKV {
 type InvokeContext struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	RequestId      string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	Action         string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
-	FuncName       string                 `protobuf:"bytes,3,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
-	TradeNo        string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	Order          *OrderSnapshot         `protobuf:"bytes,5,opt,name=order,proto3" json:"order,omitempty"`
-	Refund         *RefundSnapshot        `protobuf:"bytes,6,opt,name=refund,proto3" json:"refund,omitempty"`
-	Transfer       *TransferSnapshot      `protobuf:"bytes,7,opt,name=transfer,proto3" json:"transfer,omitempty"`
-	Channel        *ChannelSnapshot       `protobuf:"bytes,8,opt,name=channel,proto3" json:"channel,omitempty"`
-	Config         *ConfigSnapshot        `protobuf:"bytes,9,opt,name=config,proto3" json:"config,omitempty"`
-	Request        *Request               `protobuf:"bytes,10,opt,name=request,proto3" json:"request,omitempty"`
-	KernelBrokerId uint32                 `protobuf:"varint,11,opt,name=kernel_broker_id,json=kernelBrokerId,proto3" json:"kernel_broker_id,omitempty"`
+	FuncName       string                 `protobuf:"bytes,2,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
+	Order          *OrderSnapshot         `protobuf:"bytes,3,opt,name=order,proto3" json:"order,omitempty"`
+	Refund         *RefundSnapshot        `protobuf:"bytes,4,opt,name=refund,proto3" json:"refund,omitempty"`
+	Transfer       *TransferSnapshot      `protobuf:"bytes,5,opt,name=transfer,proto3" json:"transfer,omitempty"`
+	Channel        *ChannelSnapshot       `protobuf:"bytes,6,opt,name=channel,proto3" json:"channel,omitempty"`
+	Config         *ConfigSnapshot        `protobuf:"bytes,7,opt,name=config,proto3" json:"config,omitempty"`
+	Request        *Request               `protobuf:"bytes,8,opt,name=request,proto3" json:"request,omitempty"`
+	KernelBrokerId uint32                 `protobuf:"varint,9,opt,name=kernel_broker_id,json=kernelBrokerId,proto3" json:"kernel_broker_id,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1200,23 +1198,9 @@ func (x *InvokeContext) GetRequestId() string {
 	return ""
 }
 
-func (x *InvokeContext) GetAction() string {
-	if x != nil {
-		return x.Action
-	}
-	return ""
-}
-
 func (x *InvokeContext) GetFuncName() string {
 	if x != nil {
 		return x.FuncName
-	}
-	return ""
-}
-
-func (x *InvokeContext) GetTradeNo() string {
-	if x != nil {
-		return x.TradeNo
 	}
 	return ""
 }
@@ -2933,21 +2917,18 @@ const file_plugin_proto_rawDesc = "" +
 	"\x02ua\x18\x04 \x01(\tR\x02ua\x12\x14\n" +
 	"\x05query\x18\x05 \x01(\tR\x05query\x12\x12\n" +
 	"\x04body\x18\x06 \x01(\fR\x04body\x120\n" +
-	"\aheaders\x18\a \x03(\v2\x16.okpay.plugin.HeaderKVR\aheadersJ\x04\b\b\x10\v\"\xed\x03\n" +
+	"\aheaders\x18\a \x03(\v2\x16.okpay.plugin.HeaderKVR\aheadersJ\x04\b\b\x10\v\"\xba\x03\n" +
 	"\rInvokeContext\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x16\n" +
-	"\x06action\x18\x02 \x01(\tR\x06action\x12\x1b\n" +
-	"\tfunc_name\x18\x03 \x01(\tR\bfuncName\x12\x19\n" +
-	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x121\n" +
-	"\x05order\x18\x05 \x01(\v2\x1b.okpay.plugin.OrderSnapshotR\x05order\x124\n" +
-	"\x06refund\x18\x06 \x01(\v2\x1c.okpay.plugin.RefundSnapshotR\x06refund\x12:\n" +
-	"\btransfer\x18\a \x01(\v2\x1e.okpay.plugin.TransferSnapshotR\btransfer\x127\n" +
-	"\achannel\x18\b \x01(\v2\x1d.okpay.plugin.ChannelSnapshotR\achannel\x124\n" +
-	"\x06config\x18\t \x01(\v2\x1c.okpay.plugin.ConfigSnapshotR\x06config\x12/\n" +
-	"\arequest\x18\n" +
-	" \x01(\v2\x15.okpay.plugin.RequestR\arequest\x12(\n" +
-	"\x10kernel_broker_id\x18\v \x01(\rR\x0ekernelBrokerId\"\x13\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
+	"\tfunc_name\x18\x02 \x01(\tR\bfuncName\x121\n" +
+	"\x05order\x18\x03 \x01(\v2\x1b.okpay.plugin.OrderSnapshotR\x05order\x124\n" +
+	"\x06refund\x18\x04 \x01(\v2\x1c.okpay.plugin.RefundSnapshotR\x06refund\x12:\n" +
+	"\btransfer\x18\x05 \x01(\v2\x1e.okpay.plugin.TransferSnapshotR\btransfer\x127\n" +
+	"\achannel\x18\x06 \x01(\v2\x1d.okpay.plugin.ChannelSnapshotR\achannel\x124\n" +
+	"\x06config\x18\a \x01(\v2\x1c.okpay.plugin.ConfigSnapshotR\x06config\x12/\n" +
+	"\arequest\x18\b \x01(\v2\x15.okpay.plugin.RequestR\arequest\x12(\n" +
+	"\x10kernel_broker_id\x18\t \x01(\rR\x0ekernelBrokerId\"\x13\n" +
 	"\x11PluginInfoRequest\"\x86\x02\n" +
 	"\n" +
 	"InputField\x12\x12\n" +

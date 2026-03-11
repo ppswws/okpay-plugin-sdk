@@ -68,6 +68,7 @@ type CompleteCNotifyInput = sdk.CompleteCNotifyInput
 type HTTPClient = sdk.HTTPClient
 type HTTPClientConfig = sdk.HTTPClientConfig
 type CreateHandlerFunc = sdk.CreateHandlerFunc
+type SubmitFormParams = sdk.SubmitFormParams
 
 func NewManager(opts ...Option) (*Manager, error)  { return host.NewManager(opts...) }
 func WithDir(dir string) Option                    { return host.WithDir(dir) }
@@ -86,7 +87,9 @@ func BuildInfoResponse(manifest Manifest) (*PluginInfoResponse, error) {
 }
 
 func RespHTML(data string) *PageResponse                    { return sdk.RespHTML(data) }
-func BuildSubmitHTML(data string) string                    { return sdk.BuildSubmitHTML(data) }
+func BuildSubmitHTML(params SubmitFormParams) (string, error) {
+	return sdk.BuildSubmitHTML(params)
+}
 func RespJSON(data any) *PageResponse                       { return sdk.RespJSON(data) }
 func RespError(msg string) *PageResponse                    { return sdk.RespError(msg) }
 func RespPage(page string) *PageResponse                    { return sdk.RespPage(page) }

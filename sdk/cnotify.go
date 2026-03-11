@@ -15,9 +15,10 @@ func RecordNotify(ctx context.Context, req *proto.InvokeContext, bizType string,
 	if result == nil {
 		result = RespError("invalid notify response payload")
 	}
+	normalizedBizType := normalizeBizType(bizType)
 	notifyReq := CompleteCNotifyInput{
-		BizType:      normalizeBizType(bizType),
-		TradeNo:      inferNotifyTradeNo(req, bizType),
+		BizType:      normalizedBizType,
+		TradeNo:      inferNotifyTradeNo(req, normalizedBizType),
 		RequestIP:    req.GetRequest().GetIp(),
 		RequestURL:   req.GetRequest().GetUrl(),
 		RequestBody:  string(req.GetRequest().GetBody()),
@@ -53,18 +54,6 @@ func inferNotifyTradeNo(req *proto.InvokeContext, bizType string) string {
 		return req.GetRefund().GetRefundNo()
 	case contract.BizTypeTransfer:
 		return req.GetTransfer().GetTradeNo()
-	}
-	if tradeNo := strings.TrimSpace(req.GetTradeNo()); tradeNo != "" {
-		return tradeNo
-	}
-	if tradeNo := strings.TrimSpace(req.GetOrder().GetTradeNo()); tradeNo != "" {
-		return tradeNo
-	}
-	if refundNo := strings.TrimSpace(req.GetRefund().GetRefundNo()); refundNo != "" {
-		return refundNo
-	}
-	if tradeNo := strings.TrimSpace(req.GetTransfer().GetTradeNo()); tradeNo != "" {
-		return tradeNo
 	}
 	return ""
 }

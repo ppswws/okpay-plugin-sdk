@@ -140,16 +140,14 @@ message Request {
 
 message InvokeContext {
   string request_id = 1;
-  string action = 2;
-  string func_name = 3;
-  string trade_no = 4;
-  OrderSnapshot order = 5;
-  RefundSnapshot refund = 6;
-  TransferSnapshot transfer = 7;
-  ChannelSnapshot channel = 8;
-  ConfigSnapshot config = 9;
-  Request request = 10;
-  uint32 kernel_broker_id = 11;
+  string func_name = 2;
+  OrderSnapshot order = 3;
+  RefundSnapshot refund = 4;
+  TransferSnapshot transfer = 5;
+  ChannelSnapshot channel = 6;
+  ConfigSnapshot config = 7;
+  Request request = 8;
+  uint32 kernel_broker_id = 9;
 }
 
 message PluginInfoRequest {}
