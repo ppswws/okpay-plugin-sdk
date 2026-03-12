@@ -108,32 +108,53 @@ func RespPageFull(page, url string, data any) *proto.PageResponse {
 	return &proto.PageResponse{Type: ResponseTypePage, Page: page, Url: url, DataJsonRaw: raw}
 }
 
-func RespQuery(state int, apiTradeNo string) *proto.QueryResponse {
-	return &proto.QueryResponse{State: int32(state), ApiTradeNo: apiTradeNo}
+// BizResultInput is the single named-field input for plugin business results.
+type BizResultInput struct {
+	ApiNo   string
+	Code    string
+	Msg     string
+	Balance string
+	Stats   RequestStats
+	// Legacy aliases for smooth migration.
+	APIBizNo    string
+	ChannelCode string
+	ChannelMsg  string
 }
 
-func RespRefund(state int, apiRefundNo, reqBody, respBody, result string, reqMs int32) *proto.RefundResponse {
-	return &proto.RefundResponse{
-		State:       int32(state),
-		ApiRefundNo: apiRefundNo,
-		ReqBody:     reqBody,
-		RespBody:    respBody,
-		Result:      result,
-		ReqMs:       reqMs,
+func ResultOK(input BizResultInput) *proto.BizResult {
+	return buildResult(proto.BizState_BIZ_STATE_SUCCEEDED, pick(input.ApiNo, input.APIBizNo), pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), "", input.Stats)
+}
+
+func ResultPending(input BizResultInput) *proto.BizResult {
+	return buildResult(proto.BizState_BIZ_STATE_PROCESSING, pick(input.ApiNo, input.APIBizNo), pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), "", input.Stats)
+}
+
+func ResultFail(input BizResultInput) *proto.BizResult {
+	return buildResult(proto.BizState_BIZ_STATE_FAILED, "", pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), "", input.Stats)
+}
+
+func ResultBal(input BizResultInput) *proto.BizResult {
+	return buildResult(proto.BizState_BIZ_STATE_SUCCEEDED, "", pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), input.Balance, input.Stats)
+}
+
+func pick(short, legacy string) string {
+	if short != "" {
+		return short
 	}
+	return legacy
 }
 
-func RespTransfer(state int, apiTradeNo, reqBody, respBody, result string, reqMs int32) *proto.TransferResponse {
-	return &proto.TransferResponse{
-		State:      int32(state),
-		ApiTradeNo: apiTradeNo,
-		ReqBody:    reqBody,
-		RespBody:   respBody,
-		Result:     result,
-		ReqMs:      reqMs,
+func buildResult(state proto.BizState, apiBizNo, channelCode, channelMsg, balance string, stats RequestStats) *proto.BizResult {
+	return &proto.BizResult{
+		State:       state,
+		ApiBizNo:    apiBizNo,
+		ChannelCode: channelCode,
+		ChannelMsg:  channelMsg,
+		Balance:     balance,
+		Trace: &proto.RequestTrace{
+			ReqMs:    stats.ReqMs,
+			ReqBody:  stats.ReqBody,
+			RespBody: stats.RespBody,
+		},
 	}
-}
-
-func RespBalance(balance string) *proto.BalanceResponse {
-	return &proto.BalanceResponse{Balance: balance}
 }

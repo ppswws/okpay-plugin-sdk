@@ -19,13 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PluginService_Info_FullMethodName       = "/okpay.plugin.PluginService/Info"
-	PluginService_Create_FullMethodName     = "/okpay.plugin.PluginService/Create"
-	PluginService_Query_FullMethodName      = "/okpay.plugin.PluginService/Query"
-	PluginService_Refund_FullMethodName     = "/okpay.plugin.PluginService/Refund"
-	PluginService_Transfer_FullMethodName   = "/okpay.plugin.PluginService/Transfer"
-	PluginService_Balance_FullMethodName    = "/okpay.plugin.PluginService/Balance"
-	PluginService_InvokeFunc_FullMethodName = "/okpay.plugin.PluginService/InvokeFunc"
+	PluginService_Info_FullMethodName   = "/okpay.plugin.PluginService/Info"
+	PluginService_Handle_FullMethodName = "/okpay.plugin.PluginService/Handle"
+	PluginService_Submit_FullMethodName = "/okpay.plugin.PluginService/Submit"
+	PluginService_Query_FullMethodName  = "/okpay.plugin.PluginService/Query"
 )
 
 // PluginServiceClient is the client API for PluginService service.
@@ -33,12 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PluginServiceClient interface {
 	Info(ctx context.Context, in *PluginInfoRequest, opts ...grpc.CallOption) (*PluginInfoResponse, error)
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
-	Refund(ctx context.Context, in *RefundRequest, opts ...grpc.CallOption) (*RefundResponse, error)
-	Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransferResponse, error)
-	Balance(ctx context.Context, in *BalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error)
-	InvokeFunc(ctx context.Context, in *InvokeFuncRequest, opts ...grpc.CallOption) (*InvokeFuncResponse, error)
+	Handle(ctx context.Context, in *HandleRequest, opts ...grpc.CallOption) (*HandleResponse, error)
+	Submit(ctx context.Context, in *BizRequest, opts ...grpc.CallOption) (*BizResult, error)
+	Query(ctx context.Context, in *BizRequest, opts ...grpc.CallOption) (*BizResult, error)
 }
 
 type pluginServiceClient struct {
@@ -59,60 +53,30 @@ func (c *pluginServiceClient) Info(ctx context.Context, in *PluginInfoRequest, o
 	return out, nil
 }
 
-func (c *pluginServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+func (c *pluginServiceClient) Handle(ctx context.Context, in *HandleRequest, opts ...grpc.CallOption) (*HandleResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, PluginService_Create_FullMethodName, in, out, cOpts...)
+	out := new(HandleResponse)
+	err := c.cc.Invoke(ctx, PluginService_Handle_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *pluginServiceClient) Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error) {
+func (c *pluginServiceClient) Submit(ctx context.Context, in *BizRequest, opts ...grpc.CallOption) (*BizResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(QueryResponse)
+	out := new(BizResult)
+	err := c.cc.Invoke(ctx, PluginService_Submit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pluginServiceClient) Query(ctx context.Context, in *BizRequest, opts ...grpc.CallOption) (*BizResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BizResult)
 	err := c.cc.Invoke(ctx, PluginService_Query_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pluginServiceClient) Refund(ctx context.Context, in *RefundRequest, opts ...grpc.CallOption) (*RefundResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RefundResponse)
-	err := c.cc.Invoke(ctx, PluginService_Refund_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pluginServiceClient) Transfer(ctx context.Context, in *TransferRequest, opts ...grpc.CallOption) (*TransferResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TransferResponse)
-	err := c.cc.Invoke(ctx, PluginService_Transfer_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pluginServiceClient) Balance(ctx context.Context, in *BalanceRequest, opts ...grpc.CallOption) (*BalanceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BalanceResponse)
-	err := c.cc.Invoke(ctx, PluginService_Balance_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *pluginServiceClient) InvokeFunc(ctx context.Context, in *InvokeFuncRequest, opts ...grpc.CallOption) (*InvokeFuncResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(InvokeFuncResponse)
-	err := c.cc.Invoke(ctx, PluginService_InvokeFunc_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,12 +88,9 @@ func (c *pluginServiceClient) InvokeFunc(ctx context.Context, in *InvokeFuncRequ
 // for forward compatibility.
 type PluginServiceServer interface {
 	Info(context.Context, *PluginInfoRequest) (*PluginInfoResponse, error)
-	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	Query(context.Context, *QueryRequest) (*QueryResponse, error)
-	Refund(context.Context, *RefundRequest) (*RefundResponse, error)
-	Transfer(context.Context, *TransferRequest) (*TransferResponse, error)
-	Balance(context.Context, *BalanceRequest) (*BalanceResponse, error)
-	InvokeFunc(context.Context, *InvokeFuncRequest) (*InvokeFuncResponse, error)
+	Handle(context.Context, *HandleRequest) (*HandleResponse, error)
+	Submit(context.Context, *BizRequest) (*BizResult, error)
+	Query(context.Context, *BizRequest) (*BizResult, error)
 }
 
 // UnimplementedPluginServiceServer should be embedded to have
@@ -142,23 +103,14 @@ type UnimplementedPluginServiceServer struct{}
 func (UnimplementedPluginServiceServer) Info(context.Context, *PluginInfoRequest) (*PluginInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Info not implemented")
 }
-func (UnimplementedPluginServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedPluginServiceServer) Handle(context.Context, *HandleRequest) (*HandleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Handle not implemented")
 }
-func (UnimplementedPluginServiceServer) Query(context.Context, *QueryRequest) (*QueryResponse, error) {
+func (UnimplementedPluginServiceServer) Submit(context.Context, *BizRequest) (*BizResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Submit not implemented")
+}
+func (UnimplementedPluginServiceServer) Query(context.Context, *BizRequest) (*BizResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Query not implemented")
-}
-func (UnimplementedPluginServiceServer) Refund(context.Context, *RefundRequest) (*RefundResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Refund not implemented")
-}
-func (UnimplementedPluginServiceServer) Transfer(context.Context, *TransferRequest) (*TransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
-}
-func (UnimplementedPluginServiceServer) Balance(context.Context, *BalanceRequest) (*BalanceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Balance not implemented")
-}
-func (UnimplementedPluginServiceServer) InvokeFunc(context.Context, *InvokeFuncRequest) (*InvokeFuncResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InvokeFunc not implemented")
 }
 func (UnimplementedPluginServiceServer) testEmbeddedByValue() {}
 
@@ -198,26 +150,44 @@ func _PluginService_Info_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PluginService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _PluginService_Handle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HandleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PluginServiceServer).Create(ctx, in)
+		return srv.(PluginServiceServer).Handle(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PluginService_Create_FullMethodName,
+		FullMethod: PluginService_Handle_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).Create(ctx, req.(*CreateRequest))
+		return srv.(PluginServiceServer).Handle(ctx, req.(*HandleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PluginService_Submit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BizRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PluginServiceServer).Submit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PluginService_Submit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PluginServiceServer).Submit(ctx, req.(*BizRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _PluginService_Query_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryRequest)
+	in := new(BizRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -229,79 +199,7 @@ func _PluginService_Query_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: PluginService_Query_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).Query(ctx, req.(*QueryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PluginService_Refund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RefundRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PluginServiceServer).Refund(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PluginService_Refund_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).Refund(ctx, req.(*RefundRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PluginService_Transfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransferRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PluginServiceServer).Transfer(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PluginService_Transfer_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).Transfer(ctx, req.(*TransferRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PluginService_Balance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BalanceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PluginServiceServer).Balance(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PluginService_Balance_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).Balance(ctx, req.(*BalanceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PluginService_InvokeFunc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InvokeFuncRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PluginServiceServer).InvokeFunc(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PluginService_InvokeFunc_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PluginServiceServer).InvokeFunc(ctx, req.(*InvokeFuncRequest))
+		return srv.(PluginServiceServer).Query(ctx, req.(*BizRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -318,28 +216,16 @@ var PluginService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PluginService_Info_Handler,
 		},
 		{
-			MethodName: "Create",
-			Handler:    _PluginService_Create_Handler,
+			MethodName: "Handle",
+			Handler:    _PluginService_Handle_Handler,
+		},
+		{
+			MethodName: "Submit",
+			Handler:    _PluginService_Submit_Handler,
 		},
 		{
 			MethodName: "Query",
 			Handler:    _PluginService_Query_Handler,
-		},
-		{
-			MethodName: "Refund",
-			Handler:    _PluginService_Refund_Handler,
-		},
-		{
-			MethodName: "Transfer",
-			Handler:    _PluginService_Transfer_Handler,
-		},
-		{
-			MethodName: "Balance",
-			Handler:    _PluginService_Balance_Handler,
-		},
-		{
-			MethodName: "InvokeFunc",
-			Handler:    _PluginService_InvokeFunc_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -347,21 +233,15 @@ var PluginService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	KernelService_CompleteOrder_FullMethodName    = "/okpay.plugin.KernelService/CompleteOrder"
-	KernelService_CompleteRefund_FullMethodName   = "/okpay.plugin.KernelService/CompleteRefund"
-	KernelService_CompleteTransfer_FullMethodName = "/okpay.plugin.KernelService/CompleteTransfer"
-	KernelService_RecordCNotify_FullMethodName    = "/okpay.plugin.KernelService/RecordCNotify"
-	KernelService_LockOrderExt_FullMethodName     = "/okpay.plugin.KernelService/LockOrderExt"
+	KernelService_CompleteBiz_FullMethodName  = "/okpay.plugin.KernelService/CompleteBiz"
+	KernelService_LockOrderExt_FullMethodName = "/okpay.plugin.KernelService/LockOrderExt"
 )
 
 // KernelServiceClient is the client API for KernelService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KernelServiceClient interface {
-	CompleteOrder(ctx context.Context, in *CompleteOrderRequest, opts ...grpc.CallOption) (*Ack, error)
-	CompleteRefund(ctx context.Context, in *CompleteRefundRequest, opts ...grpc.CallOption) (*Ack, error)
-	CompleteTransfer(ctx context.Context, in *CompleteTransferRequest, opts ...grpc.CallOption) (*Ack, error)
-	RecordCNotify(ctx context.Context, in *RecordCNotifyRequest, opts ...grpc.CallOption) (*Ack, error)
+	CompleteBiz(ctx context.Context, in *CompleteBizRequest, opts ...grpc.CallOption) (*Ack, error)
 	LockOrderExt(ctx context.Context, in *LockOrderExtRequest, opts ...grpc.CallOption) (*LockOrderExtResponse, error)
 }
 
@@ -373,40 +253,10 @@ func NewKernelServiceClient(cc grpc.ClientConnInterface) KernelServiceClient {
 	return &kernelServiceClient{cc}
 }
 
-func (c *kernelServiceClient) CompleteOrder(ctx context.Context, in *CompleteOrderRequest, opts ...grpc.CallOption) (*Ack, error) {
+func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *CompleteBizRequest, opts ...grpc.CallOption) (*Ack, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Ack)
-	err := c.cc.Invoke(ctx, KernelService_CompleteOrder_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *kernelServiceClient) CompleteRefund(ctx context.Context, in *CompleteRefundRequest, opts ...grpc.CallOption) (*Ack, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Ack)
-	err := c.cc.Invoke(ctx, KernelService_CompleteRefund_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *kernelServiceClient) CompleteTransfer(ctx context.Context, in *CompleteTransferRequest, opts ...grpc.CallOption) (*Ack, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Ack)
-	err := c.cc.Invoke(ctx, KernelService_CompleteTransfer_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *kernelServiceClient) RecordCNotify(ctx context.Context, in *RecordCNotifyRequest, opts ...grpc.CallOption) (*Ack, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Ack)
-	err := c.cc.Invoke(ctx, KernelService_RecordCNotify_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, KernelService_CompleteBiz_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -427,10 +277,7 @@ func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *LockOrderExt
 // All implementations should embed UnimplementedKernelServiceServer
 // for forward compatibility.
 type KernelServiceServer interface {
-	CompleteOrder(context.Context, *CompleteOrderRequest) (*Ack, error)
-	CompleteRefund(context.Context, *CompleteRefundRequest) (*Ack, error)
-	CompleteTransfer(context.Context, *CompleteTransferRequest) (*Ack, error)
-	RecordCNotify(context.Context, *RecordCNotifyRequest) (*Ack, error)
+	CompleteBiz(context.Context, *CompleteBizRequest) (*Ack, error)
 	LockOrderExt(context.Context, *LockOrderExtRequest) (*LockOrderExtResponse, error)
 }
 
@@ -441,17 +288,8 @@ type KernelServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedKernelServiceServer struct{}
 
-func (UnimplementedKernelServiceServer) CompleteOrder(context.Context, *CompleteOrderRequest) (*Ack, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CompleteOrder not implemented")
-}
-func (UnimplementedKernelServiceServer) CompleteRefund(context.Context, *CompleteRefundRequest) (*Ack, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CompleteRefund not implemented")
-}
-func (UnimplementedKernelServiceServer) CompleteTransfer(context.Context, *CompleteTransferRequest) (*Ack, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CompleteTransfer not implemented")
-}
-func (UnimplementedKernelServiceServer) RecordCNotify(context.Context, *RecordCNotifyRequest) (*Ack, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RecordCNotify not implemented")
+func (UnimplementedKernelServiceServer) CompleteBiz(context.Context, *CompleteBizRequest) (*Ack, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompleteBiz not implemented")
 }
 func (UnimplementedKernelServiceServer) LockOrderExt(context.Context, *LockOrderExtRequest) (*LockOrderExtResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LockOrderExt not implemented")
@@ -476,74 +314,20 @@ func RegisterKernelServiceServer(s grpc.ServiceRegistrar, srv KernelServiceServe
 	s.RegisterService(&KernelService_ServiceDesc, srv)
 }
 
-func _KernelService_CompleteOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompleteOrderRequest)
+func _KernelService_CompleteBiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteBizRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KernelServiceServer).CompleteOrder(ctx, in)
+		return srv.(KernelServiceServer).CompleteBiz(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: KernelService_CompleteOrder_FullMethodName,
+		FullMethod: KernelService_CompleteBiz_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KernelServiceServer).CompleteOrder(ctx, req.(*CompleteOrderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _KernelService_CompleteRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompleteRefundRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KernelServiceServer).CompleteRefund(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: KernelService_CompleteRefund_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KernelServiceServer).CompleteRefund(ctx, req.(*CompleteRefundRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _KernelService_CompleteTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompleteTransferRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KernelServiceServer).CompleteTransfer(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: KernelService_CompleteTransfer_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KernelServiceServer).CompleteTransfer(ctx, req.(*CompleteTransferRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _KernelService_RecordCNotify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecordCNotifyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(KernelServiceServer).RecordCNotify(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: KernelService_RecordCNotify_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KernelServiceServer).RecordCNotify(ctx, req.(*RecordCNotifyRequest))
+		return srv.(KernelServiceServer).CompleteBiz(ctx, req.(*CompleteBizRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -574,20 +358,8 @@ var KernelService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*KernelServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CompleteOrder",
-			Handler:    _KernelService_CompleteOrder_Handler,
-		},
-		{
-			MethodName: "CompleteRefund",
-			Handler:    _KernelService_CompleteRefund_Handler,
-		},
-		{
-			MethodName: "CompleteTransfer",
-			Handler:    _KernelService_CompleteTransfer_Handler,
-		},
-		{
-			MethodName: "RecordCNotify",
-			Handler:    _KernelService_RecordCNotify_Handler,
+			MethodName: "CompleteBiz",
+			Handler:    _KernelService_CompleteBiz_Handler,
 		},
 		{
 			MethodName: "LockOrderExt",

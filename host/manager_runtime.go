@@ -26,15 +26,15 @@ func (m *Manager) Info(ctx context.Context, id string) (*proto.PluginInfoRespons
 	return out, err
 }
 
-func (m *Manager) Create(ctx context.Context, id string, req *proto.CreateRequest) (*proto.CreateResponse, error) {
-	var out *proto.CreateResponse
-	err := m.Invoke(ctx, id, "create", func(ctx context.Context, ch contract.PluginService) error {
+func (m *Manager) Handle(ctx context.Context, id string, req *proto.HandleRequest) (*proto.HandleResponse, error) {
+	var out *proto.HandleResponse
+	err := m.Invoke(ctx, id, "handle", func(ctx context.Context, ch contract.PluginService) error {
 		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
 		if err != nil {
 			return err
 		}
 		defer cleanup()
-		resp, err := ch.Create(ctx, req)
+		resp, err := ch.Handle(ctx, req)
 		if err != nil {
 			return err
 		}
@@ -44,8 +44,26 @@ func (m *Manager) Create(ctx context.Context, id string, req *proto.CreateReques
 	return out, err
 }
 
-func (m *Manager) Query(ctx context.Context, id string, req *proto.QueryRequest) (*proto.QueryResponse, error) {
-	var out *proto.QueryResponse
+func (m *Manager) Submit(ctx context.Context, id string, req *proto.BizRequest) (*proto.BizResult, error) {
+	var out *proto.BizResult
+	err := m.Invoke(ctx, id, "submit", func(ctx context.Context, ch contract.PluginService) error {
+		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
+		if err != nil {
+			return err
+		}
+		defer cleanup()
+		resp, err := ch.Submit(ctx, req)
+		if err != nil {
+			return err
+		}
+		out = resp
+		return nil
+	})
+	return out, err
+}
+
+func (m *Manager) Query(ctx context.Context, id string, req *proto.BizRequest) (*proto.BizResult, error) {
+	var out *proto.BizResult
 	err := m.Invoke(ctx, id, "query", func(ctx context.Context, ch contract.PluginService) error {
 		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
 		if err != nil {
@@ -53,78 +71,6 @@ func (m *Manager) Query(ctx context.Context, id string, req *proto.QueryRequest)
 		}
 		defer cleanup()
 		resp, err := ch.Query(ctx, req)
-		if err != nil {
-			return err
-		}
-		out = resp
-		return nil
-	})
-	return out, err
-}
-
-func (m *Manager) Refund(ctx context.Context, id string, req *proto.RefundRequest) (*proto.RefundResponse, error) {
-	var out *proto.RefundResponse
-	err := m.Invoke(ctx, id, "refund", func(ctx context.Context, ch contract.PluginService) error {
-		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
-		if err != nil {
-			return err
-		}
-		defer cleanup()
-		resp, err := ch.Refund(ctx, req)
-		if err != nil {
-			return err
-		}
-		out = resp
-		return nil
-	})
-	return out, err
-}
-
-func (m *Manager) Transfer(ctx context.Context, id string, req *proto.TransferRequest) (*proto.TransferResponse, error) {
-	var out *proto.TransferResponse
-	err := m.Invoke(ctx, id, "transfer", func(ctx context.Context, ch contract.PluginService) error {
-		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
-		if err != nil {
-			return err
-		}
-		defer cleanup()
-		resp, err := ch.Transfer(ctx, req)
-		if err != nil {
-			return err
-		}
-		out = resp
-		return nil
-	})
-	return out, err
-}
-
-func (m *Manager) Balance(ctx context.Context, id string, req *proto.BalanceRequest) (*proto.BalanceResponse, error) {
-	var out *proto.BalanceResponse
-	err := m.Invoke(ctx, id, "balance", func(ctx context.Context, ch contract.PluginService) error {
-		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
-		if err != nil {
-			return err
-		}
-		defer cleanup()
-		resp, err := ch.Balance(ctx, req)
-		if err != nil {
-			return err
-		}
-		out = resp
-		return nil
-	})
-	return out, err
-}
-
-func (m *Manager) InvokeFunc(ctx context.Context, id string, req *proto.InvokeFuncRequest) (*proto.InvokeFuncResponse, error) {
-	var out *proto.InvokeFuncResponse
-	err := m.Invoke(ctx, id, "invoke_func", func(ctx context.Context, ch contract.PluginService) error {
-		cleanup, err := m.attachKernelBroker(ch, req.GetCtx())
-		if err != nil {
-			return err
-		}
-		defer cleanup()
-		resp, err := ch.InvokeFunc(ctx, req)
 		if err != nil {
 			return err
 		}

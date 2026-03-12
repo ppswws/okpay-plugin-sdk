@@ -34,22 +34,13 @@ func (s *channelService) Info(ctx context.Context, _ *proto.PluginInfoRequest) (
 	}), nil
 }
 
-func (s *channelService) Create(ctx context.Context, _ *proto.CreateRequest) (*proto.CreateResponse, error) {
-	return &proto.CreateResponse{Page: plugin.RespError("not implemented")}, nil
+func (s *channelService) Handle(ctx context.Context, _ *proto.HandleRequest) (*proto.HandleResponse, error) {
+	return &proto.HandleResponse{Page: plugin.RespError("not implemented")}, nil
 }
-func (s *channelService) Query(context.Context, *proto.QueryRequest) (*proto.QueryResponse, error) {
+func (s *channelService) Submit(context.Context, *proto.BizRequest) (*proto.BizResult, error) {
 	return nil, plugin.ErrNoImplementation
 }
-func (s *channelService) Refund(context.Context, *proto.RefundRequest) (*proto.RefundResponse, error) {
-	return nil, plugin.ErrNoImplementation
-}
-func (s *channelService) Transfer(context.Context, *proto.TransferRequest) (*proto.TransferResponse, error) {
-	return nil, plugin.ErrNoImplementation
-}
-func (s *channelService) Balance(context.Context, *proto.BalanceRequest) (*proto.BalanceResponse, error) {
-	return nil, plugin.ErrNoImplementation
-}
-func (s *channelService) InvokeFunc(context.Context, *proto.InvokeFuncRequest) (*proto.InvokeFuncResponse, error) {
+func (s *channelService) Query(context.Context, *proto.BizRequest) (*proto.BizResult, error) {
 	return nil, plugin.ErrNoImplementation
 }
 
@@ -70,8 +61,8 @@ func main() {
 ## 常用 API
 
 - `plugin.CreateWithHandlers`
-- `plugin.CompleteOrder` / `plugin.CompleteRefund` / `plugin.CompleteTransfer` / `plugin.CompleteCNotify`
-- `plugin.RecordNotify` / `plugin.LockOrderExt`
+- `plugin.CompleteBiz` / `plugin.LockOrderExt`
+- `plugin.ResultOK` / `plugin.ResultPending` / `plugin.ResultFail` / `plugin.ResultBal`
 - `plugin.IsWeChat` / `plugin.IsAlipay` / `plugin.IsMobileQQ` / `plugin.IsMobile`
 - `plugin.BuildMPOAuthURL` / `plugin.GetMPOpenid` / `plugin.GetMiniOpenid` / `plugin.GetMiniScheme`
 

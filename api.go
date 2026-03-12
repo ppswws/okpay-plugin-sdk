@@ -25,10 +25,6 @@ const (
 	PluginName  = contract.PluginName
 	CallTimeout = host.CallTimeout
 
-	BizTypeOrder    = contract.BizTypeOrder
-	BizTypeRefund   = contract.BizTypeRefund
-	BizTypeTransfer = contract.BizTypeTransfer
-
 	ResponseTypeJump  = sdk.ResponseTypeJump
 	ResponseTypeHTML  = sdk.ResponseTypeHTML
 	ResponseTypeJSON  = sdk.ResponseTypeJSON
@@ -44,31 +40,37 @@ var (
 // Proto aliases exposed to plugins.
 type InvokeContext = proto.InvokeContext
 type PluginInfoResponse = proto.PluginInfoResponse
-type CreateRequest = proto.CreateRequest
-type CreateResponse = proto.CreateResponse
-type QueryRequest = proto.QueryRequest
-type QueryResponse = proto.QueryResponse
-type RefundRequest = proto.RefundRequest
-type RefundResponse = proto.RefundResponse
-type TransferRequest = proto.TransferRequest
-type TransferResponse = proto.TransferResponse
-type BalanceRequest = proto.BalanceRequest
-type BalanceResponse = proto.BalanceResponse
-type InvokeFuncRequest = proto.InvokeFuncRequest
-type InvokeFuncResponse = proto.InvokeFuncResponse
+type HandleRequest = proto.HandleRequest
+type HandleResponse = proto.HandleResponse
+type BizRequest = proto.BizRequest
+type BizResult = proto.BizResult
+type BizType = proto.BizType
+type BizState = proto.BizState
+type RequestTrace = proto.RequestTrace
 type PageResponse = proto.PageResponse
 
 type Manifest = sdk.Manifest
 type InputSpec = sdk.InputSpec
 type RequestStats = sdk.RequestStats
-type CompleteOrderInput = sdk.CompleteOrderInput
-type CompleteRefundInput = sdk.CompleteRefundInput
-type CompleteTransferInput = sdk.CompleteTransferInput
-type CompleteCNotifyInput = sdk.CompleteCNotifyInput
+type BizResultInput = sdk.BizResultInput
+type CompleteBizInput = sdk.CompleteBizInput
 type HTTPClient = sdk.HTTPClient
 type HTTPClientConfig = sdk.HTTPClientConfig
 type CreateHandlerFunc = sdk.CreateHandlerFunc
 type SubmitFormParams = sdk.SubmitFormParams
+
+const (
+	BizTypeInvalid  = proto.BizType_BIZ_TYPE_INVALID
+	BizTypeOrder    = proto.BizType_BIZ_TYPE_ORDER
+	BizTypeRefund   = proto.BizType_BIZ_TYPE_REFUND
+	BizTypeTransfer = proto.BizType_BIZ_TYPE_TRANSFER
+	BizTypeBalance  = proto.BizType_BIZ_TYPE_BALANCE
+
+	BizStateInvalid    = proto.BizState_BIZ_STATE_INVALID
+	BizStateFailed     = proto.BizState_BIZ_STATE_FAILED
+	BizStateProcessing = proto.BizState_BIZ_STATE_PROCESSING
+	BizStateSucceeded  = proto.BizState_BIZ_STATE_SUCCEEDED
+)
 
 func NewManager(opts ...Option) (*Manager, error)  { return host.NewManager(opts...) }
 func WithDir(dir string) Option                    { return host.WithDir(dir) }
@@ -86,7 +88,7 @@ func BuildInfoResponse(manifest Manifest) (*PluginInfoResponse, error) {
 	return sdk.BuildInfoResponse(manifest)
 }
 
-func RespHTML(data string) *PageResponse                    { return sdk.RespHTML(data) }
+func RespHTML(data string) *PageResponse { return sdk.RespHTML(data) }
 func BuildSubmitHTML(params SubmitFormParams) (string, error) {
 	return sdk.BuildSubmitHTML(params)
 }
@@ -97,35 +99,28 @@ func RespJump(url string) *PageResponse                     { return sdk.RespJum
 func RespPageURL(page, url string) *PageResponse            { return sdk.RespPageURL(page, url) }
 func RespPageData(page string, data any) *PageResponse      { return sdk.RespPageData(page, data) }
 func RespPageFull(page, url string, data any) *PageResponse { return sdk.RespPageFull(page, url, data) }
-func RespQuery(state int, apiTradeNo string) *QueryResponse { return sdk.RespQuery(state, apiTradeNo) }
-func RespRefund(state int, apiRefundNo, reqBody, respBody, result string, reqMs int32) *RefundResponse {
-	return sdk.RespRefund(state, apiRefundNo, reqBody, respBody, result, reqMs)
+func ResultOK(input BizResultInput) *BizResult {
+	return sdk.ResultOK(input)
 }
-func RespTransfer(state int, apiTradeNo, reqBody, respBody, result string, reqMs int32) *TransferResponse {
-	return sdk.RespTransfer(state, apiTradeNo, reqBody, respBody, result, reqMs)
+func ResultPending(input BizResultInput) *BizResult {
+	return sdk.ResultPending(input)
 }
-func RespBalance(balance string) *BalanceResponse { return sdk.RespBalance(balance) }
+func ResultFail(input BizResultInput) *BizResult {
+	return sdk.ResultFail(input)
+}
+func ResultBal(input BizResultInput) *BizResult {
+	return sdk.ResultBal(input)
+}
 
-func RecordNotify(ctx context.Context, req *InvokeContext, bizType string, result *PageResponse) *PageResponse {
-	return sdk.RecordNotify(ctx, req, bizType, result)
-}
-
-func CompleteOrder(ctx context.Context, req CompleteOrderInput) error {
-	return sdk.CompleteOrder(ctx, req)
-}
-func CompleteRefund(ctx context.Context, req CompleteRefundInput) error {
-	return sdk.CompleteRefund(ctx, req)
-}
-func CompleteTransfer(ctx context.Context, req CompleteTransferInput) error {
-	return sdk.CompleteTransfer(ctx, req)
-}
-func CompleteCNotify(ctx context.Context, req CompleteCNotifyInput) error {
-	return sdk.CompleteCNotify(ctx, req)
+func CompleteBiz(ctx context.Context, req CompleteBizInput) error {
+	return sdk.CompleteBiz(ctx, req)
 }
 
 func LockOrderExt(ctx context.Context, tradeNo string, fetch func() (any, RequestStats, error)) (map[string]any, error) {
 	return sdk.LockOrderExt(ctx, tradeNo, fetch)
 }
+func BuildReturnMap(page *PageResponse) map[string]any     { return sdk.BuildReturnMap(page) }
+func BuildReturnPage(payload map[string]any) *PageResponse { return sdk.BuildReturnPage(payload) }
 
 func CreateWithHandlers(ctx context.Context, req *InvokeContext, handlers map[string]CreateHandlerFunc) (*PageResponse, error) {
 	return sdk.CreateWithHandlers(ctx, req, handlers)

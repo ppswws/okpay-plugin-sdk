@@ -180,40 +180,44 @@ message PageResponse {
   string data_text = 6;
 }
 
-message CreateRequest { InvokeContext ctx = 1; }
-message CreateResponse { PageResponse page = 1; }
+message HandleRequest { InvokeContext ctx = 1; }
+message HandleResponse { PageResponse page = 1; }
 
-message QueryRequest { InvokeContext ctx = 1; }
-message QueryResponse {
-  int32 state = 1;
-  string api_trade_no = 2;
+enum BizType {
+  BIZ_TYPE_INVALID = 0;
+  BIZ_TYPE_ORDER = 1;
+  BIZ_TYPE_REFUND = 2;
+  BIZ_TYPE_TRANSFER = 3;
+  BIZ_TYPE_BALANCE = 4;
 }
 
-message RefundRequest { InvokeContext ctx = 1; }
-message RefundResponse {
-  int32 state = 1;
-  string api_refund_no = 2;
-  int32 req_ms = 3;
-  string req_body = 4;
-  string resp_body = 5;
-  string result = 6;
+enum BizState {
+  BIZ_STATE_INVALID = 0;
+  BIZ_STATE_FAILED = 1;
+  BIZ_STATE_PROCESSING = 2;
+  BIZ_STATE_SUCCEEDED = 3;
 }
 
-message TransferRequest { InvokeContext ctx = 1; }
-message TransferResponse {
-  int32 state = 1;
-  string api_trade_no = 2;
-  int32 req_ms = 3;
-  string req_body = 4;
-  string resp_body = 5;
-  string result = 6;
+message BizRequest {
+  InvokeContext ctx = 1;
+  BizType biz_type = 2;
+  string biz_no = 3;
 }
 
-message BalanceRequest { InvokeContext ctx = 1; }
-message BalanceResponse { string balance = 1; }
+message RequestTrace {
+  int32 req_ms = 1;
+  string req_body = 2;
+  string resp_body = 3;
+}
 
-message InvokeFuncRequest { InvokeContext ctx = 1; }
-message InvokeFuncResponse { PageResponse page = 1; }
+message BizResult {
+  BizState state = 1;
+  string api_biz_no = 2;
+  string channel_code = 3;
+  string channel_msg = 4;
+  RequestTrace trace = 5;
+  string balance = 6;
+}
 
 message PluginError {
   string code = 1;
@@ -227,52 +231,26 @@ message Ack {
   PluginError error = 3;
 }
 
-message CompleteOrderRequest {
+message CompleteBizRequest {
   string request_id = 1;
-  string plugin_id = 2;
-  string trade_no = 3;
-  string api_trade_no = 4;
-  string buyer = 5;
-}
-
-message CompleteRefundRequest {
-  string request_id = 1;
-  string plugin_id = 2;
-  string refund_no = 3;
-  int32 status = 4;
-  string api_refund_no = 5;
-  string resp_body = 6;
-}
-
-message CompleteTransferRequest {
-  string request_id = 1;
-  string plugin_id = 2;
-  string trade_no = 3;
-  int32 status = 4;
-  string api_trade_no = 5;
-  string result = 6;
-}
-
-message RecordCNotifyRequest {
-  string request_id = 1;
-  string plugin_id = 2;
-  string biz_type = 3;
-  string trade_no = 4;
-  string request_ip = 5;
-  string request_url = 6;
-  bytes request_body_raw = 7;
-  bytes response_body_raw = 8;
+  BizType biz_type = 2;
+  string biz_no = 3;
+  BizState state = 4;
+  string api_biz_no = 5;
+  string channel_code = 6;
+  string channel_msg = 7;
+  string resp_body = 8;
+  string buyer = 9;
 }
 
 message LockOrderExtRequest {
   string request_id = 1;
-  string plugin_id = 2;
-  string trade_no = 3;
-  string req_body = 4;
-  string resp_body = 5;
-  int32 req_count = 6;
-  int32 req_ms = 7;
-  bytes ext_json_raw = 8;
+  string trade_no = 2;
+  string req_body = 3;
+  string resp_body = 4;
+  int32 req_count = 5;
+  int32 req_ms = 6;
+  bytes ext_json_raw = 7;
 }
 
 message LockOrderExtResponse {
@@ -281,18 +259,12 @@ message LockOrderExtResponse {
 
 service PluginService {
   rpc Info(PluginInfoRequest) returns (PluginInfoResponse);
-  rpc Create(CreateRequest) returns (CreateResponse);
-  rpc Query(QueryRequest) returns (QueryResponse);
-  rpc Refund(RefundRequest) returns (RefundResponse);
-  rpc Transfer(TransferRequest) returns (TransferResponse);
-  rpc Balance(BalanceRequest) returns (BalanceResponse);
-  rpc InvokeFunc(InvokeFuncRequest) returns (InvokeFuncResponse);
+  rpc Handle(HandleRequest) returns (HandleResponse);
+  rpc Submit(BizRequest) returns (BizResult);
+  rpc Query(BizRequest) returns (BizResult);
 }
 
 service KernelService {
-  rpc CompleteOrder(CompleteOrderRequest) returns (Ack);
-  rpc CompleteRefund(CompleteRefundRequest) returns (Ack);
-  rpc CompleteTransfer(CompleteTransferRequest) returns (Ack);
-  rpc RecordCNotify(RecordCNotifyRequest) returns (Ack);
+  rpc CompleteBiz(CompleteBizRequest) returns (Ack);
   rpc LockOrderExt(LockOrderExtRequest) returns (LockOrderExtResponse);
 }

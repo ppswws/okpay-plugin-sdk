@@ -22,6 +22,113 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type BizType int32
+
+const (
+	BizType_BIZ_TYPE_INVALID  BizType = 0
+	BizType_BIZ_TYPE_ORDER    BizType = 1
+	BizType_BIZ_TYPE_REFUND   BizType = 2
+	BizType_BIZ_TYPE_TRANSFER BizType = 3
+	BizType_BIZ_TYPE_BALANCE  BizType = 4
+)
+
+// Enum value maps for BizType.
+var (
+	BizType_name = map[int32]string{
+		0: "BIZ_TYPE_INVALID",
+		1: "BIZ_TYPE_ORDER",
+		2: "BIZ_TYPE_REFUND",
+		3: "BIZ_TYPE_TRANSFER",
+		4: "BIZ_TYPE_BALANCE",
+	}
+	BizType_value = map[string]int32{
+		"BIZ_TYPE_INVALID":  0,
+		"BIZ_TYPE_ORDER":    1,
+		"BIZ_TYPE_REFUND":   2,
+		"BIZ_TYPE_TRANSFER": 3,
+		"BIZ_TYPE_BALANCE":  4,
+	}
+)
+
+func (x BizType) Enum() *BizType {
+	p := new(BizType)
+	*p = x
+	return p
+}
+
+func (x BizType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BizType) Descriptor() protoreflect.EnumDescriptor {
+	return file_plugin_proto_enumTypes[0].Descriptor()
+}
+
+func (BizType) Type() protoreflect.EnumType {
+	return &file_plugin_proto_enumTypes[0]
+}
+
+func (x BizType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BizType.Descriptor instead.
+func (BizType) EnumDescriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{0}
+}
+
+type BizState int32
+
+const (
+	BizState_BIZ_STATE_INVALID    BizState = 0
+	BizState_BIZ_STATE_FAILED     BizState = 1
+	BizState_BIZ_STATE_PROCESSING BizState = 2
+	BizState_BIZ_STATE_SUCCEEDED  BizState = 3
+)
+
+// Enum value maps for BizState.
+var (
+	BizState_name = map[int32]string{
+		0: "BIZ_STATE_INVALID",
+		1: "BIZ_STATE_FAILED",
+		2: "BIZ_STATE_PROCESSING",
+		3: "BIZ_STATE_SUCCEEDED",
+	}
+	BizState_value = map[string]int32{
+		"BIZ_STATE_INVALID":    0,
+		"BIZ_STATE_FAILED":     1,
+		"BIZ_STATE_PROCESSING": 2,
+		"BIZ_STATE_SUCCEEDED":  3,
+	}
+)
+
+func (x BizState) Enum() *BizState {
+	p := new(BizState)
+	*p = x
+	return p
+}
+
+func (x BizState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BizState) Descriptor() protoreflect.EnumDescriptor {
+	return file_plugin_proto_enumTypes[1].Descriptor()
+}
+
+func (BizState) Type() protoreflect.EnumType {
+	return &file_plugin_proto_enumTypes[1]
+}
+
+func (x BizState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BizState.Descriptor instead.
+func (BizState) EnumDescriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{1}
+}
+
 type HeaderKV struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
@@ -1550,27 +1657,27 @@ func (x *PageResponse) GetDataText() string {
 	return ""
 }
 
-type CreateRequest struct {
+type HandleRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ctx           *InvokeContext         `protobuf:"bytes,1,opt,name=ctx,proto3" json:"ctx,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateRequest) Reset() {
-	*x = CreateRequest{}
+func (x *HandleRequest) Reset() {
+	*x = HandleRequest{}
 	mi := &file_plugin_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateRequest) String() string {
+func (x *HandleRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateRequest) ProtoMessage() {}
+func (*HandleRequest) ProtoMessage() {}
 
-func (x *CreateRequest) ProtoReflect() protoreflect.Message {
+func (x *HandleRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1582,39 +1689,39 @@ func (x *CreateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateRequest.ProtoReflect.Descriptor instead.
-func (*CreateRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use HandleRequest.ProtoReflect.Descriptor instead.
+func (*HandleRequest) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *CreateRequest) GetCtx() *InvokeContext {
+func (x *HandleRequest) GetCtx() *InvokeContext {
 	if x != nil {
 		return x.Ctx
 	}
 	return nil
 }
 
-type CreateResponse struct {
+type HandleResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Page          *PageResponse          `protobuf:"bytes,1,opt,name=page,proto3" json:"page,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateResponse) Reset() {
-	*x = CreateResponse{}
+func (x *HandleResponse) Reset() {
+	*x = HandleResponse{}
 	mi := &file_plugin_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateResponse) String() string {
+func (x *HandleResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateResponse) ProtoMessage() {}
+func (*HandleResponse) ProtoMessage() {}
 
-func (x *CreateResponse) ProtoReflect() protoreflect.Message {
+func (x *HandleResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1626,39 +1733,41 @@ func (x *CreateResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateResponse.ProtoReflect.Descriptor instead.
-func (*CreateResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use HandleResponse.ProtoReflect.Descriptor instead.
+func (*HandleResponse) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *CreateResponse) GetPage() *PageResponse {
+func (x *HandleResponse) GetPage() *PageResponse {
 	if x != nil {
 		return x.Page
 	}
 	return nil
 }
 
-type QueryRequest struct {
+type BizRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ctx           *InvokeContext         `protobuf:"bytes,1,opt,name=ctx,proto3" json:"ctx,omitempty"`
+	BizType       BizType                `protobuf:"varint,2,opt,name=biz_type,json=bizType,proto3,enum=okpay.plugin.BizType" json:"biz_type,omitempty"`
+	BizNo         string                 `protobuf:"bytes,3,opt,name=biz_no,json=bizNo,proto3" json:"biz_no,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *QueryRequest) Reset() {
-	*x = QueryRequest{}
+func (x *BizRequest) Reset() {
+	*x = BizRequest{}
 	mi := &file_plugin_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *QueryRequest) String() string {
+func (x *BizRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryRequest) ProtoMessage() {}
+func (*BizRequest) ProtoMessage() {}
 
-func (x *QueryRequest) ProtoReflect() protoreflect.Message {
+func (x *BizRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1670,40 +1779,55 @@ func (x *QueryRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use QueryRequest.ProtoReflect.Descriptor instead.
-func (*QueryRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use BizRequest.ProtoReflect.Descriptor instead.
+func (*BizRequest) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *QueryRequest) GetCtx() *InvokeContext {
+func (x *BizRequest) GetCtx() *InvokeContext {
 	if x != nil {
 		return x.Ctx
 	}
 	return nil
 }
 
-type QueryResponse struct {
+func (x *BizRequest) GetBizType() BizType {
+	if x != nil {
+		return x.BizType
+	}
+	return BizType_BIZ_TYPE_INVALID
+}
+
+func (x *BizRequest) GetBizNo() string {
+	if x != nil {
+		return x.BizNo
+	}
+	return ""
+}
+
+type RequestTrace struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         int32                  `protobuf:"varint,1,opt,name=state,proto3" json:"state,omitempty"`
-	ApiTradeNo    string                 `protobuf:"bytes,2,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
+	ReqMs         int32                  `protobuf:"varint,1,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
+	ReqBody       string                 `protobuf:"bytes,2,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
+	RespBody      string                 `protobuf:"bytes,3,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *QueryResponse) Reset() {
-	*x = QueryResponse{}
+func (x *RequestTrace) Reset() {
+	*x = RequestTrace{}
 	mi := &file_plugin_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *QueryResponse) String() string {
+func (x *RequestTrace) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryResponse) ProtoMessage() {}
+func (*RequestTrace) ProtoMessage() {}
 
-func (x *QueryResponse) ProtoReflect() protoreflect.Message {
+func (x *RequestTrace) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1715,46 +1839,58 @@ func (x *QueryResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use QueryResponse.ProtoReflect.Descriptor instead.
-func (*QueryResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use RequestTrace.ProtoReflect.Descriptor instead.
+func (*RequestTrace) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *QueryResponse) GetState() int32 {
+func (x *RequestTrace) GetReqMs() int32 {
 	if x != nil {
-		return x.State
+		return x.ReqMs
 	}
 	return 0
 }
 
-func (x *QueryResponse) GetApiTradeNo() string {
+func (x *RequestTrace) GetReqBody() string {
 	if x != nil {
-		return x.ApiTradeNo
+		return x.ReqBody
 	}
 	return ""
 }
 
-type RefundRequest struct {
+func (x *RequestTrace) GetRespBody() string {
+	if x != nil {
+		return x.RespBody
+	}
+	return ""
+}
+
+type BizResult struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ctx           *InvokeContext         `protobuf:"bytes,1,opt,name=ctx,proto3" json:"ctx,omitempty"`
+	State         BizState               `protobuf:"varint,1,opt,name=state,proto3,enum=okpay.plugin.BizState" json:"state,omitempty"`
+	ApiBizNo      string                 `protobuf:"bytes,2,opt,name=api_biz_no,json=apiBizNo,proto3" json:"api_biz_no,omitempty"`
+	ChannelCode   string                 `protobuf:"bytes,3,opt,name=channel_code,json=channelCode,proto3" json:"channel_code,omitempty"`
+	ChannelMsg    string                 `protobuf:"bytes,4,opt,name=channel_msg,json=channelMsg,proto3" json:"channel_msg,omitempty"`
+	Trace         *RequestTrace          `protobuf:"bytes,5,opt,name=trace,proto3" json:"trace,omitempty"`
+	Balance       string                 `protobuf:"bytes,6,opt,name=balance,proto3" json:"balance,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *RefundRequest) Reset() {
-	*x = RefundRequest{}
+func (x *BizResult) Reset() {
+	*x = BizResult{}
 	mi := &file_plugin_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *RefundRequest) String() string {
+func (x *BizResult) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*RefundRequest) ProtoMessage() {}
+func (*BizResult) ProtoMessage() {}
 
-func (x *RefundRequest) ProtoReflect() protoreflect.Message {
+func (x *BizResult) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1766,404 +1902,51 @@ func (x *RefundRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RefundRequest.ProtoReflect.Descriptor instead.
-func (*RefundRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use BizResult.ProtoReflect.Descriptor instead.
+func (*BizResult) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *RefundRequest) GetCtx() *InvokeContext {
-	if x != nil {
-		return x.Ctx
-	}
-	return nil
-}
-
-type RefundResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         int32                  `protobuf:"varint,1,opt,name=state,proto3" json:"state,omitempty"`
-	ApiRefundNo   string                 `protobuf:"bytes,2,opt,name=api_refund_no,json=apiRefundNo,proto3" json:"api_refund_no,omitempty"`
-	ReqMs         int32                  `protobuf:"varint,3,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
-	ReqBody       string                 `protobuf:"bytes,4,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
-	RespBody      string                 `protobuf:"bytes,5,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
-	Result        string                 `protobuf:"bytes,6,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RefundResponse) Reset() {
-	*x = RefundResponse{}
-	mi := &file_plugin_proto_msgTypes[17]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RefundResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RefundResponse) ProtoMessage() {}
-
-func (x *RefundResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[17]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RefundResponse.ProtoReflect.Descriptor instead.
-func (*RefundResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{17}
-}
-
-func (x *RefundResponse) GetState() int32 {
+func (x *BizResult) GetState() BizState {
 	if x != nil {
 		return x.State
 	}
-	return 0
+	return BizState_BIZ_STATE_INVALID
 }
 
-func (x *RefundResponse) GetApiRefundNo() string {
+func (x *BizResult) GetApiBizNo() string {
 	if x != nil {
-		return x.ApiRefundNo
+		return x.ApiBizNo
 	}
 	return ""
 }
 
-func (x *RefundResponse) GetReqMs() int32 {
+func (x *BizResult) GetChannelCode() string {
 	if x != nil {
-		return x.ReqMs
-	}
-	return 0
-}
-
-func (x *RefundResponse) GetReqBody() string {
-	if x != nil {
-		return x.ReqBody
+		return x.ChannelCode
 	}
 	return ""
 }
 
-func (x *RefundResponse) GetRespBody() string {
+func (x *BizResult) GetChannelMsg() string {
 	if x != nil {
-		return x.RespBody
+		return x.ChannelMsg
 	}
 	return ""
 }
 
-func (x *RefundResponse) GetResult() string {
+func (x *BizResult) GetTrace() *RequestTrace {
 	if x != nil {
-		return x.Result
-	}
-	return ""
-}
-
-type TransferRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ctx           *InvokeContext         `protobuf:"bytes,1,opt,name=ctx,proto3" json:"ctx,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *TransferRequest) Reset() {
-	*x = TransferRequest{}
-	mi := &file_plugin_proto_msgTypes[18]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TransferRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TransferRequest) ProtoMessage() {}
-
-func (x *TransferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[18]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TransferRequest.ProtoReflect.Descriptor instead.
-func (*TransferRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{18}
-}
-
-func (x *TransferRequest) GetCtx() *InvokeContext {
-	if x != nil {
-		return x.Ctx
+		return x.Trace
 	}
 	return nil
 }
 
-type TransferResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	State         int32                  `protobuf:"varint,1,opt,name=state,proto3" json:"state,omitempty"`
-	ApiTradeNo    string                 `protobuf:"bytes,2,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
-	ReqMs         int32                  `protobuf:"varint,3,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
-	ReqBody       string                 `protobuf:"bytes,4,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
-	RespBody      string                 `protobuf:"bytes,5,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
-	Result        string                 `protobuf:"bytes,6,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *TransferResponse) Reset() {
-	*x = TransferResponse{}
-	mi := &file_plugin_proto_msgTypes[19]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TransferResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TransferResponse) ProtoMessage() {}
-
-func (x *TransferResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[19]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TransferResponse.ProtoReflect.Descriptor instead.
-func (*TransferResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{19}
-}
-
-func (x *TransferResponse) GetState() int32 {
-	if x != nil {
-		return x.State
-	}
-	return 0
-}
-
-func (x *TransferResponse) GetApiTradeNo() string {
-	if x != nil {
-		return x.ApiTradeNo
-	}
-	return ""
-}
-
-func (x *TransferResponse) GetReqMs() int32 {
-	if x != nil {
-		return x.ReqMs
-	}
-	return 0
-}
-
-func (x *TransferResponse) GetReqBody() string {
-	if x != nil {
-		return x.ReqBody
-	}
-	return ""
-}
-
-func (x *TransferResponse) GetRespBody() string {
-	if x != nil {
-		return x.RespBody
-	}
-	return ""
-}
-
-func (x *TransferResponse) GetResult() string {
-	if x != nil {
-		return x.Result
-	}
-	return ""
-}
-
-type BalanceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ctx           *InvokeContext         `protobuf:"bytes,1,opt,name=ctx,proto3" json:"ctx,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *BalanceRequest) Reset() {
-	*x = BalanceRequest{}
-	mi := &file_plugin_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *BalanceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BalanceRequest) ProtoMessage() {}
-
-func (x *BalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BalanceRequest.ProtoReflect.Descriptor instead.
-func (*BalanceRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{20}
-}
-
-func (x *BalanceRequest) GetCtx() *InvokeContext {
-	if x != nil {
-		return x.Ctx
-	}
-	return nil
-}
-
-type BalanceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Balance       string                 `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *BalanceResponse) Reset() {
-	*x = BalanceResponse{}
-	mi := &file_plugin_proto_msgTypes[21]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *BalanceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BalanceResponse) ProtoMessage() {}
-
-func (x *BalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[21]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BalanceResponse.ProtoReflect.Descriptor instead.
-func (*BalanceResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{21}
-}
-
-func (x *BalanceResponse) GetBalance() string {
+func (x *BizResult) GetBalance() string {
 	if x != nil {
 		return x.Balance
 	}
 	return ""
-}
-
-type InvokeFuncRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ctx           *InvokeContext         `protobuf:"bytes,1,opt,name=ctx,proto3" json:"ctx,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *InvokeFuncRequest) Reset() {
-	*x = InvokeFuncRequest{}
-	mi := &file_plugin_proto_msgTypes[22]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *InvokeFuncRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*InvokeFuncRequest) ProtoMessage() {}
-
-func (x *InvokeFuncRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[22]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use InvokeFuncRequest.ProtoReflect.Descriptor instead.
-func (*InvokeFuncRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{22}
-}
-
-func (x *InvokeFuncRequest) GetCtx() *InvokeContext {
-	if x != nil {
-		return x.Ctx
-	}
-	return nil
-}
-
-type InvokeFuncResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Page          *PageResponse          `protobuf:"bytes,1,opt,name=page,proto3" json:"page,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *InvokeFuncResponse) Reset() {
-	*x = InvokeFuncResponse{}
-	mi := &file_plugin_proto_msgTypes[23]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *InvokeFuncResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*InvokeFuncResponse) ProtoMessage() {}
-
-func (x *InvokeFuncResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[23]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use InvokeFuncResponse.ProtoReflect.Descriptor instead.
-func (*InvokeFuncResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{23}
-}
-
-func (x *InvokeFuncResponse) GetPage() *PageResponse {
-	if x != nil {
-		return x.Page
-	}
-	return nil
 }
 
 type PluginError struct {
@@ -2177,7 +1960,7 @@ type PluginError struct {
 
 func (x *PluginError) Reset() {
 	*x = PluginError{}
-	mi := &file_plugin_proto_msgTypes[24]
+	mi := &file_plugin_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2189,7 +1972,7 @@ func (x *PluginError) String() string {
 func (*PluginError) ProtoMessage() {}
 
 func (x *PluginError) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[24]
+	mi := &file_plugin_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2202,7 +1985,7 @@ func (x *PluginError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PluginError.ProtoReflect.Descriptor instead.
 func (*PluginError) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{24}
+	return file_plugin_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PluginError) GetCode() string {
@@ -2237,7 +2020,7 @@ type Ack struct {
 
 func (x *Ack) Reset() {
 	*x = Ack{}
-	mi := &file_plugin_proto_msgTypes[25]
+	mi := &file_plugin_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2249,7 +2032,7 @@ func (x *Ack) String() string {
 func (*Ack) ProtoMessage() {}
 
 func (x *Ack) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[25]
+	mi := &file_plugin_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2262,7 +2045,7 @@ func (x *Ack) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ack.ProtoReflect.Descriptor instead.
 func (*Ack) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{25}
+	return file_plugin_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *Ack) GetAccepted() bool {
@@ -2286,32 +2069,36 @@ func (x *Ack) GetError() *PluginError {
 	return nil
 }
 
-type CompleteOrderRequest struct {
+type CompleteBizRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	TradeNo       string                 `protobuf:"bytes,3,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	ApiTradeNo    string                 `protobuf:"bytes,4,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
-	Buyer         string                 `protobuf:"bytes,5,opt,name=buyer,proto3" json:"buyer,omitempty"`
+	BizType       BizType                `protobuf:"varint,2,opt,name=biz_type,json=bizType,proto3,enum=okpay.plugin.BizType" json:"biz_type,omitempty"`
+	BizNo         string                 `protobuf:"bytes,3,opt,name=biz_no,json=bizNo,proto3" json:"biz_no,omitempty"`
+	State         BizState               `protobuf:"varint,4,opt,name=state,proto3,enum=okpay.plugin.BizState" json:"state,omitempty"`
+	ApiBizNo      string                 `protobuf:"bytes,5,opt,name=api_biz_no,json=apiBizNo,proto3" json:"api_biz_no,omitempty"`
+	ChannelCode   string                 `protobuf:"bytes,6,opt,name=channel_code,json=channelCode,proto3" json:"channel_code,omitempty"`
+	ChannelMsg    string                 `protobuf:"bytes,7,opt,name=channel_msg,json=channelMsg,proto3" json:"channel_msg,omitempty"`
+	RespBody      string                 `protobuf:"bytes,8,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
+	Buyer         string                 `protobuf:"bytes,9,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CompleteOrderRequest) Reset() {
-	*x = CompleteOrderRequest{}
-	mi := &file_plugin_proto_msgTypes[26]
+func (x *CompleteBizRequest) Reset() {
+	*x = CompleteBizRequest{}
+	mi := &file_plugin_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CompleteOrderRequest) String() string {
+func (x *CompleteBizRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CompleteOrderRequest) ProtoMessage() {}
+func (*CompleteBizRequest) ProtoMessage() {}
 
-func (x *CompleteOrderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[26]
+func (x *CompleteBizRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plugin_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2322,331 +2109,90 @@ func (x *CompleteOrderRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CompleteOrderRequest.ProtoReflect.Descriptor instead.
-func (*CompleteOrderRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{26}
+// Deprecated: Use CompleteBizRequest.ProtoReflect.Descriptor instead.
+func (*CompleteBizRequest) Descriptor() ([]byte, []int) {
+	return file_plugin_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *CompleteOrderRequest) GetRequestId() string {
+func (x *CompleteBizRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
 	}
 	return ""
 }
 
-func (x *CompleteOrderRequest) GetPluginId() string {
+func (x *CompleteBizRequest) GetBizType() BizType {
 	if x != nil {
-		return x.PluginId
+		return x.BizType
+	}
+	return BizType_BIZ_TYPE_INVALID
+}
+
+func (x *CompleteBizRequest) GetBizNo() string {
+	if x != nil {
+		return x.BizNo
 	}
 	return ""
 }
 
-func (x *CompleteOrderRequest) GetTradeNo() string {
+func (x *CompleteBizRequest) GetState() BizState {
 	if x != nil {
-		return x.TradeNo
+		return x.State
+	}
+	return BizState_BIZ_STATE_INVALID
+}
+
+func (x *CompleteBizRequest) GetApiBizNo() string {
+	if x != nil {
+		return x.ApiBizNo
 	}
 	return ""
 }
 
-func (x *CompleteOrderRequest) GetApiTradeNo() string {
+func (x *CompleteBizRequest) GetChannelCode() string {
 	if x != nil {
-		return x.ApiTradeNo
+		return x.ChannelCode
 	}
 	return ""
 }
 
-func (x *CompleteOrderRequest) GetBuyer() string {
+func (x *CompleteBizRequest) GetChannelMsg() string {
 	if x != nil {
-		return x.Buyer
+		return x.ChannelMsg
 	}
 	return ""
 }
 
-type CompleteRefundRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	RefundNo      string                 `protobuf:"bytes,3,opt,name=refund_no,json=refundNo,proto3" json:"refund_no,omitempty"`
-	Status        int32                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
-	ApiRefundNo   string                 `protobuf:"bytes,5,opt,name=api_refund_no,json=apiRefundNo,proto3" json:"api_refund_no,omitempty"`
-	RespBody      string                 `protobuf:"bytes,6,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CompleteRefundRequest) Reset() {
-	*x = CompleteRefundRequest{}
-	mi := &file_plugin_proto_msgTypes[27]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CompleteRefundRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CompleteRefundRequest) ProtoMessage() {}
-
-func (x *CompleteRefundRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[27]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CompleteRefundRequest.ProtoReflect.Descriptor instead.
-func (*CompleteRefundRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{27}
-}
-
-func (x *CompleteRefundRequest) GetRequestId() string {
-	if x != nil {
-		return x.RequestId
-	}
-	return ""
-}
-
-func (x *CompleteRefundRequest) GetPluginId() string {
-	if x != nil {
-		return x.PluginId
-	}
-	return ""
-}
-
-func (x *CompleteRefundRequest) GetRefundNo() string {
-	if x != nil {
-		return x.RefundNo
-	}
-	return ""
-}
-
-func (x *CompleteRefundRequest) GetStatus() int32 {
-	if x != nil {
-		return x.Status
-	}
-	return 0
-}
-
-func (x *CompleteRefundRequest) GetApiRefundNo() string {
-	if x != nil {
-		return x.ApiRefundNo
-	}
-	return ""
-}
-
-func (x *CompleteRefundRequest) GetRespBody() string {
+func (x *CompleteBizRequest) GetRespBody() string {
 	if x != nil {
 		return x.RespBody
 	}
 	return ""
 }
 
-type CompleteTransferRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	TradeNo       string                 `protobuf:"bytes,3,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	Status        int32                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`
-	ApiTradeNo    string                 `protobuf:"bytes,5,opt,name=api_trade_no,json=apiTradeNo,proto3" json:"api_trade_no,omitempty"`
-	Result        string                 `protobuf:"bytes,6,opt,name=result,proto3" json:"result,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CompleteTransferRequest) Reset() {
-	*x = CompleteTransferRequest{}
-	mi := &file_plugin_proto_msgTypes[28]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CompleteTransferRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CompleteTransferRequest) ProtoMessage() {}
-
-func (x *CompleteTransferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[28]
+func (x *CompleteBizRequest) GetBuyer() string {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CompleteTransferRequest.ProtoReflect.Descriptor instead.
-func (*CompleteTransferRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{28}
-}
-
-func (x *CompleteTransferRequest) GetRequestId() string {
-	if x != nil {
-		return x.RequestId
+		return x.Buyer
 	}
 	return ""
-}
-
-func (x *CompleteTransferRequest) GetPluginId() string {
-	if x != nil {
-		return x.PluginId
-	}
-	return ""
-}
-
-func (x *CompleteTransferRequest) GetTradeNo() string {
-	if x != nil {
-		return x.TradeNo
-	}
-	return ""
-}
-
-func (x *CompleteTransferRequest) GetStatus() int32 {
-	if x != nil {
-		return x.Status
-	}
-	return 0
-}
-
-func (x *CompleteTransferRequest) GetApiTradeNo() string {
-	if x != nil {
-		return x.ApiTradeNo
-	}
-	return ""
-}
-
-func (x *CompleteTransferRequest) GetResult() string {
-	if x != nil {
-		return x.Result
-	}
-	return ""
-}
-
-type RecordCNotifyRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	RequestId       string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	PluginId        string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	BizType         string                 `protobuf:"bytes,3,opt,name=biz_type,json=bizType,proto3" json:"biz_type,omitempty"`
-	TradeNo         string                 `protobuf:"bytes,4,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	RequestIp       string                 `protobuf:"bytes,5,opt,name=request_ip,json=requestIp,proto3" json:"request_ip,omitempty"`
-	RequestUrl      string                 `protobuf:"bytes,6,opt,name=request_url,json=requestUrl,proto3" json:"request_url,omitempty"`
-	RequestBodyRaw  []byte                 `protobuf:"bytes,7,opt,name=request_body_raw,json=requestBodyRaw,proto3" json:"request_body_raw,omitempty"`
-	ResponseBodyRaw []byte                 `protobuf:"bytes,8,opt,name=response_body_raw,json=responseBodyRaw,proto3" json:"response_body_raw,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *RecordCNotifyRequest) Reset() {
-	*x = RecordCNotifyRequest{}
-	mi := &file_plugin_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RecordCNotifyRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RecordCNotifyRequest) ProtoMessage() {}
-
-func (x *RecordCNotifyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RecordCNotifyRequest.ProtoReflect.Descriptor instead.
-func (*RecordCNotifyRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{29}
-}
-
-func (x *RecordCNotifyRequest) GetRequestId() string {
-	if x != nil {
-		return x.RequestId
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetPluginId() string {
-	if x != nil {
-		return x.PluginId
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetBizType() string {
-	if x != nil {
-		return x.BizType
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetTradeNo() string {
-	if x != nil {
-		return x.TradeNo
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetRequestIp() string {
-	if x != nil {
-		return x.RequestIp
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetRequestUrl() string {
-	if x != nil {
-		return x.RequestUrl
-	}
-	return ""
-}
-
-func (x *RecordCNotifyRequest) GetRequestBodyRaw() []byte {
-	if x != nil {
-		return x.RequestBodyRaw
-	}
-	return nil
-}
-
-func (x *RecordCNotifyRequest) GetResponseBodyRaw() []byte {
-	if x != nil {
-		return x.ResponseBodyRaw
-	}
-	return nil
 }
 
 type LockOrderExtRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	PluginId      string                 `protobuf:"bytes,2,opt,name=plugin_id,json=pluginId,proto3" json:"plugin_id,omitempty"`
-	TradeNo       string                 `protobuf:"bytes,3,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
-	ReqBody       string                 `protobuf:"bytes,4,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
-	RespBody      string                 `protobuf:"bytes,5,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
-	ReqCount      int32                  `protobuf:"varint,6,opt,name=req_count,json=reqCount,proto3" json:"req_count,omitempty"`
-	ReqMs         int32                  `protobuf:"varint,7,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
-	ExtJsonRaw    []byte                 `protobuf:"bytes,8,opt,name=ext_json_raw,json=extJsonRaw,proto3" json:"ext_json_raw,omitempty"`
+	TradeNo       string                 `protobuf:"bytes,2,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
+	ReqBody       string                 `protobuf:"bytes,3,opt,name=req_body,json=reqBody,proto3" json:"req_body,omitempty"`
+	RespBody      string                 `protobuf:"bytes,4,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
+	ReqCount      int32                  `protobuf:"varint,5,opt,name=req_count,json=reqCount,proto3" json:"req_count,omitempty"`
+	ReqMs         int32                  `protobuf:"varint,6,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
+	ExtJsonRaw    []byte                 `protobuf:"bytes,7,opt,name=ext_json_raw,json=extJsonRaw,proto3" json:"ext_json_raw,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LockOrderExtRequest) Reset() {
 	*x = LockOrderExtRequest{}
-	mi := &file_plugin_proto_msgTypes[30]
+	mi := &file_plugin_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2658,7 +2204,7 @@ func (x *LockOrderExtRequest) String() string {
 func (*LockOrderExtRequest) ProtoMessage() {}
 
 func (x *LockOrderExtRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[30]
+	mi := &file_plugin_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2671,19 +2217,12 @@ func (x *LockOrderExtRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockOrderExtRequest.ProtoReflect.Descriptor instead.
 func (*LockOrderExtRequest) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{30}
+	return file_plugin_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *LockOrderExtRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
-	}
-	return ""
-}
-
-func (x *LockOrderExtRequest) GetPluginId() string {
-	if x != nil {
-		return x.PluginId
 	}
 	return ""
 }
@@ -2739,7 +2278,7 @@ type LockOrderExtResponse struct {
 
 func (x *LockOrderExtResponse) Reset() {
 	*x = LockOrderExtResponse{}
-	mi := &file_plugin_proto_msgTypes[31]
+	mi := &file_plugin_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2751,7 +2290,7 @@ func (x *LockOrderExtResponse) String() string {
 func (*LockOrderExtResponse) ProtoMessage() {}
 
 func (x *LockOrderExtResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_plugin_proto_msgTypes[31]
+	mi := &file_plugin_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2764,7 +2303,7 @@ func (x *LockOrderExtResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LockOrderExtResponse.ProtoReflect.Descriptor instead.
 func (*LockOrderExtResponse) Descriptor() ([]byte, []int) {
-	return file_plugin_proto_rawDescGZIP(), []int{31}
+	return file_plugin_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *LockOrderExtResponse) GetExtJsonRaw() []byte {
@@ -2961,43 +2500,28 @@ const file_plugin_proto_rawDesc = "" +
 	"\x03msg\x18\x04 \x01(\tR\x03msg\x12\"\n" +
 	"\rdata_json_raw\x18\x05 \x01(\fR\vdataJsonRaw\x12\x1b\n" +
 	"\tdata_text\x18\x06 \x01(\tR\bdataText\">\n" +
-	"\rCreateRequest\x12-\n" +
+	"\rHandleRequest\x12-\n" +
 	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"@\n" +
-	"\x0eCreateResponse\x12.\n" +
-	"\x04page\x18\x01 \x01(\v2\x1a.okpay.plugin.PageResponseR\x04page\"=\n" +
-	"\fQueryRequest\x12-\n" +
-	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"G\n" +
-	"\rQueryResponse\x12\x14\n" +
-	"\x05state\x18\x01 \x01(\x05R\x05state\x12 \n" +
-	"\fapi_trade_no\x18\x02 \x01(\tR\n" +
-	"apiTradeNo\">\n" +
-	"\rRefundRequest\x12-\n" +
-	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"\xb1\x01\n" +
-	"\x0eRefundResponse\x12\x14\n" +
-	"\x05state\x18\x01 \x01(\x05R\x05state\x12\"\n" +
-	"\rapi_refund_no\x18\x02 \x01(\tR\vapiRefundNo\x12\x15\n" +
-	"\x06req_ms\x18\x03 \x01(\x05R\x05reqMs\x12\x19\n" +
-	"\breq_body\x18\x04 \x01(\tR\areqBody\x12\x1b\n" +
-	"\tresp_body\x18\x05 \x01(\tR\brespBody\x12\x16\n" +
-	"\x06result\x18\x06 \x01(\tR\x06result\"@\n" +
-	"\x0fTransferRequest\x12-\n" +
-	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"\xb1\x01\n" +
-	"\x10TransferResponse\x12\x14\n" +
-	"\x05state\x18\x01 \x01(\x05R\x05state\x12 \n" +
-	"\fapi_trade_no\x18\x02 \x01(\tR\n" +
-	"apiTradeNo\x12\x15\n" +
-	"\x06req_ms\x18\x03 \x01(\x05R\x05reqMs\x12\x19\n" +
-	"\breq_body\x18\x04 \x01(\tR\areqBody\x12\x1b\n" +
-	"\tresp_body\x18\x05 \x01(\tR\brespBody\x12\x16\n" +
-	"\x06result\x18\x06 \x01(\tR\x06result\"?\n" +
-	"\x0eBalanceRequest\x12-\n" +
-	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"+\n" +
-	"\x0fBalanceResponse\x12\x18\n" +
-	"\abalance\x18\x01 \x01(\tR\abalance\"B\n" +
-	"\x11InvokeFuncRequest\x12-\n" +
-	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"D\n" +
-	"\x12InvokeFuncResponse\x12.\n" +
-	"\x04page\x18\x01 \x01(\v2\x1a.okpay.plugin.PageResponseR\x04page\"Y\n" +
+	"\x0eHandleResponse\x12.\n" +
+	"\x04page\x18\x01 \x01(\v2\x1a.okpay.plugin.PageResponseR\x04page\"\x84\x01\n" +
+	"\n" +
+	"BizRequest\x12-\n" +
+	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\x120\n" +
+	"\bbiz_type\x18\x02 \x01(\x0e2\x15.okpay.plugin.BizTypeR\abizType\x12\x15\n" +
+	"\x06biz_no\x18\x03 \x01(\tR\x05bizNo\"]\n" +
+	"\fRequestTrace\x12\x15\n" +
+	"\x06req_ms\x18\x01 \x01(\x05R\x05reqMs\x12\x19\n" +
+	"\breq_body\x18\x02 \x01(\tR\areqBody\x12\x1b\n" +
+	"\tresp_body\x18\x03 \x01(\tR\brespBody\"\xe7\x01\n" +
+	"\tBizResult\x12,\n" +
+	"\x05state\x18\x01 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x1c\n" +
+	"\n" +
+	"api_biz_no\x18\x02 \x01(\tR\bapiBizNo\x12!\n" +
+	"\fchannel_code\x18\x03 \x01(\tR\vchannelCode\x12\x1f\n" +
+	"\vchannel_msg\x18\x04 \x01(\tR\n" +
+	"channelMsg\x120\n" +
+	"\x05trace\x18\x05 \x01(\v2\x1a.okpay.plugin.RequestTraceR\x05trace\x12\x18\n" +
+	"\abalance\x18\x06 \x01(\tR\abalance\"Y\n" +
 	"\vPluginError\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1c\n" +
@@ -3006,72 +2530,51 @@ const file_plugin_proto_rawDesc = "" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12/\n" +
-	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\xa5\x01\n" +
-	"\x14CompleteOrderRequest\x12\x1d\n" +
+	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\xbf\x02\n" +
+	"\x12CompleteBizRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
-	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
-	"\btrade_no\x18\x03 \x01(\tR\atradeNo\x12 \n" +
-	"\fapi_trade_no\x18\x04 \x01(\tR\n" +
-	"apiTradeNo\x12\x14\n" +
-	"\x05buyer\x18\x05 \x01(\tR\x05buyer\"\xc9\x01\n" +
-	"\x15CompleteRefundRequest\x12\x1d\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x120\n" +
+	"\bbiz_type\x18\x02 \x01(\x0e2\x15.okpay.plugin.BizTypeR\abizType\x12\x15\n" +
+	"\x06biz_no\x18\x03 \x01(\tR\x05bizNo\x12,\n" +
+	"\x05state\x18\x04 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x1c\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
-	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x1b\n" +
-	"\trefund_no\x18\x03 \x01(\tR\brefundNo\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\x05R\x06status\x12\"\n" +
-	"\rapi_refund_no\x18\x05 \x01(\tR\vapiRefundNo\x12\x1b\n" +
-	"\tresp_body\x18\x06 \x01(\tR\brespBody\"\xc2\x01\n" +
-	"\x17CompleteTransferRequest\x12\x1d\n" +
-	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
-	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
-	"\btrade_no\x18\x03 \x01(\tR\atradeNo\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\x05R\x06status\x12 \n" +
-	"\fapi_trade_no\x18\x05 \x01(\tR\n" +
-	"apiTradeNo\x12\x16\n" +
-	"\x06result\x18\x06 \x01(\tR\x06result\"\x9e\x02\n" +
-	"\x14RecordCNotifyRequest\x12\x1d\n" +
-	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
-	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
-	"\bbiz_type\x18\x03 \x01(\tR\abizType\x12\x19\n" +
-	"\btrade_no\x18\x04 \x01(\tR\atradeNo\x12\x1d\n" +
-	"\n" +
-	"request_ip\x18\x05 \x01(\tR\trequestIp\x12\x1f\n" +
-	"\vrequest_url\x18\x06 \x01(\tR\n" +
-	"requestUrl\x12(\n" +
-	"\x10request_body_raw\x18\a \x01(\fR\x0erequestBodyRaw\x12*\n" +
-	"\x11response_body_raw\x18\b \x01(\fR\x0fresponseBodyRaw\"\xfa\x01\n" +
+	"api_biz_no\x18\x05 \x01(\tR\bapiBizNo\x12!\n" +
+	"\fchannel_code\x18\x06 \x01(\tR\vchannelCode\x12\x1f\n" +
+	"\vchannel_msg\x18\a \x01(\tR\n" +
+	"channelMsg\x12\x1b\n" +
+	"\tresp_body\x18\b \x01(\tR\brespBody\x12\x14\n" +
+	"\x05buyer\x18\t \x01(\tR\x05buyer\"\xdd\x01\n" +
 	"\x13LockOrderExtRequest\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
-	"\tplugin_id\x18\x02 \x01(\tR\bpluginId\x12\x19\n" +
-	"\btrade_no\x18\x03 \x01(\tR\atradeNo\x12\x19\n" +
-	"\breq_body\x18\x04 \x01(\tR\areqBody\x12\x1b\n" +
-	"\tresp_body\x18\x05 \x01(\tR\brespBody\x12\x1b\n" +
-	"\treq_count\x18\x06 \x01(\x05R\breqCount\x12\x15\n" +
-	"\x06req_ms\x18\a \x01(\x05R\x05reqMs\x12 \n" +
-	"\fext_json_raw\x18\b \x01(\fR\n" +
+	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
+	"\btrade_no\x18\x02 \x01(\tR\atradeNo\x12\x19\n" +
+	"\breq_body\x18\x03 \x01(\tR\areqBody\x12\x1b\n" +
+	"\tresp_body\x18\x04 \x01(\tR\brespBody\x12\x1b\n" +
+	"\treq_count\x18\x05 \x01(\x05R\breqCount\x12\x15\n" +
+	"\x06req_ms\x18\x06 \x01(\x05R\x05reqMs\x12 \n" +
+	"\fext_json_raw\x18\a \x01(\fR\n" +
 	"extJsonRaw\"8\n" +
 	"\x14LockOrderExtResponse\x12 \n" +
 	"\fext_json_raw\x18\x01 \x01(\fR\n" +
-	"extJsonRaw2\x8a\x04\n" +
+	"extJsonRaw*u\n" +
+	"\aBizType\x12\x14\n" +
+	"\x10BIZ_TYPE_INVALID\x10\x00\x12\x12\n" +
+	"\x0eBIZ_TYPE_ORDER\x10\x01\x12\x13\n" +
+	"\x0fBIZ_TYPE_REFUND\x10\x02\x12\x15\n" +
+	"\x11BIZ_TYPE_TRANSFER\x10\x03\x12\x14\n" +
+	"\x10BIZ_TYPE_BALANCE\x10\x04*j\n" +
+	"\bBizState\x12\x15\n" +
+	"\x11BIZ_STATE_INVALID\x10\x00\x12\x14\n" +
+	"\x10BIZ_STATE_FAILED\x10\x01\x12\x18\n" +
+	"\x14BIZ_STATE_PROCESSING\x10\x02\x12\x17\n" +
+	"\x13BIZ_STATE_SUCCEEDED\x10\x032\x98\x02\n" +
 	"\rPluginService\x12I\n" +
 	"\x04Info\x12\x1f.okpay.plugin.PluginInfoRequest\x1a .okpay.plugin.PluginInfoResponse\x12C\n" +
-	"\x06Create\x12\x1b.okpay.plugin.CreateRequest\x1a\x1c.okpay.plugin.CreateResponse\x12@\n" +
-	"\x05Query\x12\x1a.okpay.plugin.QueryRequest\x1a\x1b.okpay.plugin.QueryResponse\x12C\n" +
-	"\x06Refund\x12\x1b.okpay.plugin.RefundRequest\x1a\x1c.okpay.plugin.RefundResponse\x12I\n" +
-	"\bTransfer\x12\x1d.okpay.plugin.TransferRequest\x1a\x1e.okpay.plugin.TransferResponse\x12F\n" +
-	"\aBalance\x12\x1c.okpay.plugin.BalanceRequest\x1a\x1d.okpay.plugin.BalanceResponse\x12O\n" +
-	"\n" +
-	"InvokeFunc\x12\x1f.okpay.plugin.InvokeFuncRequest\x1a .okpay.plugin.InvokeFuncResponse2\x8e\x03\n" +
-	"\rKernelService\x12F\n" +
-	"\rCompleteOrder\x12\".okpay.plugin.CompleteOrderRequest\x1a\x11.okpay.plugin.Ack\x12H\n" +
-	"\x0eCompleteRefund\x12#.okpay.plugin.CompleteRefundRequest\x1a\x11.okpay.plugin.Ack\x12L\n" +
-	"\x10CompleteTransfer\x12%.okpay.plugin.CompleteTransferRequest\x1a\x11.okpay.plugin.Ack\x12F\n" +
-	"\rRecordCNotify\x12\".okpay.plugin.RecordCNotifyRequest\x1a\x11.okpay.plugin.Ack\x12U\n" +
+	"\x06Handle\x12\x1b.okpay.plugin.HandleRequest\x1a\x1c.okpay.plugin.HandleResponse\x12;\n" +
+	"\x06Submit\x12\x18.okpay.plugin.BizRequest\x1a\x17.okpay.plugin.BizResult\x12:\n" +
+	"\x05Query\x12\x18.okpay.plugin.BizRequest\x1a\x17.okpay.plugin.BizResult2\xaa\x01\n" +
+	"\rKernelService\x12B\n" +
+	"\vCompleteBiz\x12 .okpay.plugin.CompleteBizRequest\x1a\x11.okpay.plugin.Ack\x12U\n" +
 	"\fLockOrderExt\x12!.okpay.plugin.LockOrderExtRequest\x1a\".okpay.plugin.LockOrderExtResponseB0Z.github.com/ppswws/okpay-plugin-sdk/proto;protob\x06proto3"
 
 var (
@@ -3086,101 +2589,82 @@ func file_plugin_proto_rawDescGZIP() []byte {
 	return file_plugin_proto_rawDescData
 }
 
-var file_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
+var file_plugin_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_plugin_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_plugin_proto_goTypes = []any{
-	(*HeaderKV)(nil),                // 0: okpay.plugin.HeaderKV
-	(*OrderSnapshot)(nil),           // 1: okpay.plugin.OrderSnapshot
-	(*RefundSnapshot)(nil),          // 2: okpay.plugin.RefundSnapshot
-	(*TransferSnapshot)(nil),        // 3: okpay.plugin.TransferSnapshot
-	(*ChannelSnapshot)(nil),         // 4: okpay.plugin.ChannelSnapshot
-	(*ConfigSnapshot)(nil),          // 5: okpay.plugin.ConfigSnapshot
-	(*Request)(nil),                 // 6: okpay.plugin.Request
-	(*InvokeContext)(nil),           // 7: okpay.plugin.InvokeContext
-	(*PluginInfoRequest)(nil),       // 8: okpay.plugin.PluginInfoRequest
-	(*InputField)(nil),              // 9: okpay.plugin.InputField
-	(*PluginInfoResponse)(nil),      // 10: okpay.plugin.PluginInfoResponse
-	(*PageResponse)(nil),            // 11: okpay.plugin.PageResponse
-	(*CreateRequest)(nil),           // 12: okpay.plugin.CreateRequest
-	(*CreateResponse)(nil),          // 13: okpay.plugin.CreateResponse
-	(*QueryRequest)(nil),            // 14: okpay.plugin.QueryRequest
-	(*QueryResponse)(nil),           // 15: okpay.plugin.QueryResponse
-	(*RefundRequest)(nil),           // 16: okpay.plugin.RefundRequest
-	(*RefundResponse)(nil),          // 17: okpay.plugin.RefundResponse
-	(*TransferRequest)(nil),         // 18: okpay.plugin.TransferRequest
-	(*TransferResponse)(nil),        // 19: okpay.plugin.TransferResponse
-	(*BalanceRequest)(nil),          // 20: okpay.plugin.BalanceRequest
-	(*BalanceResponse)(nil),         // 21: okpay.plugin.BalanceResponse
-	(*InvokeFuncRequest)(nil),       // 22: okpay.plugin.InvokeFuncRequest
-	(*InvokeFuncResponse)(nil),      // 23: okpay.plugin.InvokeFuncResponse
-	(*PluginError)(nil),             // 24: okpay.plugin.PluginError
-	(*Ack)(nil),                     // 25: okpay.plugin.Ack
-	(*CompleteOrderRequest)(nil),    // 26: okpay.plugin.CompleteOrderRequest
-	(*CompleteRefundRequest)(nil),   // 27: okpay.plugin.CompleteRefundRequest
-	(*CompleteTransferRequest)(nil), // 28: okpay.plugin.CompleteTransferRequest
-	(*RecordCNotifyRequest)(nil),    // 29: okpay.plugin.RecordCNotifyRequest
-	(*LockOrderExtRequest)(nil),     // 30: okpay.plugin.LockOrderExtRequest
-	(*LockOrderExtResponse)(nil),    // 31: okpay.plugin.LockOrderExtResponse
-	nil,                             // 32: okpay.plugin.InputField.OptionsEntry
-	nil,                             // 33: okpay.plugin.PluginInfoResponse.InputsEntry
-	(*timestamppb.Timestamp)(nil),   // 34: google.protobuf.Timestamp
+	(BizType)(0),                  // 0: okpay.plugin.BizType
+	(BizState)(0),                 // 1: okpay.plugin.BizState
+	(*HeaderKV)(nil),              // 2: okpay.plugin.HeaderKV
+	(*OrderSnapshot)(nil),         // 3: okpay.plugin.OrderSnapshot
+	(*RefundSnapshot)(nil),        // 4: okpay.plugin.RefundSnapshot
+	(*TransferSnapshot)(nil),      // 5: okpay.plugin.TransferSnapshot
+	(*ChannelSnapshot)(nil),       // 6: okpay.plugin.ChannelSnapshot
+	(*ConfigSnapshot)(nil),        // 7: okpay.plugin.ConfigSnapshot
+	(*Request)(nil),               // 8: okpay.plugin.Request
+	(*InvokeContext)(nil),         // 9: okpay.plugin.InvokeContext
+	(*PluginInfoRequest)(nil),     // 10: okpay.plugin.PluginInfoRequest
+	(*InputField)(nil),            // 11: okpay.plugin.InputField
+	(*PluginInfoResponse)(nil),    // 12: okpay.plugin.PluginInfoResponse
+	(*PageResponse)(nil),          // 13: okpay.plugin.PageResponse
+	(*HandleRequest)(nil),         // 14: okpay.plugin.HandleRequest
+	(*HandleResponse)(nil),        // 15: okpay.plugin.HandleResponse
+	(*BizRequest)(nil),            // 16: okpay.plugin.BizRequest
+	(*RequestTrace)(nil),          // 17: okpay.plugin.RequestTrace
+	(*BizResult)(nil),             // 18: okpay.plugin.BizResult
+	(*PluginError)(nil),           // 19: okpay.plugin.PluginError
+	(*Ack)(nil),                   // 20: okpay.plugin.Ack
+	(*CompleteBizRequest)(nil),    // 21: okpay.plugin.CompleteBizRequest
+	(*LockOrderExtRequest)(nil),   // 22: okpay.plugin.LockOrderExtRequest
+	(*LockOrderExtResponse)(nil),  // 23: okpay.plugin.LockOrderExtResponse
+	nil,                           // 24: okpay.plugin.InputField.OptionsEntry
+	nil,                           // 25: okpay.plugin.PluginInfoResponse.InputsEntry
+	(*timestamppb.Timestamp)(nil), // 26: google.protobuf.Timestamp
 }
 var file_plugin_proto_depIdxs = []int32{
-	34, // 0: okpay.plugin.OrderSnapshot.endtime:type_name -> google.protobuf.Timestamp
-	34, // 1: okpay.plugin.OrderSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	34, // 2: okpay.plugin.OrderSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	34, // 3: okpay.plugin.RefundSnapshot.endtime:type_name -> google.protobuf.Timestamp
-	34, // 4: okpay.plugin.RefundSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	34, // 5: okpay.plugin.RefundSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	34, // 6: okpay.plugin.TransferSnapshot.endtime:type_name -> google.protobuf.Timestamp
-	34, // 7: okpay.plugin.TransferSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	34, // 8: okpay.plugin.TransferSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	34, // 9: okpay.plugin.ChannelSnapshot.created_at:type_name -> google.protobuf.Timestamp
-	34, // 10: okpay.plugin.ChannelSnapshot.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 11: okpay.plugin.Request.headers:type_name -> okpay.plugin.HeaderKV
-	1,  // 12: okpay.plugin.InvokeContext.order:type_name -> okpay.plugin.OrderSnapshot
-	2,  // 13: okpay.plugin.InvokeContext.refund:type_name -> okpay.plugin.RefundSnapshot
-	3,  // 14: okpay.plugin.InvokeContext.transfer:type_name -> okpay.plugin.TransferSnapshot
-	4,  // 15: okpay.plugin.InvokeContext.channel:type_name -> okpay.plugin.ChannelSnapshot
-	5,  // 16: okpay.plugin.InvokeContext.config:type_name -> okpay.plugin.ConfigSnapshot
-	6,  // 17: okpay.plugin.InvokeContext.request:type_name -> okpay.plugin.Request
-	32, // 18: okpay.plugin.InputField.options:type_name -> okpay.plugin.InputField.OptionsEntry
-	33, // 19: okpay.plugin.PluginInfoResponse.inputs:type_name -> okpay.plugin.PluginInfoResponse.InputsEntry
-	7,  // 20: okpay.plugin.CreateRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	11, // 21: okpay.plugin.CreateResponse.page:type_name -> okpay.plugin.PageResponse
-	7,  // 22: okpay.plugin.QueryRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	7,  // 23: okpay.plugin.RefundRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	7,  // 24: okpay.plugin.TransferRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	7,  // 25: okpay.plugin.BalanceRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	7,  // 26: okpay.plugin.InvokeFuncRequest.ctx:type_name -> okpay.plugin.InvokeContext
-	11, // 27: okpay.plugin.InvokeFuncResponse.page:type_name -> okpay.plugin.PageResponse
-	24, // 28: okpay.plugin.Ack.error:type_name -> okpay.plugin.PluginError
-	9,  // 29: okpay.plugin.PluginInfoResponse.InputsEntry.value:type_name -> okpay.plugin.InputField
-	8,  // 30: okpay.plugin.PluginService.Info:input_type -> okpay.plugin.PluginInfoRequest
-	12, // 31: okpay.plugin.PluginService.Create:input_type -> okpay.plugin.CreateRequest
-	14, // 32: okpay.plugin.PluginService.Query:input_type -> okpay.plugin.QueryRequest
-	16, // 33: okpay.plugin.PluginService.Refund:input_type -> okpay.plugin.RefundRequest
-	18, // 34: okpay.plugin.PluginService.Transfer:input_type -> okpay.plugin.TransferRequest
-	20, // 35: okpay.plugin.PluginService.Balance:input_type -> okpay.plugin.BalanceRequest
-	22, // 36: okpay.plugin.PluginService.InvokeFunc:input_type -> okpay.plugin.InvokeFuncRequest
-	26, // 37: okpay.plugin.KernelService.CompleteOrder:input_type -> okpay.plugin.CompleteOrderRequest
-	27, // 38: okpay.plugin.KernelService.CompleteRefund:input_type -> okpay.plugin.CompleteRefundRequest
-	28, // 39: okpay.plugin.KernelService.CompleteTransfer:input_type -> okpay.plugin.CompleteTransferRequest
-	29, // 40: okpay.plugin.KernelService.RecordCNotify:input_type -> okpay.plugin.RecordCNotifyRequest
-	30, // 41: okpay.plugin.KernelService.LockOrderExt:input_type -> okpay.plugin.LockOrderExtRequest
-	10, // 42: okpay.plugin.PluginService.Info:output_type -> okpay.plugin.PluginInfoResponse
-	13, // 43: okpay.plugin.PluginService.Create:output_type -> okpay.plugin.CreateResponse
-	15, // 44: okpay.plugin.PluginService.Query:output_type -> okpay.plugin.QueryResponse
-	17, // 45: okpay.plugin.PluginService.Refund:output_type -> okpay.plugin.RefundResponse
-	19, // 46: okpay.plugin.PluginService.Transfer:output_type -> okpay.plugin.TransferResponse
-	21, // 47: okpay.plugin.PluginService.Balance:output_type -> okpay.plugin.BalanceResponse
-	23, // 48: okpay.plugin.PluginService.InvokeFunc:output_type -> okpay.plugin.InvokeFuncResponse
-	25, // 49: okpay.plugin.KernelService.CompleteOrder:output_type -> okpay.plugin.Ack
-	25, // 50: okpay.plugin.KernelService.CompleteRefund:output_type -> okpay.plugin.Ack
-	25, // 51: okpay.plugin.KernelService.CompleteTransfer:output_type -> okpay.plugin.Ack
-	25, // 52: okpay.plugin.KernelService.RecordCNotify:output_type -> okpay.plugin.Ack
-	31, // 53: okpay.plugin.KernelService.LockOrderExt:output_type -> okpay.plugin.LockOrderExtResponse
-	42, // [42:54] is the sub-list for method output_type
-	30, // [30:42] is the sub-list for method input_type
+	26, // 0: okpay.plugin.OrderSnapshot.endtime:type_name -> google.protobuf.Timestamp
+	26, // 1: okpay.plugin.OrderSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	26, // 2: okpay.plugin.OrderSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	26, // 3: okpay.plugin.RefundSnapshot.endtime:type_name -> google.protobuf.Timestamp
+	26, // 4: okpay.plugin.RefundSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	26, // 5: okpay.plugin.RefundSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	26, // 6: okpay.plugin.TransferSnapshot.endtime:type_name -> google.protobuf.Timestamp
+	26, // 7: okpay.plugin.TransferSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	26, // 8: okpay.plugin.TransferSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	26, // 9: okpay.plugin.ChannelSnapshot.created_at:type_name -> google.protobuf.Timestamp
+	26, // 10: okpay.plugin.ChannelSnapshot.updated_at:type_name -> google.protobuf.Timestamp
+	2,  // 11: okpay.plugin.Request.headers:type_name -> okpay.plugin.HeaderKV
+	3,  // 12: okpay.plugin.InvokeContext.order:type_name -> okpay.plugin.OrderSnapshot
+	4,  // 13: okpay.plugin.InvokeContext.refund:type_name -> okpay.plugin.RefundSnapshot
+	5,  // 14: okpay.plugin.InvokeContext.transfer:type_name -> okpay.plugin.TransferSnapshot
+	6,  // 15: okpay.plugin.InvokeContext.channel:type_name -> okpay.plugin.ChannelSnapshot
+	7,  // 16: okpay.plugin.InvokeContext.config:type_name -> okpay.plugin.ConfigSnapshot
+	8,  // 17: okpay.plugin.InvokeContext.request:type_name -> okpay.plugin.Request
+	24, // 18: okpay.plugin.InputField.options:type_name -> okpay.plugin.InputField.OptionsEntry
+	25, // 19: okpay.plugin.PluginInfoResponse.inputs:type_name -> okpay.plugin.PluginInfoResponse.InputsEntry
+	9,  // 20: okpay.plugin.HandleRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	13, // 21: okpay.plugin.HandleResponse.page:type_name -> okpay.plugin.PageResponse
+	9,  // 22: okpay.plugin.BizRequest.ctx:type_name -> okpay.plugin.InvokeContext
+	0,  // 23: okpay.plugin.BizRequest.biz_type:type_name -> okpay.plugin.BizType
+	1,  // 24: okpay.plugin.BizResult.state:type_name -> okpay.plugin.BizState
+	17, // 25: okpay.plugin.BizResult.trace:type_name -> okpay.plugin.RequestTrace
+	19, // 26: okpay.plugin.Ack.error:type_name -> okpay.plugin.PluginError
+	0,  // 27: okpay.plugin.CompleteBizRequest.biz_type:type_name -> okpay.plugin.BizType
+	1,  // 28: okpay.plugin.CompleteBizRequest.state:type_name -> okpay.plugin.BizState
+	11, // 29: okpay.plugin.PluginInfoResponse.InputsEntry.value:type_name -> okpay.plugin.InputField
+	10, // 30: okpay.plugin.PluginService.Info:input_type -> okpay.plugin.PluginInfoRequest
+	14, // 31: okpay.plugin.PluginService.Handle:input_type -> okpay.plugin.HandleRequest
+	16, // 32: okpay.plugin.PluginService.Submit:input_type -> okpay.plugin.BizRequest
+	16, // 33: okpay.plugin.PluginService.Query:input_type -> okpay.plugin.BizRequest
+	21, // 34: okpay.plugin.KernelService.CompleteBiz:input_type -> okpay.plugin.CompleteBizRequest
+	22, // 35: okpay.plugin.KernelService.LockOrderExt:input_type -> okpay.plugin.LockOrderExtRequest
+	12, // 36: okpay.plugin.PluginService.Info:output_type -> okpay.plugin.PluginInfoResponse
+	15, // 37: okpay.plugin.PluginService.Handle:output_type -> okpay.plugin.HandleResponse
+	18, // 38: okpay.plugin.PluginService.Submit:output_type -> okpay.plugin.BizResult
+	18, // 39: okpay.plugin.PluginService.Query:output_type -> okpay.plugin.BizResult
+	20, // 40: okpay.plugin.KernelService.CompleteBiz:output_type -> okpay.plugin.Ack
+	23, // 41: okpay.plugin.KernelService.LockOrderExt:output_type -> okpay.plugin.LockOrderExtResponse
+	36, // [36:42] is the sub-list for method output_type
+	30, // [30:36] is the sub-list for method input_type
 	30, // [30:30] is the sub-list for extension type_name
 	30, // [30:30] is the sub-list for extension extendee
 	0,  // [0:30] is the sub-list for field type_name
@@ -3196,13 +2680,14 @@ func file_plugin_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_plugin_proto_rawDesc), len(file_plugin_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   34,
+			NumEnums:      2,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
 		GoTypes:           file_plugin_proto_goTypes,
 		DependencyIndexes: file_plugin_proto_depIdxs,
+		EnumInfos:         file_plugin_proto_enumTypes,
 		MessageInfos:      file_plugin_proto_msgTypes,
 	}.Build()
 	File_plugin_proto = out.File

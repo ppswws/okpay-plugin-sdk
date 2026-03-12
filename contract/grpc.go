@@ -14,20 +14,14 @@ import (
 // PluginService defines the strongly-typed protobuf contract between kernel and plugin.
 type PluginService interface {
 	Info(context.Context, *proto.PluginInfoRequest) (*proto.PluginInfoResponse, error)
-	Create(context.Context, *proto.CreateRequest) (*proto.CreateResponse, error)
-	Query(context.Context, *proto.QueryRequest) (*proto.QueryResponse, error)
-	Refund(context.Context, *proto.RefundRequest) (*proto.RefundResponse, error)
-	Transfer(context.Context, *proto.TransferRequest) (*proto.TransferResponse, error)
-	Balance(context.Context, *proto.BalanceRequest) (*proto.BalanceResponse, error)
-	InvokeFunc(context.Context, *proto.InvokeFuncRequest) (*proto.InvokeFuncResponse, error)
+	Handle(context.Context, *proto.HandleRequest) (*proto.HandleResponse, error)
+	Submit(context.Context, *proto.BizRequest) (*proto.BizResult, error)
+	Query(context.Context, *proto.BizRequest) (*proto.BizResult, error)
 }
 
 // KernelService defines plugin -> kernel callbacks over GRPCBroker.
 type KernelService interface {
-	CompleteOrder(context.Context, *proto.CompleteOrderRequest) (*proto.Ack, error)
-	CompleteRefund(context.Context, *proto.CompleteRefundRequest) (*proto.Ack, error)
-	CompleteTransfer(context.Context, *proto.CompleteTransferRequest) (*proto.Ack, error)
-	RecordCNotify(context.Context, *proto.RecordCNotifyRequest) (*proto.Ack, error)
+	CompleteBiz(context.Context, *proto.CompleteBizRequest) (*proto.Ack, error)
 	LockOrderExt(context.Context, *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error)
 }
 
@@ -64,28 +58,16 @@ func (s *pluginServiceServer) Info(ctx context.Context, in *proto.PluginInfoRequ
 	return s.impl.Info(ctx, in)
 }
 
-func (s *pluginServiceServer) Create(ctx context.Context, in *proto.CreateRequest) (*proto.CreateResponse, error) {
-	return s.impl.Create(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
+func (s *pluginServiceServer) Handle(ctx context.Context, in *proto.HandleRequest) (*proto.HandleResponse, error) {
+	return s.impl.Handle(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
 }
 
-func (s *pluginServiceServer) Query(ctx context.Context, in *proto.QueryRequest) (*proto.QueryResponse, error) {
+func (s *pluginServiceServer) Submit(ctx context.Context, in *proto.BizRequest) (*proto.BizResult, error) {
+	return s.impl.Submit(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
+}
+
+func (s *pluginServiceServer) Query(ctx context.Context, in *proto.BizRequest) (*proto.BizResult, error) {
 	return s.impl.Query(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
-}
-
-func (s *pluginServiceServer) Refund(ctx context.Context, in *proto.RefundRequest) (*proto.RefundResponse, error) {
-	return s.impl.Refund(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
-}
-
-func (s *pluginServiceServer) Transfer(ctx context.Context, in *proto.TransferRequest) (*proto.TransferResponse, error) {
-	return s.impl.Transfer(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
-}
-
-func (s *pluginServiceServer) Balance(ctx context.Context, in *proto.BalanceRequest) (*proto.BalanceResponse, error) {
-	return s.impl.Balance(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
-}
-
-func (s *pluginServiceServer) InvokeFunc(ctx context.Context, in *proto.InvokeFuncRequest) (*proto.InvokeFuncResponse, error) {
-	return s.impl.InvokeFunc(withKernelDialContext(ctx, s.broker, in.GetCtx()), in)
 }
 
 type pluginServiceClient struct {
@@ -104,28 +86,16 @@ func (c *pluginServiceClient) Info(ctx context.Context, in *proto.PluginInfoRequ
 	return c.client.Info(ctx, in)
 }
 
-func (c *pluginServiceClient) Create(ctx context.Context, in *proto.CreateRequest) (*proto.CreateResponse, error) {
-	return c.client.Create(ctx, in)
+func (c *pluginServiceClient) Handle(ctx context.Context, in *proto.HandleRequest) (*proto.HandleResponse, error) {
+	return c.client.Handle(ctx, in)
 }
 
-func (c *pluginServiceClient) Query(ctx context.Context, in *proto.QueryRequest) (*proto.QueryResponse, error) {
+func (c *pluginServiceClient) Submit(ctx context.Context, in *proto.BizRequest) (*proto.BizResult, error) {
+	return c.client.Submit(ctx, in)
+}
+
+func (c *pluginServiceClient) Query(ctx context.Context, in *proto.BizRequest) (*proto.BizResult, error) {
 	return c.client.Query(ctx, in)
-}
-
-func (c *pluginServiceClient) Refund(ctx context.Context, in *proto.RefundRequest) (*proto.RefundResponse, error) {
-	return c.client.Refund(ctx, in)
-}
-
-func (c *pluginServiceClient) Transfer(ctx context.Context, in *proto.TransferRequest) (*proto.TransferResponse, error) {
-	return c.client.Transfer(ctx, in)
-}
-
-func (c *pluginServiceClient) Balance(ctx context.Context, in *proto.BalanceRequest) (*proto.BalanceResponse, error) {
-	return c.client.Balance(ctx, in)
-}
-
-func (c *pluginServiceClient) InvokeFunc(ctx context.Context, in *proto.InvokeFuncRequest) (*proto.InvokeFuncResponse, error) {
-	return c.client.InvokeFunc(ctx, in)
 }
 
 // ServeKernelService serves kernel callbacks for plugin side usage via GRPCBroker.
@@ -171,20 +141,8 @@ type kernelServiceServer struct {
 	impl KernelService
 }
 
-func (s *kernelServiceServer) CompleteOrder(ctx context.Context, in *proto.CompleteOrderRequest) (*proto.Ack, error) {
-	return s.impl.CompleteOrder(ctx, in)
-}
-
-func (s *kernelServiceServer) CompleteRefund(ctx context.Context, in *proto.CompleteRefundRequest) (*proto.Ack, error) {
-	return s.impl.CompleteRefund(ctx, in)
-}
-
-func (s *kernelServiceServer) CompleteTransfer(ctx context.Context, in *proto.CompleteTransferRequest) (*proto.Ack, error) {
-	return s.impl.CompleteTransfer(ctx, in)
-}
-
-func (s *kernelServiceServer) RecordCNotify(ctx context.Context, in *proto.RecordCNotifyRequest) (*proto.Ack, error) {
-	return s.impl.RecordCNotify(ctx, in)
+func (s *kernelServiceServer) CompleteBiz(ctx context.Context, in *proto.CompleteBizRequest) (*proto.Ack, error) {
+	return s.impl.CompleteBiz(ctx, in)
 }
 
 func (s *kernelServiceServer) LockOrderExt(ctx context.Context, in *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error) {
@@ -195,20 +153,8 @@ type kernelServiceClient struct {
 	client proto.KernelServiceClient
 }
 
-func (c *kernelServiceClient) CompleteOrder(ctx context.Context, in *proto.CompleteOrderRequest) (*proto.Ack, error) {
-	return c.client.CompleteOrder(ctx, in)
-}
-
-func (c *kernelServiceClient) CompleteRefund(ctx context.Context, in *proto.CompleteRefundRequest) (*proto.Ack, error) {
-	return c.client.CompleteRefund(ctx, in)
-}
-
-func (c *kernelServiceClient) CompleteTransfer(ctx context.Context, in *proto.CompleteTransferRequest) (*proto.Ack, error) {
-	return c.client.CompleteTransfer(ctx, in)
-}
-
-func (c *kernelServiceClient) RecordCNotify(ctx context.Context, in *proto.RecordCNotifyRequest) (*proto.Ack, error) {
-	return c.client.RecordCNotify(ctx, in)
+func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *proto.CompleteBizRequest) (*proto.Ack, error) {
+	return c.client.CompleteBiz(ctx, in)
 }
 
 func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error) {
