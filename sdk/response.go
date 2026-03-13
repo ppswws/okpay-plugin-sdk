@@ -115,42 +115,27 @@ type BizResultInput struct {
 	Msg     string
 	Balance string
 	Stats   RequestStats
-	// Legacy aliases for smooth migration.
-	APIBizNo    string
-	ChannelCode string
-	ChannelMsg  string
 }
 
-func ResultOK(input BizResultInput) *proto.BizResult {
-	return buildResult(proto.BizState_BIZ_STATE_SUCCEEDED, pick(input.ApiNo, input.APIBizNo), pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), "", input.Stats)
-}
-
-func ResultPending(input BizResultInput) *proto.BizResult {
-	return buildResult(proto.BizState_BIZ_STATE_PROCESSING, pick(input.ApiNo, input.APIBizNo), pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), "", input.Stats)
-}
-
-func ResultFail(input BizResultInput) *proto.BizResult {
-	return buildResult(proto.BizState_BIZ_STATE_FAILED, "", pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), "", input.Stats)
+func Result(state proto.BizState, input BizResultInput) *proto.BizResult {
+	apiBizNo := input.ApiNo
+	if state == proto.BizState_BIZ_STATE_FAILED {
+		apiBizNo = ""
+	}
+	return buildResult(state, apiBizNo, input.Code, input.Msg, "", input.Stats)
 }
 
 func ResultBal(input BizResultInput) *proto.BizResult {
-	return buildResult(proto.BizState_BIZ_STATE_SUCCEEDED, "", pick(input.Code, input.ChannelCode), pick(input.Msg, input.ChannelMsg), input.Balance, input.Stats)
+	return buildResult(proto.BizState_BIZ_STATE_SUCCEEDED, "", input.Code, input.Msg, input.Balance, input.Stats)
 }
 
-func pick(short, legacy string) string {
-	if short != "" {
-		return short
-	}
-	return legacy
-}
-
-func buildResult(state proto.BizState, apiBizNo, channelCode, channelMsg, balance string, stats RequestStats) *proto.BizResult {
+func buildResult(state proto.BizState, apiNo, code, msg, balance string, stats RequestStats) *proto.BizResult {
 	return &proto.BizResult{
-		State:       state,
-		ApiBizNo:    apiBizNo,
-		ChannelCode: channelCode,
-		ChannelMsg:  channelMsg,
-		Balance:     balance,
+		State:   state,
+		ApiNo:   apiNo,
+		Code:    code,
+		Msg:     msg,
+		Balance: balance,
 		Trace: &proto.RequestTrace{
 			ReqMs:    stats.ReqMs,
 			ReqBody:  stats.ReqBody,

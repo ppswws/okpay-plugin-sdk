@@ -62,7 +62,7 @@ func main() {
 
 - `plugin.CreateWithHandlers`
 - `plugin.CompleteBiz` / `plugin.LockOrderExt`
-- `plugin.ResultOK` / `plugin.ResultPending` / `plugin.ResultFail` / `plugin.ResultBal`
+- `plugin.Result` / `plugin.ResultBal`
 - `plugin.IsWeChat` / `plugin.IsAlipay` / `plugin.IsMobileQQ` / `plugin.IsMobile`
 - `plugin.BuildMPOAuthURL` / `plugin.GetMPOpenid` / `plugin.GetMiniOpenid` / `plugin.GetMiniScheme`
 

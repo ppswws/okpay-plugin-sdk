@@ -69,9 +69,9 @@
 `Submit` 与 `Query` 统一返回 `BizResult`，字段语义如下：
 
 - `state`：`FAILED / PROCESSING / SUCCEEDED`
-- `api_biz_no`
-- `channel_code`
-- `channel_msg`
+- `api_no`
+- `code`
+- `msg`
 - `trace.req_ms`
 - `trace.req_body`
 - `trace.resp_body`
@@ -99,9 +99,9 @@
 - `biz_type`
 - `biz_no`
 - `state`
-- `api_biz_no`
-- `channel_code`
-- `channel_msg`
+- `api_no`
+- `code`
+- `msg`
 - `resp_body`
 - `buyer`（仅 `ORDER` 使用）
 
@@ -130,9 +130,7 @@
 ### 10.1 SDK
 新增结构化构造器，仅返回对象，且必须使用结构体命名字段入参：
 
-- `ResultOK(BizResultInput{...})`
-- `ResultPending(BizResultInput{...})`
-- `ResultFail(BizResultInput{...})`
+- `Result(BizState, BizResultInput{...})`
 - `ResultBal(BizResultInput{...})`
 
 ### 10.2 代码风格

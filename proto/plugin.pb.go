@@ -1868,9 +1868,9 @@ func (x *RequestTrace) GetRespBody() string {
 type BizResult struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	State         BizState               `protobuf:"varint,1,opt,name=state,proto3,enum=okpay.plugin.BizState" json:"state,omitempty"`
-	ApiBizNo      string                 `protobuf:"bytes,2,opt,name=api_biz_no,json=apiBizNo,proto3" json:"api_biz_no,omitempty"`
-	ChannelCode   string                 `protobuf:"bytes,3,opt,name=channel_code,json=channelCode,proto3" json:"channel_code,omitempty"`
-	ChannelMsg    string                 `protobuf:"bytes,4,opt,name=channel_msg,json=channelMsg,proto3" json:"channel_msg,omitempty"`
+	ApiNo         string                 `protobuf:"bytes,2,opt,name=api_no,json=apiNo,proto3" json:"api_no,omitempty"`
+	Code          string                 `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
+	Msg           string                 `protobuf:"bytes,4,opt,name=msg,proto3" json:"msg,omitempty"`
 	Trace         *RequestTrace          `protobuf:"bytes,5,opt,name=trace,proto3" json:"trace,omitempty"`
 	Balance       string                 `protobuf:"bytes,6,opt,name=balance,proto3" json:"balance,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1914,23 +1914,23 @@ func (x *BizResult) GetState() BizState {
 	return BizState_BIZ_STATE_INVALID
 }
 
-func (x *BizResult) GetApiBizNo() string {
+func (x *BizResult) GetApiNo() string {
 	if x != nil {
-		return x.ApiBizNo
+		return x.ApiNo
 	}
 	return ""
 }
 
-func (x *BizResult) GetChannelCode() string {
+func (x *BizResult) GetCode() string {
 	if x != nil {
-		return x.ChannelCode
+		return x.Code
 	}
 	return ""
 }
 
-func (x *BizResult) GetChannelMsg() string {
+func (x *BizResult) GetMsg() string {
 	if x != nil {
-		return x.ChannelMsg
+		return x.Msg
 	}
 	return ""
 }
@@ -2075,9 +2075,9 @@ type CompleteBizRequest struct {
 	BizType       BizType                `protobuf:"varint,2,opt,name=biz_type,json=bizType,proto3,enum=okpay.plugin.BizType" json:"biz_type,omitempty"`
 	BizNo         string                 `protobuf:"bytes,3,opt,name=biz_no,json=bizNo,proto3" json:"biz_no,omitempty"`
 	State         BizState               `protobuf:"varint,4,opt,name=state,proto3,enum=okpay.plugin.BizState" json:"state,omitempty"`
-	ApiBizNo      string                 `protobuf:"bytes,5,opt,name=api_biz_no,json=apiBizNo,proto3" json:"api_biz_no,omitempty"`
-	ChannelCode   string                 `protobuf:"bytes,6,opt,name=channel_code,json=channelCode,proto3" json:"channel_code,omitempty"`
-	ChannelMsg    string                 `protobuf:"bytes,7,opt,name=channel_msg,json=channelMsg,proto3" json:"channel_msg,omitempty"`
+	ApiNo         string                 `protobuf:"bytes,5,opt,name=api_no,json=apiNo,proto3" json:"api_no,omitempty"`
+	Code          string                 `protobuf:"bytes,6,opt,name=code,proto3" json:"code,omitempty"`
+	Msg           string                 `protobuf:"bytes,7,opt,name=msg,proto3" json:"msg,omitempty"`
 	RespBody      string                 `protobuf:"bytes,8,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
 	Buyer         string                 `protobuf:"bytes,9,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -2142,23 +2142,23 @@ func (x *CompleteBizRequest) GetState() BizState {
 	return BizState_BIZ_STATE_INVALID
 }
 
-func (x *CompleteBizRequest) GetApiBizNo() string {
+func (x *CompleteBizRequest) GetApiNo() string {
 	if x != nil {
-		return x.ApiBizNo
+		return x.ApiNo
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetChannelCode() string {
+func (x *CompleteBizRequest) GetCode() string {
 	if x != nil {
-		return x.ChannelCode
+		return x.Code
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetChannelMsg() string {
+func (x *CompleteBizRequest) GetMsg() string {
 	if x != nil {
-		return x.ChannelMsg
+		return x.Msg
 	}
 	return ""
 }
@@ -2512,14 +2512,12 @@ const file_plugin_proto_rawDesc = "" +
 	"\fRequestTrace\x12\x15\n" +
 	"\x06req_ms\x18\x01 \x01(\x05R\x05reqMs\x12\x19\n" +
 	"\breq_body\x18\x02 \x01(\tR\areqBody\x12\x1b\n" +
-	"\tresp_body\x18\x03 \x01(\tR\brespBody\"\xe7\x01\n" +
+	"\tresp_body\x18\x03 \x01(\tR\brespBody\"\xc2\x01\n" +
 	"\tBizResult\x12,\n" +
-	"\x05state\x18\x01 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x1c\n" +
-	"\n" +
-	"api_biz_no\x18\x02 \x01(\tR\bapiBizNo\x12!\n" +
-	"\fchannel_code\x18\x03 \x01(\tR\vchannelCode\x12\x1f\n" +
-	"\vchannel_msg\x18\x04 \x01(\tR\n" +
-	"channelMsg\x120\n" +
+	"\x05state\x18\x01 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x15\n" +
+	"\x06api_no\x18\x02 \x01(\tR\x05apiNo\x12\x12\n" +
+	"\x04code\x18\x03 \x01(\tR\x04code\x12\x10\n" +
+	"\x03msg\x18\x04 \x01(\tR\x03msg\x120\n" +
 	"\x05trace\x18\x05 \x01(\v2\x1a.okpay.plugin.RequestTraceR\x05trace\x12\x18\n" +
 	"\abalance\x18\x06 \x01(\tR\abalance\"Y\n" +
 	"\vPluginError\x12\x12\n" +
@@ -2530,18 +2528,16 @@ const file_plugin_proto_rawDesc = "" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12/\n" +
-	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\xbf\x02\n" +
+	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\x9a\x02\n" +
 	"\x12CompleteBizRequest\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x120\n" +
 	"\bbiz_type\x18\x02 \x01(\x0e2\x15.okpay.plugin.BizTypeR\abizType\x12\x15\n" +
 	"\x06biz_no\x18\x03 \x01(\tR\x05bizNo\x12,\n" +
-	"\x05state\x18\x04 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x1c\n" +
-	"\n" +
-	"api_biz_no\x18\x05 \x01(\tR\bapiBizNo\x12!\n" +
-	"\fchannel_code\x18\x06 \x01(\tR\vchannelCode\x12\x1f\n" +
-	"\vchannel_msg\x18\a \x01(\tR\n" +
-	"channelMsg\x12\x1b\n" +
+	"\x05state\x18\x04 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x15\n" +
+	"\x06api_no\x18\x05 \x01(\tR\x05apiNo\x12\x12\n" +
+	"\x04code\x18\x06 \x01(\tR\x04code\x12\x10\n" +
+	"\x03msg\x18\a \x01(\tR\x03msg\x12\x1b\n" +
 	"\tresp_body\x18\b \x01(\tR\brespBody\x12\x14\n" +
 	"\x05buyer\x18\t \x01(\tR\x05buyer\"\xdd\x01\n" +
 	"\x13LockOrderExtRequest\x12\x1d\n" +

@@ -12,14 +12,14 @@ import (
 
 // CompleteBizInput defines plugin -> kernel completion payload.
 type CompleteBizInput struct {
-	BizType     proto.BizType  `json:"bizType"`
-	BizNo       string         `json:"bizNo"`
-	State       proto.BizState `json:"state"`
-	APIBizNo    string         `json:"apiBizNo,omitempty"`
-	ChannelCode string         `json:"channelCode,omitempty"`
-	ChannelMsg  string         `json:"channelMsg,omitempty"`
-	RespBody    string         `json:"respBody,omitempty"`
-	Buyer       string         `json:"buyer,omitempty"`
+	BizType  proto.BizType  `json:"bizType"`
+	BizNo    string         `json:"bizNo"`
+	State    proto.BizState `json:"state"`
+	ApiNo    string         `json:"apiNo,omitempty"`
+	Code     string         `json:"code,omitempty"`
+	Msg      string         `json:"msg,omitempty"`
+	RespBody string         `json:"respBody,omitempty"`
+	Buyer    string         `json:"buyer,omitempty"`
 }
 
 // CompleteBiz sends final or intermediate business state back to kernel.
@@ -33,15 +33,15 @@ func CompleteBiz(ctx context.Context, req CompleteBizInput) error {
 		return fmt.Errorf("bizNo is empty")
 	}
 	ack, err := kernel.CompleteBiz(ctx, &proto.CompleteBizRequest{
-		RequestId:   callbackRequestID(req.BizNo),
-		BizType:     req.BizType,
-		BizNo:       req.BizNo,
-		State:       req.State,
-		ApiBizNo:    req.APIBizNo,
-		ChannelCode: req.ChannelCode,
-		ChannelMsg:  req.ChannelMsg,
-		RespBody:    req.RespBody,
-		Buyer:       req.Buyer,
+		RequestId: callbackRequestID(req.BizNo),
+		BizType:   req.BizType,
+		BizNo:     req.BizNo,
+		State:     req.State,
+		ApiNo:     req.ApiNo,
+		Code:      req.Code,
+		Msg:       req.Msg,
+		RespBody:  req.RespBody,
+		Buyer:     req.Buyer,
 	})
 	if err != nil {
 		return err

@@ -99,14 +99,8 @@ func RespJump(url string) *PageResponse                     { return sdk.RespJum
 func RespPageURL(page, url string) *PageResponse            { return sdk.RespPageURL(page, url) }
 func RespPageData(page string, data any) *PageResponse      { return sdk.RespPageData(page, data) }
 func RespPageFull(page, url string, data any) *PageResponse { return sdk.RespPageFull(page, url, data) }
-func ResultOK(input BizResultInput) *BizResult {
-	return sdk.ResultOK(input)
-}
-func ResultPending(input BizResultInput) *BizResult {
-	return sdk.ResultPending(input)
-}
-func ResultFail(input BizResultInput) *BizResult {
-	return sdk.ResultFail(input)
+func Result(state BizState, input BizResultInput) *BizResult {
+	return sdk.Result(state, input)
 }
 func ResultBal(input BizResultInput) *BizResult {
 	return sdk.ResultBal(input)

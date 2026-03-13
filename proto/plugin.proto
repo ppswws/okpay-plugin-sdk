@@ -212,9 +212,9 @@ message RequestTrace {
 
 message BizResult {
   BizState state = 1;
-  string api_biz_no = 2;
-  string channel_code = 3;
-  string channel_msg = 4;
+  string api_no = 2;
+  string code = 3;
+  string msg = 4;
   RequestTrace trace = 5;
   string balance = 6;
 }
@@ -236,9 +236,9 @@ message CompleteBizRequest {
   BizType biz_type = 2;
   string biz_no = 3;
   BizState state = 4;
-  string api_biz_no = 5;
-  string channel_code = 6;
-  string channel_msg = 7;
+  string api_no = 5;
+  string code = 6;
+  string msg = 7;
   string resp_body = 8;
   string buyer = 9;
 }
