@@ -200,6 +200,9 @@ func (m *Manager) getClient(id, path string) (*plugin.Client, func(bool), error)
 			if holder.client != nil {
 				holder.client.Kill()
 			}
+			delete(m.clients, id)
+			m.mu.Unlock()
+			m.mu.Lock()
 			holder = nil
 		} else {
 			holder.lastUsed = time.Now()
@@ -231,11 +234,11 @@ func (m *Manager) getClient(id, path string) (*plugin.Client, func(bool), error)
 			return
 		}
 		m.mu.Lock()
-		defer m.mu.Unlock()
 		if cur := m.clients[id]; cur != nil && cur.client == client {
 			client.Kill()
 			delete(m.clients, id)
 		}
+		m.mu.Unlock()
 	}
 	return client, release, nil
 }
@@ -255,6 +258,8 @@ func (m *Manager) invokeInfo(ctx context.Context, ch contract.PluginService) (*c
 		Paytypes:   append([]string(nil), resp.Paytypes...),
 		Transtypes: append([]string(nil), resp.Transtypes...),
 		Note:       resp.Note,
+		Bindwxmp:   resp.GetBindwxmp(),
+		Bindwxa:    resp.GetBindwxa(),
 		Inputs:     map[string]contract.InputField{},
 	}
 	for key, val := range resp.Inputs {
@@ -290,18 +295,19 @@ func (m *Manager) attachKernelBroker(ch contract.PluginService, invokeCtx *proto
 	if !ok || withBroker.KernelBroker() == nil {
 		return nil, fmt.Errorf("插件未提供 grpc broker")
 	}
-	// go-plugin grpc broker multiplex requires sequential Accept/Dial setup.
-	m.brokerMu.Lock()
 	broker := withBroker.KernelBroker()
+	if broker == nil {
+		return nil, fmt.Errorf("插件未提供 grpc broker")
+	}
+	// broker id allocation + service bind needs a short critical section,
+	// but we must not hold the lock for the whole plugin RPC duration.
+	m.brokerMu.Lock()
 	brokerID := broker.NextId()
 	cleanup, err := contract.ServeKernelService(broker, brokerID, kernel)
+	m.brokerMu.Unlock()
 	if err != nil {
-		m.brokerMu.Unlock()
 		return nil, err
 	}
-	invokeCtx.KernelBrokerId = brokerID
-	return func() {
-		cleanup()
-		m.brokerMu.Unlock()
-	}, nil
+	invokeCtx.BrokerId = brokerID
+	return cleanup, nil
 }

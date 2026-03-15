@@ -108,7 +108,7 @@ message ChannelSnapshot {
   int32 status = 7;
   int32 action = 8;
   string domain = 9;
-  bytes config_json_raw = 10;
+  bytes cfg_raw = 10;
   int64 daylimit = 11;
   int64 daynumber = 12;
   int64 paymin = 13;
@@ -123,7 +123,7 @@ message ConfigSnapshot {
   string notify_domain = 2;
   string localhost = 3;
   string goods_name = 4;
-  string create_timeout = 5;
+  string http_timeout = 5;
   reserved 6;
 }
 
@@ -147,7 +147,7 @@ message InvokeContext {
   ChannelSnapshot channel = 6;
   ConfigSnapshot config = 7;
   Request request = 8;
-  uint32 kernel_broker_id = 9;
+  uint32 broker_id = 9;
 }
 
 message PluginInfoRequest {}
@@ -169,6 +169,8 @@ message PluginInfoResponse {
   repeated string transtypes = 5;
   map<string, InputField> inputs = 6;
   string note = 7;
+  bool bindwxmp = 8;
+  bool bindwxa = 9;
 }
 
 message PageResponse {
@@ -176,26 +178,27 @@ message PageResponse {
   string page = 2;
   string url = 3;
   string msg = 4;
-  bytes data_json_raw = 5;
+  bytes data_raw = 5;
   string data_text = 6;
+  string notify_biz = 7;
 }
 
 message HandleRequest { InvokeContext ctx = 1; }
 message HandleResponse { PageResponse page = 1; }
 
 enum BizType {
-  BIZ_TYPE_INVALID = 0;
-  BIZ_TYPE_ORDER = 1;
-  BIZ_TYPE_REFUND = 2;
-  BIZ_TYPE_TRANSFER = 3;
-  BIZ_TYPE_BALANCE = 4;
+  T_NONE = 0;
+  T_PAY = 1;
+  T_REF = 2;
+  T_XFER = 3;
+  T_BAL = 4;
 }
 
 enum BizState {
-  BIZ_STATE_INVALID = 0;
-  BIZ_STATE_FAILED = 1;
-  BIZ_STATE_PROCESSING = 2;
-  BIZ_STATE_SUCCEEDED = 3;
+  S_NONE = 0;
+  S_FAIL = 1;
+  S_ING = 2;
+  S_OK = 3;
 }
 
 message BizRequest {
@@ -217,6 +220,7 @@ message BizResult {
   string msg = 4;
   RequestTrace trace = 5;
   string balance = 6;
+  string buyer = 7;
 }
 
 message PluginError {
@@ -231,7 +235,7 @@ message Ack {
   PluginError error = 3;
 }
 
-message CompleteBizRequest {
+message BizDoneReq {
   string request_id = 1;
   BizType biz_type = 2;
   string biz_no = 3;
@@ -243,18 +247,18 @@ message CompleteBizRequest {
   string buyer = 9;
 }
 
-message LockOrderExtRequest {
+message LockExtReq {
   string request_id = 1;
   string trade_no = 2;
   string req_body = 3;
   string resp_body = 4;
   int32 req_count = 5;
   int32 req_ms = 6;
-  bytes ext_json_raw = 7;
+  bytes ext_raw = 7;
 }
 
-message LockOrderExtResponse {
-  bytes ext_json_raw = 1;
+message LockExtResp {
+  bytes ext_raw = 1;
 }
 
 service PluginService {
@@ -265,6 +269,6 @@ service PluginService {
 }
 
 service KernelService {
-  rpc CompleteBiz(CompleteBizRequest) returns (Ack);
-  rpc LockOrderExt(LockOrderExtRequest) returns (LockOrderExtResponse);
+  rpc CompleteBiz(BizDoneReq) returns (Ack);
+  rpc LockOrderExt(LockExtReq) returns (LockExtResp);
 }

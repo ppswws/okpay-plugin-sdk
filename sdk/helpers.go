@@ -7,8 +7,11 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/go-pay/gopay/alipay"
 	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
+
+// ---- 通用能力 ------------------------------------------------------
 
 // CreateHandlerFunc handles one pay type create flow and returns a page payload.
 type CreateHandlerFunc func(context.Context, *proto.InvokeContext) (*proto.PageResponse, error)
@@ -44,12 +47,12 @@ func CreateWithHandlers(ctx context.Context, req *proto.InvokeContext, handlers 
 	}
 	resType := strings.ToLower(strings.TrimSpace(res.GetType()))
 	switch resType {
-	case ResponseTypeJump:
+	case TypeJump:
 		if strings.TrimSpace(res.GetUrl()) == "" {
 			return nil, fmt.Errorf("插件返回缺少 url")
 		}
 		return res, nil
-	case ResponseTypeError:
+	case TypeError:
 		msg := strings.TrimSpace(res.GetMsg())
 		if msg == "" {
 			msg = "渠道返回失败"
@@ -59,6 +62,8 @@ func CreateWithHandlers(ctx context.Context, req *proto.InvokeContext, handlers 
 		return RespJump(siteDomain + "/pay/" + payType + "/" + order.GetTradeNo()), nil
 	}
 }
+
+// ---- 环境判断 ------------------------------------------------------
 
 func IsWeChat(ua string) bool {
 	ua = strings.ToLower(ua)
@@ -91,24 +96,26 @@ func IsMobile(ua string) bool {
 	return false
 }
 
-const defaultWeChatOAuthScope = "snsapi_base"
+// ---- 微信辅助 ------------------------------------------------------
 
-var helperHTTPClient = NewHTTPClient(HTTPClientConfig{})
+const wxScope = "snsapi_base"
 
-type miniProgramSessionResp struct {
+var httpc = NewHTTPClient(HTTPClientConfig{})
+
+type miniSessResp struct {
 	OpenID  string `json:"openid"`
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
 }
 
-type miniProgramAccessTokenResp struct {
+type miniTokenResp struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"`
 	ErrCode     int    `json:"errcode"`
 	ErrMsg      string `json:"errmsg"`
 }
 
-type miniProgramSchemeResp struct {
+type miniSchemeResp struct {
 	OpenLink string `json:"openlink"`
 	ErrCode  int    `json:"errcode"`
 	ErrMsg   string `json:"errmsg"`
@@ -127,7 +134,7 @@ func BuildMPOAuthURL(appID, redirectURL, state string) string {
 		base,
 		url.QueryEscape(appID),
 		url.QueryEscape(redirectURL),
-		url.QueryEscape(defaultWeChatOAuthScope),
+		url.QueryEscape(wxScope),
 		url.QueryEscape(strings.TrimSpace(state)),
 	)
 }
@@ -146,7 +153,7 @@ func GetMPOpenid(ctx context.Context, appID, appSecret, code string) (string, er
 		url.QueryEscape(appSecret),
 		url.QueryEscape(code),
 	)
-	body, _, _, err := helperHTTPClient.Do(ctx, "GET", endpoint, "", "")
+	body, _, _, err := httpc.Do(ctx, "GET", endpoint, "", "")
 	if err != nil {
 		return "", err
 	}
@@ -182,11 +189,11 @@ func GetMiniOpenid(ctx context.Context, appID, appSecret, code string) (string, 
 		url.QueryEscape(appSecret),
 		url.QueryEscape(code),
 	)
-	body, _, _, err := helperHTTPClient.Do(ctx, "GET", endpoint, "", "")
+	body, _, _, err := httpc.Do(ctx, "GET", endpoint, "", "")
 	if err != nil {
 		return "", err
 	}
-	resp := miniProgramSessionResp{}
+	resp := miniSessResp{}
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
 		return "", fmt.Errorf("小程序 openid 解析失败: %w", err)
 	}
@@ -206,7 +213,7 @@ func GetMiniScheme(ctx context.Context, appID, appSecret, path, query string) (s
 	if appID == "" || appSecret == "" {
 		return "", fmt.Errorf("小程序参数缺失")
 	}
-	token, err := getMiniProgramAccessToken(ctx, appID, appSecret)
+	token, err := getMiniToken(ctx, appID, appSecret)
 	if err != nil {
 		return "", err
 	}
@@ -219,11 +226,11 @@ func GetMiniScheme(ctx context.Context, appID, appSecret, path, query string) (s
 	}
 	raw, _ := json.Marshal(payload)
 	endpoint := fmt.Sprintf("https://api.weixin.qq.com/wxa/generatescheme?access_token=%s", url.QueryEscape(token))
-	respBody, _, _, err := helperHTTPClient.Do(ctx, "POST", endpoint, string(raw), "application/json")
+	respBody, _, _, err := httpc.Do(ctx, "POST", endpoint, string(raw), "application/json")
 	if err != nil {
 		return "", err
 	}
-	resp := miniProgramSchemeResp{}
+	resp := miniSchemeResp{}
 	if err := json.Unmarshal([]byte(respBody), &resp); err != nil {
 		return "", fmt.Errorf("小程序 scheme 解析失败: %w", err)
 	}
@@ -236,17 +243,17 @@ func GetMiniScheme(ctx context.Context, appID, appSecret, path, query string) (s
 	return strings.TrimSpace(resp.OpenLink), nil
 }
 
-func getMiniProgramAccessToken(ctx context.Context, appID, appSecret string) (string, error) {
+func getMiniToken(ctx context.Context, appID, appSecret string) (string, error) {
 	endpoint := fmt.Sprintf(
 		"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s",
 		url.QueryEscape(appID),
 		url.QueryEscape(appSecret),
 	)
-	body, _, _, err := helperHTTPClient.Do(ctx, "GET", endpoint, "", "")
+	body, _, _, err := httpc.Do(ctx, "GET", endpoint, "", "")
 	if err != nil {
 		return "", err
 	}
-	resp := miniProgramAccessTokenResp{}
+	resp := miniTokenResp{}
 	if err := json.Unmarshal([]byte(body), &resp); err != nil {
 		return "", fmt.Errorf("获取小程序 access_token 解析失败: %w", err)
 	}
@@ -257,4 +264,79 @@ func getMiniProgramAccessToken(ctx context.Context, appID, appSecret string) (st
 		return "", fmt.Errorf("获取小程序 access_token 失败: 为空")
 	}
 	return strings.TrimSpace(resp.AccessToken), nil
+}
+
+// ---- 支付宝辅助 ----------------------------------------------------
+
+// AliIdentity stores buyer identity resolved from alipay oauth token.
+type AliIdentity struct {
+	UserID      string
+	OpenID      string
+	AccessToken string
+}
+
+// BuildAliOAuthURL returns Alipay oauth authorize URL by environment.
+func BuildAliOAuthURL(appID, redirectURL, state string, isProd bool) string {
+	appID = strings.TrimSpace(appID)
+	redirectURL = strings.TrimSpace(redirectURL)
+	if appID == "" || redirectURL == "" {
+		return ""
+	}
+	base := "https://openauth.alipay.com/oauth2/publicAppAuthorize.htm"
+	if !isProd {
+		base = "https://openauth-sandbox.dl.alipaydev.com/oauth2/publicAppAuthorize.htm"
+	}
+	q := url.Values{}
+	q.Set("app_id", appID)
+	q.Set("scope", "auth_base")
+	q.Set("redirect_uri", redirectURL)
+	if strings.TrimSpace(state) != "" {
+		q.Set("state", strings.TrimSpace(state))
+	}
+	return base + "?" + q.Encode()
+}
+
+// GetAliIdentity exchanges auth_code for buyer identity.
+func GetAliIdentity(ctx context.Context, appID, privateKey, authCode string, isProd bool) (AliIdentity, error) {
+	appID = strings.TrimSpace(appID)
+	privateKey = strings.TrimSpace(privateKey)
+	authCode = strings.TrimSpace(authCode)
+	if appID == "" || privateKey == "" || authCode == "" {
+		return AliIdentity{}, fmt.Errorf("支付宝 oauth 参数缺失")
+	}
+	client, err := alipay.NewClient(appID, privateKey, isProd)
+	if err != nil {
+		return AliIdentity{}, fmt.Errorf("初始化支付宝客户端失败: %w", err)
+	}
+	client.SetCharset(alipay.UTF8).SetSignType(alipay.RSA2)
+	resp, err := client.SystemOauthToken(ctx, map[string]any{
+		"grant_type": "authorization_code",
+		"code":       authCode,
+	})
+	if err != nil {
+		return AliIdentity{}, fmt.Errorf("支付宝 oauth 换取令牌失败: %w", err)
+	}
+	if resp == nil || resp.Response == nil {
+		return AliIdentity{}, fmt.Errorf("支付宝 oauth 返回为空")
+	}
+	if resp.ErrorResponse != nil {
+		code := strings.TrimSpace(resp.ErrorResponse.Code)
+		msg := strings.TrimSpace(resp.ErrorResponse.SubMsg)
+		if msg == "" {
+			msg = strings.TrimSpace(resp.ErrorResponse.Msg)
+		}
+		if msg == "" {
+			msg = "未知错误"
+		}
+		return AliIdentity{}, fmt.Errorf("支付宝 oauth 失败[%s]%s", code, msg)
+	}
+	out := AliIdentity{
+		UserID:      strings.TrimSpace(resp.Response.UserId),
+		OpenID:      strings.TrimSpace(resp.Response.OpenId),
+		AccessToken: strings.TrimSpace(resp.Response.AccessToken),
+	}
+	if out.UserID == "" && out.OpenID == "" {
+		return AliIdentity{}, fmt.Errorf("支付宝 oauth 未返回用户标识")
+	}
+	return out, nil
 }

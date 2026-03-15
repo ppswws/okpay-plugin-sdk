@@ -25,11 +25,11 @@ const (
 	PluginName  = contract.PluginName
 	CallTimeout = host.CallTimeout
 
-	ResponseTypeJump  = sdk.ResponseTypeJump
-	ResponseTypeHTML  = sdk.ResponseTypeHTML
-	ResponseTypeJSON  = sdk.ResponseTypeJSON
-	ResponseTypePage  = sdk.ResponseTypePage
-	ResponseTypeError = sdk.ResponseTypeError
+	TypeJump  = sdk.TypeJump
+	TypeHTML  = sdk.TypeHTML
+	TypeJSON  = sdk.TypeJSON
+	TypePage  = sdk.TypePage
+	TypeError = sdk.TypeError
 )
 
 var (
@@ -50,26 +50,27 @@ type RequestTrace = proto.RequestTrace
 type PageResponse = proto.PageResponse
 
 type Manifest = sdk.Manifest
-type InputSpec = sdk.InputSpec
+type InSpec = sdk.InSpec
 type RequestStats = sdk.RequestStats
-type BizResultInput = sdk.BizResultInput
-type CompleteBizInput = sdk.CompleteBizInput
+type BizOut = sdk.BizOut
+type BizDoneIn = sdk.BizDoneIn
 type HTTPClient = sdk.HTTPClient
 type HTTPClientConfig = sdk.HTTPClientConfig
 type CreateHandlerFunc = sdk.CreateHandlerFunc
-type SubmitFormParams = sdk.SubmitFormParams
+type PostForm = sdk.PostForm
+type AliIdentity = sdk.AliIdentity
 
 const (
-	BizTypeInvalid  = proto.BizType_BIZ_TYPE_INVALID
-	BizTypeOrder    = proto.BizType_BIZ_TYPE_ORDER
-	BizTypeRefund   = proto.BizType_BIZ_TYPE_REFUND
-	BizTypeTransfer = proto.BizType_BIZ_TYPE_TRANSFER
-	BizTypeBalance  = proto.BizType_BIZ_TYPE_BALANCE
+	BizTypeInvalid  = proto.BizType_T_NONE
+	BizTypeOrder    = proto.BizType_T_PAY
+	BizTypeRefund   = proto.BizType_T_REF
+	BizTypeTransfer = proto.BizType_T_XFER
+	BizTypeBalance  = proto.BizType_T_BAL
 
-	BizStateInvalid    = proto.BizState_BIZ_STATE_INVALID
-	BizStateFailed     = proto.BizState_BIZ_STATE_FAILED
-	BizStateProcessing = proto.BizState_BIZ_STATE_PROCESSING
-	BizStateSucceeded  = proto.BizState_BIZ_STATE_SUCCEEDED
+	BizStateInvalid    = proto.BizState_S_NONE
+	BizStateFailed     = proto.BizState_S_FAIL
+	BizStateProcessing = proto.BizState_S_ING
+	BizStateSucceeded  = proto.BizState_S_OK
 )
 
 func NewManager(opts ...Option) (*Manager, error)  { return host.NewManager(opts...) }
@@ -84,13 +85,16 @@ func WithKernelService(kernel KernelService) Option { return host.WithKernelServ
 
 func Serve(impl PluginService) error { return sdk.Serve(impl) }
 
-func BuildInfoResponse(manifest Manifest) (*PluginInfoResponse, error) {
-	return sdk.BuildInfoResponse(manifest)
+func BuildInfo(manifest Manifest) (*PluginInfoResponse, error) {
+	return sdk.BuildInfo(manifest)
 }
 
 func RespHTML(data string) *PageResponse { return sdk.RespHTML(data) }
-func BuildSubmitHTML(params SubmitFormParams) (string, error) {
-	return sdk.BuildSubmitHTML(params)
+func RecordNotify(req *InvokeContext, page *PageResponse) *PageResponse {
+	return sdk.RecordNotify(req, page)
+}
+func BuildPostHTML(params PostForm) (string, error) {
+	return sdk.BuildPostHTML(params)
 }
 func RespJSON(data any) *PageResponse                       { return sdk.RespJSON(data) }
 func RespError(msg string) *PageResponse                    { return sdk.RespError(msg) }
@@ -99,14 +103,14 @@ func RespJump(url string) *PageResponse                     { return sdk.RespJum
 func RespPageURL(page, url string) *PageResponse            { return sdk.RespPageURL(page, url) }
 func RespPageData(page string, data any) *PageResponse      { return sdk.RespPageData(page, data) }
 func RespPageFull(page, url string, data any) *PageResponse { return sdk.RespPageFull(page, url, data) }
-func Result(state BizState, input BizResultInput) *BizResult {
+func Result(state BizState, input BizOut) *BizResult {
 	return sdk.Result(state, input)
 }
-func ResultBal(input BizResultInput) *BizResult {
+func ResultBal(input BizOut) *BizResult {
 	return sdk.ResultBal(input)
 }
 
-func CompleteBiz(ctx context.Context, req CompleteBizInput) error {
+func CompleteBiz(ctx context.Context, req BizDoneIn) error {
 	return sdk.CompleteBiz(ctx, req)
 }
 
@@ -127,6 +131,12 @@ func IsMobileQQ(ua string) bool                      { return sdk.IsMobileQQ(ua)
 func IsMobile(ua string) bool                        { return sdk.IsMobile(ua) }
 func BuildMPOAuthURL(appID, redirectURL, state string) string {
 	return sdk.BuildMPOAuthURL(appID, redirectURL, state)
+}
+func BuildAliOAuthURL(appID, redirectURL, state string, isProd bool) string {
+	return sdk.BuildAliOAuthURL(appID, redirectURL, state, isProd)
+}
+func GetAliIdentity(ctx context.Context, appID, privateKey, authCode string, isProd bool) (AliIdentity, error) {
+	return sdk.GetAliIdentity(ctx, appID, privateKey, authCode, isProd)
 }
 func GetMPOpenid(ctx context.Context, appID, appSecret, code string) (string, error) {
 	return sdk.GetMPOpenid(ctx, appID, appSecret, code)

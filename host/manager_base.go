@@ -284,25 +284,25 @@ func (m *Manager) recordMetrics(id string, d time.Duration) {
 // Close 关闭所有复用的插件进程。
 func (m *Manager) Close() {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	for id, holder := range m.clients {
 		if holder != nil && holder.client != nil {
 			holder.client.Kill()
 		}
 		delete(m.clients, id)
 	}
+	m.mu.Unlock()
 }
 
 // invalidate 清理指定插件的复用客户端（如覆盖更新时）。
 func (m *Manager) invalidate(id string) {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 	if holder, ok := m.clients[id]; ok && holder != nil {
 		if holder.client != nil {
 			holder.client.Kill()
 		}
 		delete(m.clients, id)
 	}
+	m.mu.Unlock()
 }
 
 // Stats 返回当前所有插件的运行状态与调用指标（懒加载，未运行的也列出）。
@@ -321,13 +321,14 @@ func (m *Manager) Stats() []PluginStat {
 }
 
 func (m *Manager) applyTimeout(ctx context.Context) (context.Context, context.CancelFunc) {
-	if ctx == nil {
-		ctx = context.Background()
+	base := context.Background()
+	if ctx != nil {
+		base = context.WithoutCancel(ctx)
 	}
 	if m.callTimeout <= 0 {
-		return ctx, func() {}
+		return base, func() {}
 	}
-	return context.WithTimeout(ctx, m.callTimeout)
+	return context.WithTimeout(base, m.callTimeout)
 }
 
 type clientHolder struct {

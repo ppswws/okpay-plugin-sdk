@@ -1,6 +1,7 @@
 package sdk
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -43,9 +44,13 @@ func LockOrderExt(ctx context.Context, tradeNo string, fetch func() (any, Reques
 	}
 	result, stats, err := fetch()
 	if err != nil {
+		// 渠道请求失败也回写统计（不写 ext），避免丢失请求痕迹。
+		_, _ = lockOrderData(ctx, kernel, tradeNo, stats, nil)
 		return nil, err
 	}
 	if msg, ok := errorPayloadMsg(result); ok {
+		// 插件返回业务错误时同样记录统计（不写 ext）。
+		_, _ = lockOrderData(ctx, kernel, tradeNo, stats, nil)
 		return nil, errors.New(msg)
 	}
 	lockedExt, err := lockOrderData(ctx, kernel, tradeNo, stats, result)
@@ -66,25 +71,35 @@ func LockOrderExt(ctx context.Context, tradeNo string, fetch func() (any, Reques
 func lockOrderData(ctx context.Context, kernel contract.KernelService, tradeNo string, stats RequestStats, ext any) (string, error) {
 	extRaw := []byte(nil)
 	if ext != nil {
-		b, err := json.Marshal(ext)
+		b, err := marshalJSONNoEscape(ext)
 		if err != nil {
 			return "", err
 		}
 		extRaw = b
 	}
-	resp, err := kernel.LockOrderExt(ctx, &proto.LockOrderExtRequest{
-		RequestId:  callbackRequestID(tradeNo),
-		TradeNo:    tradeNo,
-		ReqBody:    stats.ReqBody,
-		RespBody:   stats.RespBody,
-		ReqCount:   int32(stats.ReqCount),
-		ReqMs:      stats.ReqMs,
-		ExtJsonRaw: extRaw,
+	resp, err := kernel.LockOrderExt(ctx, &proto.LockExtReq{
+		RequestId: cbReqID(tradeNo),
+		TradeNo:   tradeNo,
+		ReqBody:   stats.ReqBody,
+		RespBody:  stats.RespBody,
+		ReqCount:  int32(stats.ReqCount),
+		ReqMs:     stats.ReqMs,
+		ExtRaw:    extRaw,
 	})
 	if err != nil {
 		return "", err
 	}
-	return string(resp.GetExtJsonRaw()), nil
+	return string(resp.GetExtRaw()), nil
+}
+
+func marshalJSONNoEscape(v any) ([]byte, error) {
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(v); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSpace(buf.Bytes()), nil
 }
 
 func extractPayloadFromAny(value any) (map[string]any, bool) {

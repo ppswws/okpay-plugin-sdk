@@ -4,7 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/hashicorp/go-plugin"
 	"github.com/ppswws/okpay-plugin-sdk/proto"
@@ -21,8 +24,8 @@ type PluginService interface {
 
 // KernelService defines plugin -> kernel callbacks over GRPCBroker.
 type KernelService interface {
-	CompleteBiz(context.Context, *proto.CompleteBizRequest) (*proto.Ack, error)
-	LockOrderExt(context.Context, *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error)
+	CompleteBiz(context.Context, *proto.BizDoneReq) (*proto.Ack, error)
+	LockOrderExt(context.Context, *proto.LockExtReq) (*proto.LockExtResp, error)
 }
 
 // GRPCPlugin is the go-plugin gRPC implementation for strongly typed plugin API.
@@ -113,7 +116,17 @@ func ServeKernelService(broker *plugin.GRPCBroker, brokerID uint32, impl KernelS
 	var once sync.Once
 	cleanup := func() {
 		once.Do(func() {
-			server.Stop()
+			done := make(chan struct{})
+			go func() {
+				server.GracefulStop()
+				close(done)
+			}()
+			select {
+			case <-done:
+			case <-time.After(200 * time.Millisecond):
+				server.Stop()
+				<-done
+			}
 			_ = lis.Close()
 		})
 	}
@@ -141,11 +154,11 @@ type kernelServiceServer struct {
 	impl KernelService
 }
 
-func (s *kernelServiceServer) CompleteBiz(ctx context.Context, in *proto.CompleteBizRequest) (*proto.Ack, error) {
+func (s *kernelServiceServer) CompleteBiz(ctx context.Context, in *proto.BizDoneReq) (*proto.Ack, error) {
 	return s.impl.CompleteBiz(ctx, in)
 }
 
-func (s *kernelServiceServer) LockOrderExt(ctx context.Context, in *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error) {
+func (s *kernelServiceServer) LockOrderExt(ctx context.Context, in *proto.LockExtReq) (*proto.LockExtResp, error) {
 	return s.impl.LockOrderExt(ctx, in)
 }
 
@@ -153,27 +166,54 @@ type kernelServiceClient struct {
 	client proto.KernelServiceClient
 }
 
-func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *proto.CompleteBizRequest) (*proto.Ack, error) {
+func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *proto.BizDoneReq) (*proto.Ack, error) {
 	return c.client.CompleteBiz(ctx, in)
 }
 
-func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error) {
+func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *proto.LockExtReq) (*proto.LockExtResp, error) {
 	return c.client.LockOrderExt(ctx, in)
 }
 
 type ctxKernelBrokerKey struct{}
 type ctxKernelBrokerIDKey struct{}
+type ctxHTTPTimeoutKey struct{}
 
 func withKernelDialContext(ctx context.Context, broker *plugin.GRPCBroker, invokeCtx *proto.InvokeContext) context.Context {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	if broker == nil || invokeCtx == nil || invokeCtx.GetKernelBrokerId() == 0 {
+	if invokeCtx != nil && invokeCtx.GetConfig() != nil {
+		if raw := strings.TrimSpace(invokeCtx.GetConfig().GetHttpTimeout()); raw != "" {
+			ctx = context.WithValue(ctx, ctxHTTPTimeoutKey{}, raw)
+		}
+	}
+	if broker == nil || invokeCtx == nil || invokeCtx.GetBrokerId() == 0 {
 		return ctx
 	}
 	ctx = context.WithValue(ctx, ctxKernelBrokerKey{}, broker)
-	ctx = context.WithValue(ctx, ctxKernelBrokerIDKey{}, invokeCtx.GetKernelBrokerId())
+	ctx = context.WithValue(ctx, ctxKernelBrokerIDKey{}, invokeCtx.GetBrokerId())
 	return ctx
+}
+
+// HTTPTimeoutFromContext returns configured plugin http timeout from invoke context metadata.
+// Input unit is seconds and supports decimal fractions, e.g. "6.5".
+func HTTPTimeoutFromContext(ctx context.Context) (time.Duration, bool) {
+	if ctx == nil {
+		return 0, false
+	}
+	raw, _ := ctx.Value(ctxHTTPTimeoutKey{}).(string)
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return 0, false
+	}
+	sec, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return 0, false
+	}
+	if sec <= 0 {
+		return 0, false
+	}
+	return time.Duration(sec * float64(time.Second)), true
 }
 
 // DialKernelServiceFromContext resolves KernelService from grpc broker metadata injected by host.

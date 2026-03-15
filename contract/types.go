@@ -9,6 +9,8 @@ type PluginInfo struct {
 	Transtypes []string              `json:"transtypes,omitempty"`
 	Inputs     map[string]InputField `json:"inputs,omitempty"`
 	Note       string                `json:"note,omitempty"`
+	Bindwxmp   bool                  `json:"bindwxmp,omitempty"`
+	Bindwxa    bool                  `json:"bindwxa,omitempty"`
 }
 
 // InputField 定义插件动态表单的输入项。
