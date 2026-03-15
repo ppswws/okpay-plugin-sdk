@@ -7,8 +7,8 @@ import (
 	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
-// InputSpec defines one plugin config input field.
-type InputSpec struct {
+// InSpec defines one plugin config input field.
+type InSpec struct {
 	Name         string
 	Type         string
 	Note         string
@@ -24,12 +24,14 @@ type Manifest struct {
 	Link       string
 	Paytypes   []string
 	Transtypes []string
-	Inputs     map[string]InputSpec
+	Inputs     map[string]InSpec
 	Note       string
+	BindWxmp   bool
+	BindWxa    bool
 }
 
-// BuildInfoResponse converts manifest to proto info response with validation.
-func BuildInfoResponse(m Manifest) (*proto.PluginInfoResponse, error) {
+// BuildInfo converts manifest to proto info response with validation.
+func BuildInfo(m Manifest) (*proto.PluginInfoResponse, error) {
 	id := strings.TrimSpace(m.ID)
 	name := strings.TrimSpace(m.Name)
 	if id == "" || name == "" {
@@ -39,10 +41,12 @@ func BuildInfoResponse(m Manifest) (*proto.PluginInfoResponse, error) {
 		Id:         id,
 		Name:       name,
 		Link:       strings.TrimSpace(m.Link),
-		Paytypes:   sanitizeStringSlice(m.Paytypes),
-		Transtypes: sanitizeStringSlice(m.Transtypes),
+		Paytypes:   cleanStrs(m.Paytypes),
+		Transtypes: cleanStrs(m.Transtypes),
 		Inputs:     map[string]*proto.InputField{},
 		Note:       strings.TrimSpace(m.Note),
+		Bindwxmp:   m.BindWxmp,
+		Bindwxa:    m.BindWxa,
 	}
 	for key, item := range m.Inputs {
 		fieldKey := strings.TrimSpace(key)
@@ -55,7 +59,7 @@ func BuildInfoResponse(m Manifest) (*proto.PluginInfoResponse, error) {
 		if strings.TrimSpace(item.Type) == "" {
 			return nil, fmt.Errorf("manifest input[%s] 缺少 type", fieldKey)
 		}
-		options := copyStringMap(item.Options)
+		options := copyMap(item.Options)
 		typ := strings.TrimSpace(item.Type)
 		if (typ == "select" || typ == "checkbox") && len(options) == 0 {
 			return nil, fmt.Errorf("manifest input[%s] type=%s 必须提供 options", fieldKey, typ)
@@ -72,7 +76,7 @@ func BuildInfoResponse(m Manifest) (*proto.PluginInfoResponse, error) {
 	return out, nil
 }
 
-func sanitizeStringSlice(in []string) []string {
+func cleanStrs(in []string) []string {
 	if len(in) == 0 {
 		return []string{}
 	}
@@ -86,7 +90,7 @@ func sanitizeStringSlice(in []string) []string {
 	return out
 }
 
-func copyStringMap(in map[string]string) map[string]string {
+func copyMap(in map[string]string) map[string]string {
 	if len(in) == 0 {
 		return map[string]string{}
 	}

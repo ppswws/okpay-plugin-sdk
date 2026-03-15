@@ -241,8 +241,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KernelServiceClient interface {
-	CompleteBiz(ctx context.Context, in *CompleteBizRequest, opts ...grpc.CallOption) (*Ack, error)
-	LockOrderExt(ctx context.Context, in *LockOrderExtRequest, opts ...grpc.CallOption) (*LockOrderExtResponse, error)
+	CompleteBiz(ctx context.Context, in *BizDoneReq, opts ...grpc.CallOption) (*Ack, error)
+	LockOrderExt(ctx context.Context, in *LockExtReq, opts ...grpc.CallOption) (*LockExtResp, error)
 }
 
 type kernelServiceClient struct {
@@ -253,7 +253,7 @@ func NewKernelServiceClient(cc grpc.ClientConnInterface) KernelServiceClient {
 	return &kernelServiceClient{cc}
 }
 
-func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *CompleteBizRequest, opts ...grpc.CallOption) (*Ack, error) {
+func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *BizDoneReq, opts ...grpc.CallOption) (*Ack, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Ack)
 	err := c.cc.Invoke(ctx, KernelService_CompleteBiz_FullMethodName, in, out, cOpts...)
@@ -263,9 +263,9 @@ func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *CompleteBizRe
 	return out, nil
 }
 
-func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *LockOrderExtRequest, opts ...grpc.CallOption) (*LockOrderExtResponse, error) {
+func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *LockExtReq, opts ...grpc.CallOption) (*LockExtResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LockOrderExtResponse)
+	out := new(LockExtResp)
 	err := c.cc.Invoke(ctx, KernelService_LockOrderExt_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -277,8 +277,8 @@ func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *LockOrderExt
 // All implementations should embed UnimplementedKernelServiceServer
 // for forward compatibility.
 type KernelServiceServer interface {
-	CompleteBiz(context.Context, *CompleteBizRequest) (*Ack, error)
-	LockOrderExt(context.Context, *LockOrderExtRequest) (*LockOrderExtResponse, error)
+	CompleteBiz(context.Context, *BizDoneReq) (*Ack, error)
+	LockOrderExt(context.Context, *LockExtReq) (*LockExtResp, error)
 }
 
 // UnimplementedKernelServiceServer should be embedded to have
@@ -288,10 +288,10 @@ type KernelServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedKernelServiceServer struct{}
 
-func (UnimplementedKernelServiceServer) CompleteBiz(context.Context, *CompleteBizRequest) (*Ack, error) {
+func (UnimplementedKernelServiceServer) CompleteBiz(context.Context, *BizDoneReq) (*Ack, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompleteBiz not implemented")
 }
-func (UnimplementedKernelServiceServer) LockOrderExt(context.Context, *LockOrderExtRequest) (*LockOrderExtResponse, error) {
+func (UnimplementedKernelServiceServer) LockOrderExt(context.Context, *LockExtReq) (*LockExtResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LockOrderExt not implemented")
 }
 func (UnimplementedKernelServiceServer) testEmbeddedByValue() {}
@@ -315,7 +315,7 @@ func RegisterKernelServiceServer(s grpc.ServiceRegistrar, srv KernelServiceServe
 }
 
 func _KernelService_CompleteBiz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompleteBizRequest)
+	in := new(BizDoneReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -327,13 +327,13 @@ func _KernelService_CompleteBiz_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: KernelService_CompleteBiz_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KernelServiceServer).CompleteBiz(ctx, req.(*CompleteBizRequest))
+		return srv.(KernelServiceServer).CompleteBiz(ctx, req.(*BizDoneReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _KernelService_LockOrderExt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LockOrderExtRequest)
+	in := new(LockExtReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func _KernelService_LockOrderExt_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: KernelService_LockOrderExt_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KernelServiceServer).LockOrderExt(ctx, req.(*LockOrderExtRequest))
+		return srv.(KernelServiceServer).LockOrderExt(ctx, req.(*LockExtReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }

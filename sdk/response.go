@@ -13,25 +13,44 @@ import (
 
 // Response type constants.
 const (
-	ResponseTypeJump  = "jump"
-	ResponseTypeHTML  = "html"
-	ResponseTypeJSON  = "json"
-	ResponseTypePage  = "page"
-	ResponseTypeError = "error"
+	TypeJump  = "jump"
+	TypeHTML  = "html"
+	TypeJSON  = "json"
+	TypePage  = "page"
+	TypeError = "error"
 )
 
 func RespHTML(data string) *proto.PageResponse {
-	return &proto.PageResponse{Type: ResponseTypeHTML, DataText: data}
+	return &proto.PageResponse{Type: TypeHTML, DataText: data}
 }
 
-// SubmitFormParams defines the action URL and fields for a POST auto-submit page.
-type SubmitFormParams struct {
+// RecordNotify marks current page response as channel-notify for kernel cnotify logging.
+// Biz type is inferred from invoke context snapshots: refund > transfer > order.
+func RecordNotify(req *proto.InvokeContext, page *proto.PageResponse) *proto.PageResponse {
+	if page == nil {
+		page = RespError("empty notify response")
+	}
+	switch {
+	case req != nil && req.GetRefund() != nil && strings.TrimSpace(req.GetRefund().GetRefundNo()) != "":
+		page.NotifyBiz = "refund"
+	case req != nil && req.GetTransfer() != nil && strings.TrimSpace(req.GetTransfer().GetTradeNo()) != "":
+		page.NotifyBiz = "transfer"
+	case req != nil && req.GetOrder() != nil && strings.TrimSpace(req.GetOrder().GetTradeNo()) != "":
+		page.NotifyBiz = "order"
+	default:
+		page.NotifyBiz = ""
+	}
+	return page
+}
+
+// PostForm defines the action URL and fields for a POST auto-submit page.
+type PostForm struct {
 	ActionURL string
 	Fields    map[string][]string
 }
 
-// BuildSubmitHTML builds an auto-submit POST HTML page from structured params.
-func BuildSubmitHTML(params SubmitFormParams) (string, error) {
+// BuildPostHTML builds an auto-submit POST HTML page from structured params.
+func BuildPostHTML(params PostForm) (string, error) {
 	actionURL := strings.TrimSpace(params.ActionURL)
 	if actionURL == "" {
 		return "", fmt.Errorf("action url is empty")
@@ -47,6 +66,7 @@ func BuildSubmitHTML(params SubmitFormParams) (string, error) {
 		Scheme: u.Scheme,
 		Host:   u.Host,
 		Path:   u.Path,
+		RawQuery: u.RawQuery,
 	}).String()
 	if len(params.Fields) == 0 {
 		return "", fmt.Errorf("submit fields are empty")
@@ -79,62 +99,64 @@ func BuildSubmitHTML(params SubmitFormParams) (string, error) {
 
 func RespJSON(data any) *proto.PageResponse {
 	raw, _ := json.Marshal(data)
-	return &proto.PageResponse{Type: ResponseTypeJSON, DataJsonRaw: raw}
+	return &proto.PageResponse{Type: TypeJSON, DataRaw: raw}
 }
 
 func RespError(msg string) *proto.PageResponse {
-	return &proto.PageResponse{Type: ResponseTypeError, Msg: msg}
+	return &proto.PageResponse{Type: TypeError, Msg: msg}
 }
 
 func RespPage(page string) *proto.PageResponse {
-	return &proto.PageResponse{Type: ResponseTypePage, Page: page}
+	return &proto.PageResponse{Type: TypePage, Page: page}
 }
 
 func RespJump(url string) *proto.PageResponse {
-	return &proto.PageResponse{Type: ResponseTypeJump, Url: url}
+	return &proto.PageResponse{Type: TypeJump, Url: url}
 }
 
 func RespPageURL(page, url string) *proto.PageResponse {
-	return &proto.PageResponse{Type: ResponseTypePage, Page: page, Url: url}
+	return &proto.PageResponse{Type: TypePage, Page: page, Url: url}
 }
 
 func RespPageData(page string, data any) *proto.PageResponse {
 	raw, _ := json.Marshal(data)
-	return &proto.PageResponse{Type: ResponseTypePage, Page: page, DataJsonRaw: raw}
+	return &proto.PageResponse{Type: TypePage, Page: page, DataRaw: raw}
 }
 
 func RespPageFull(page, url string, data any) *proto.PageResponse {
 	raw, _ := json.Marshal(data)
-	return &proto.PageResponse{Type: ResponseTypePage, Page: page, Url: url, DataJsonRaw: raw}
+	return &proto.PageResponse{Type: TypePage, Page: page, Url: url, DataRaw: raw}
 }
 
-// BizResultInput is the single named-field input for plugin business results.
-type BizResultInput struct {
+// BizOut is the single named-field input for plugin business results.
+type BizOut struct {
 	ApiNo   string
 	Code    string
 	Msg     string
+	Buyer   string
 	Balance string
 	Stats   RequestStats
 }
 
-func Result(state proto.BizState, input BizResultInput) *proto.BizResult {
+func Result(state proto.BizState, input BizOut) *proto.BizResult {
 	apiBizNo := input.ApiNo
-	if state == proto.BizState_BIZ_STATE_FAILED {
+	if state == proto.BizState_S_FAIL {
 		apiBizNo = ""
 	}
-	return buildResult(state, apiBizNo, input.Code, input.Msg, "", input.Stats)
+	return buildResult(state, apiBizNo, input.Code, input.Msg, input.Buyer, "", input.Stats)
 }
 
-func ResultBal(input BizResultInput) *proto.BizResult {
-	return buildResult(proto.BizState_BIZ_STATE_SUCCEEDED, "", input.Code, input.Msg, input.Balance, input.Stats)
+func ResultBal(input BizOut) *proto.BizResult {
+	return buildResult(proto.BizState_S_OK, "", input.Code, input.Msg, "", input.Balance, input.Stats)
 }
 
-func buildResult(state proto.BizState, apiNo, code, msg, balance string, stats RequestStats) *proto.BizResult {
+func buildResult(state proto.BizState, apiNo, code, msg, buyer, balance string, stats RequestStats) *proto.BizResult {
 	return &proto.BizResult{
 		State:   state,
 		ApiNo:   apiNo,
 		Code:    code,
 		Msg:     msg,
+		Buyer:   buyer,
 		Balance: balance,
 		Trace: &proto.RequestTrace{
 			ReqMs:    stats.ReqMs,

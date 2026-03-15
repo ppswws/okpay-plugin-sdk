@@ -21,8 +21,8 @@ type PluginService interface {
 
 // KernelService defines plugin -> kernel callbacks over GRPCBroker.
 type KernelService interface {
-	CompleteBiz(context.Context, *proto.CompleteBizRequest) (*proto.Ack, error)
-	LockOrderExt(context.Context, *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error)
+	CompleteBiz(context.Context, *proto.BizDoneReq) (*proto.Ack, error)
+	LockOrderExt(context.Context, *proto.LockExtReq) (*proto.LockExtResp, error)
 }
 
 // GRPCPlugin is the go-plugin gRPC implementation for strongly typed plugin API.
@@ -141,11 +141,11 @@ type kernelServiceServer struct {
 	impl KernelService
 }
 
-func (s *kernelServiceServer) CompleteBiz(ctx context.Context, in *proto.CompleteBizRequest) (*proto.Ack, error) {
+func (s *kernelServiceServer) CompleteBiz(ctx context.Context, in *proto.BizDoneReq) (*proto.Ack, error) {
 	return s.impl.CompleteBiz(ctx, in)
 }
 
-func (s *kernelServiceServer) LockOrderExt(ctx context.Context, in *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error) {
+func (s *kernelServiceServer) LockOrderExt(ctx context.Context, in *proto.LockExtReq) (*proto.LockExtResp, error) {
 	return s.impl.LockOrderExt(ctx, in)
 }
 
@@ -153,11 +153,11 @@ type kernelServiceClient struct {
 	client proto.KernelServiceClient
 }
 
-func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *proto.CompleteBizRequest) (*proto.Ack, error) {
+func (c *kernelServiceClient) CompleteBiz(ctx context.Context, in *proto.BizDoneReq) (*proto.Ack, error) {
 	return c.client.CompleteBiz(ctx, in)
 }
 
-func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *proto.LockOrderExtRequest) (*proto.LockOrderExtResponse, error) {
+func (c *kernelServiceClient) LockOrderExt(ctx context.Context, in *proto.LockExtReq) (*proto.LockExtResp, error) {
 	return c.client.LockOrderExt(ctx, in)
 }
 
@@ -168,11 +168,11 @@ func withKernelDialContext(ctx context.Context, broker *plugin.GRPCBroker, invok
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	if broker == nil || invokeCtx == nil || invokeCtx.GetKernelBrokerId() == 0 {
+	if broker == nil || invokeCtx == nil || invokeCtx.GetBrokerId() == 0 {
 		return ctx
 	}
 	ctx = context.WithValue(ctx, ctxKernelBrokerKey{}, broker)
-	ctx = context.WithValue(ctx, ctxKernelBrokerIDKey{}, invokeCtx.GetKernelBrokerId())
+	ctx = context.WithValue(ctx, ctxKernelBrokerIDKey{}, invokeCtx.GetBrokerId())
 	return ctx
 }
 

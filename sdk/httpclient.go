@@ -84,7 +84,11 @@ func NewHTTPClient(cfg HTTPClientConfig) *HTTPClient {
 // Do 执行请求，返回响应内容与请求统计。
 // method: GET/POST/PUT/DELETE...
 // reqBody: 原始请求体（用于记录），contentType 为空则不设置。
-func (c *HTTPClient) Do(ctx context.Context, method, endpoint, reqBody, contentType string) (string, int16, int32, error) {
+func (c *HTTPClient) Do(
+	ctx context.Context,
+	method, endpoint, reqBody, contentType string,
+	headers ...map[string]string,
+) (string, int16, int32, error) {
 	start := time.Now()
 	body, count, err := c.do(ctx, func() (*http.Request, error) {
 		var reader io.Reader
@@ -97,6 +101,14 @@ func (c *HTTPClient) Do(ctx context.Context, method, endpoint, reqBody, contentT
 		}
 		if contentType != "" {
 			req.Header.Set("Content-Type", contentType)
+		}
+		if len(headers) > 0 {
+			for k, v := range headers[0] {
+				if strings.TrimSpace(k) == "" {
+					continue
+				}
+				req.Header.Set(k, v)
+			}
 		}
 		return req, nil
 	})

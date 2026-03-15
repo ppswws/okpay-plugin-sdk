@@ -255,6 +255,8 @@ func (m *Manager) invokeInfo(ctx context.Context, ch contract.PluginService) (*c
 		Paytypes:   append([]string(nil), resp.Paytypes...),
 		Transtypes: append([]string(nil), resp.Transtypes...),
 		Note:       resp.Note,
+		Bindwxmp:   resp.GetBindwxmp(),
+		Bindwxa:    resp.GetBindwxa(),
 		Inputs:     map[string]contract.InputField{},
 	}
 	for key, val := range resp.Inputs {
@@ -299,7 +301,7 @@ func (m *Manager) attachKernelBroker(ch contract.PluginService, invokeCtx *proto
 		m.brokerMu.Unlock()
 		return nil, err
 	}
-	invokeCtx.KernelBrokerId = brokerID
+	invokeCtx.BrokerId = brokerID
 	return func() {
 		cleanup()
 		m.brokerMu.Unlock()

@@ -10,7 +10,7 @@ import (
 // BuildReturnMap serializes PageResponse to lock-order ext payload.
 func BuildReturnMap(page *proto.PageResponse) map[string]any {
 	if page == nil {
-		return map[string]any{"type": ResponseTypeError, "msg": "empty page response"}
+		return map[string]any{"type": TypeError, "msg": "empty page response"}
 	}
 	out := map[string]any{"type": page.GetType()}
 	if page.GetPage() != "" {
@@ -22,9 +22,9 @@ func BuildReturnMap(page *proto.PageResponse) map[string]any {
 	if page.GetMsg() != "" {
 		out["msg"] = page.GetMsg()
 	}
-	if len(page.GetDataJsonRaw()) > 0 {
+	if len(page.GetDataRaw()) > 0 {
 		var data any
-		if err := json.Unmarshal(page.GetDataJsonRaw(), &data); err == nil {
+		if err := json.Unmarshal(page.GetDataRaw(), &data); err == nil {
 			out["data"] = data
 		}
 	}
@@ -49,11 +49,11 @@ func BuildReturnPage(payload map[string]any) *proto.PageResponse {
 		}
 		if data, ok := payload["data"]; ok && data != nil {
 			switch resp.GetType() {
-			case ResponseTypeHTML:
+			case TypeHTML:
 				resp.DataText = fmt.Sprint(data)
 			default:
 				raw, _ := json.Marshal(data)
-				resp.DataJsonRaw = raw
+				resp.DataRaw = raw
 			}
 		}
 		if resp.GetType() == "" {

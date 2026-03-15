@@ -10,8 +10,8 @@ import (
 	"github.com/ppswws/okpay-plugin-sdk/proto"
 )
 
-// CompleteBizInput defines plugin -> kernel completion payload.
-type CompleteBizInput struct {
+// BizDoneIn defines plugin -> kernel completion payload.
+type BizDoneIn struct {
 	BizType  proto.BizType  `json:"bizType"`
 	BizNo    string         `json:"bizNo"`
 	State    proto.BizState `json:"state"`
@@ -23,7 +23,7 @@ type CompleteBizInput struct {
 }
 
 // CompleteBiz sends final or intermediate business state back to kernel.
-func CompleteBiz(ctx context.Context, req CompleteBizInput) error {
+func CompleteBiz(ctx context.Context, req BizDoneIn) error {
 	kernel, conn, err := contract.DialKernelServiceFromContext(ctx)
 	if err != nil {
 		return err
@@ -32,8 +32,8 @@ func CompleteBiz(ctx context.Context, req CompleteBizInput) error {
 	if req.BizNo == "" {
 		return fmt.Errorf("bizNo is empty")
 	}
-	ack, err := kernel.CompleteBiz(ctx, &proto.CompleteBizRequest{
-		RequestId: callbackRequestID(req.BizNo),
+	ack, err := kernel.CompleteBiz(ctx, &proto.BizDoneReq{
+		RequestId: cbReqID(req.BizNo),
 		BizType:   req.BizType,
 		BizNo:     req.BizNo,
 		State:     req.State,
@@ -52,6 +52,6 @@ func CompleteBiz(ctx context.Context, req CompleteBizInput) error {
 	return nil
 }
 
-func callbackRequestID(bizNo string) string {
+func cbReqID(bizNo string) string {
 	return "cb:" + bizNo + ":" + strconv.FormatInt(time.Now().UnixNano(), 10)
 }

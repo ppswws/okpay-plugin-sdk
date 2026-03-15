@@ -25,28 +25,28 @@ const (
 type BizType int32
 
 const (
-	BizType_BIZ_TYPE_INVALID  BizType = 0
-	BizType_BIZ_TYPE_ORDER    BizType = 1
-	BizType_BIZ_TYPE_REFUND   BizType = 2
-	BizType_BIZ_TYPE_TRANSFER BizType = 3
-	BizType_BIZ_TYPE_BALANCE  BizType = 4
+	BizType_T_NONE BizType = 0
+	BizType_T_PAY  BizType = 1
+	BizType_T_REF  BizType = 2
+	BizType_T_XFER BizType = 3
+	BizType_T_BAL  BizType = 4
 )
 
 // Enum value maps for BizType.
 var (
 	BizType_name = map[int32]string{
-		0: "BIZ_TYPE_INVALID",
-		1: "BIZ_TYPE_ORDER",
-		2: "BIZ_TYPE_REFUND",
-		3: "BIZ_TYPE_TRANSFER",
-		4: "BIZ_TYPE_BALANCE",
+		0: "T_NONE",
+		1: "T_PAY",
+		2: "T_REF",
+		3: "T_XFER",
+		4: "T_BAL",
 	}
 	BizType_value = map[string]int32{
-		"BIZ_TYPE_INVALID":  0,
-		"BIZ_TYPE_ORDER":    1,
-		"BIZ_TYPE_REFUND":   2,
-		"BIZ_TYPE_TRANSFER": 3,
-		"BIZ_TYPE_BALANCE":  4,
+		"T_NONE": 0,
+		"T_PAY":  1,
+		"T_REF":  2,
+		"T_XFER": 3,
+		"T_BAL":  4,
 	}
 )
 
@@ -80,25 +80,25 @@ func (BizType) EnumDescriptor() ([]byte, []int) {
 type BizState int32
 
 const (
-	BizState_BIZ_STATE_INVALID    BizState = 0
-	BizState_BIZ_STATE_FAILED     BizState = 1
-	BizState_BIZ_STATE_PROCESSING BizState = 2
-	BizState_BIZ_STATE_SUCCEEDED  BizState = 3
+	BizState_S_NONE BizState = 0
+	BizState_S_FAIL BizState = 1
+	BizState_S_ING  BizState = 2
+	BizState_S_OK   BizState = 3
 )
 
 // Enum value maps for BizState.
 var (
 	BizState_name = map[int32]string{
-		0: "BIZ_STATE_INVALID",
-		1: "BIZ_STATE_FAILED",
-		2: "BIZ_STATE_PROCESSING",
-		3: "BIZ_STATE_SUCCEEDED",
+		0: "S_NONE",
+		1: "S_FAIL",
+		2: "S_ING",
+		3: "S_OK",
 	}
 	BizState_value = map[string]int32{
-		"BIZ_STATE_INVALID":    0,
-		"BIZ_STATE_FAILED":     1,
-		"BIZ_STATE_PROCESSING": 2,
-		"BIZ_STATE_SUCCEEDED":  3,
+		"S_NONE": 0,
+		"S_FAIL": 1,
+		"S_ING":  2,
+		"S_OK":   3,
 	}
 )
 
@@ -924,7 +924,7 @@ type ChannelSnapshot struct {
 	Status        int32                  `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
 	Action        int32                  `protobuf:"varint,8,opt,name=action,proto3" json:"action,omitempty"`
 	Domain        string                 `protobuf:"bytes,9,opt,name=domain,proto3" json:"domain,omitempty"`
-	ConfigJsonRaw []byte                 `protobuf:"bytes,10,opt,name=config_json_raw,json=configJsonRaw,proto3" json:"config_json_raw,omitempty"`
+	CfgRaw        []byte                 `protobuf:"bytes,10,opt,name=cfg_raw,json=cfgRaw,proto3" json:"cfg_raw,omitempty"`
 	Daylimit      int64                  `protobuf:"varint,11,opt,name=daylimit,proto3" json:"daylimit,omitempty"`
 	Daynumber     int64                  `protobuf:"varint,12,opt,name=daynumber,proto3" json:"daynumber,omitempty"`
 	Paymin        int64                  `protobuf:"varint,13,opt,name=paymin,proto3" json:"paymin,omitempty"`
@@ -1029,9 +1029,9 @@ func (x *ChannelSnapshot) GetDomain() string {
 	return ""
 }
 
-func (x *ChannelSnapshot) GetConfigJsonRaw() []byte {
+func (x *ChannelSnapshot) GetCfgRaw() []byte {
 	if x != nil {
-		return x.ConfigJsonRaw
+		return x.CfgRaw
 	}
 	return nil
 }
@@ -1254,18 +1254,18 @@ func (x *Request) GetHeaders() []*HeaderKV {
 }
 
 type InvokeContext struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	RequestId      string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	FuncName       string                 `protobuf:"bytes,2,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
-	Order          *OrderSnapshot         `protobuf:"bytes,3,opt,name=order,proto3" json:"order,omitempty"`
-	Refund         *RefundSnapshot        `protobuf:"bytes,4,opt,name=refund,proto3" json:"refund,omitempty"`
-	Transfer       *TransferSnapshot      `protobuf:"bytes,5,opt,name=transfer,proto3" json:"transfer,omitempty"`
-	Channel        *ChannelSnapshot       `protobuf:"bytes,6,opt,name=channel,proto3" json:"channel,omitempty"`
-	Config         *ConfigSnapshot        `protobuf:"bytes,7,opt,name=config,proto3" json:"config,omitempty"`
-	Request        *Request               `protobuf:"bytes,8,opt,name=request,proto3" json:"request,omitempty"`
-	KernelBrokerId uint32                 `protobuf:"varint,9,opt,name=kernel_broker_id,json=kernelBrokerId,proto3" json:"kernel_broker_id,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	FuncName      string                 `protobuf:"bytes,2,opt,name=func_name,json=funcName,proto3" json:"func_name,omitempty"`
+	Order         *OrderSnapshot         `protobuf:"bytes,3,opt,name=order,proto3" json:"order,omitempty"`
+	Refund        *RefundSnapshot        `protobuf:"bytes,4,opt,name=refund,proto3" json:"refund,omitempty"`
+	Transfer      *TransferSnapshot      `protobuf:"bytes,5,opt,name=transfer,proto3" json:"transfer,omitempty"`
+	Channel       *ChannelSnapshot       `protobuf:"bytes,6,opt,name=channel,proto3" json:"channel,omitempty"`
+	Config        *ConfigSnapshot        `protobuf:"bytes,7,opt,name=config,proto3" json:"config,omitempty"`
+	Request       *Request               `protobuf:"bytes,8,opt,name=request,proto3" json:"request,omitempty"`
+	BrokerId      uint32                 `protobuf:"varint,9,opt,name=broker_id,json=brokerId,proto3" json:"broker_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InvokeContext) Reset() {
@@ -1354,9 +1354,9 @@ func (x *InvokeContext) GetRequest() *Request {
 	return nil
 }
 
-func (x *InvokeContext) GetKernelBrokerId() uint32 {
+func (x *InvokeContext) GetBrokerId() uint32 {
 	if x != nil {
-		return x.KernelBrokerId
+		return x.BrokerId
 	}
 	return 0
 }
@@ -1490,6 +1490,8 @@ type PluginInfoResponse struct {
 	Transtypes    []string               `protobuf:"bytes,5,rep,name=transtypes,proto3" json:"transtypes,omitempty"`
 	Inputs        map[string]*InputField `protobuf:"bytes,6,rep,name=inputs,proto3" json:"inputs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Note          string                 `protobuf:"bytes,7,opt,name=note,proto3" json:"note,omitempty"`
+	Bindwxmp      bool                   `protobuf:"varint,8,opt,name=bindwxmp,proto3" json:"bindwxmp,omitempty"`
+	Bindwxa       bool                   `protobuf:"varint,9,opt,name=bindwxa,proto3" json:"bindwxa,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1573,14 +1575,29 @@ func (x *PluginInfoResponse) GetNote() string {
 	return ""
 }
 
+func (x *PluginInfoResponse) GetBindwxmp() bool {
+	if x != nil {
+		return x.Bindwxmp
+	}
+	return false
+}
+
+func (x *PluginInfoResponse) GetBindwxa() bool {
+	if x != nil {
+		return x.Bindwxa
+	}
+	return false
+}
+
 type PageResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Type          string                 `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	Page          string                 `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`
 	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
 	Msg           string                 `protobuf:"bytes,4,opt,name=msg,proto3" json:"msg,omitempty"`
-	DataJsonRaw   []byte                 `protobuf:"bytes,5,opt,name=data_json_raw,json=dataJsonRaw,proto3" json:"data_json_raw,omitempty"`
+	DataRaw       []byte                 `protobuf:"bytes,5,opt,name=data_raw,json=dataRaw,proto3" json:"data_raw,omitempty"`
 	DataText      string                 `protobuf:"bytes,6,opt,name=data_text,json=dataText,proto3" json:"data_text,omitempty"`
+	NotifyBiz     string                 `protobuf:"bytes,7,opt,name=notify_biz,json=notifyBiz,proto3" json:"notify_biz,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1643,9 +1660,9 @@ func (x *PageResponse) GetMsg() string {
 	return ""
 }
 
-func (x *PageResponse) GetDataJsonRaw() []byte {
+func (x *PageResponse) GetDataRaw() []byte {
 	if x != nil {
-		return x.DataJsonRaw
+		return x.DataRaw
 	}
 	return nil
 }
@@ -1653,6 +1670,13 @@ func (x *PageResponse) GetDataJsonRaw() []byte {
 func (x *PageResponse) GetDataText() string {
 	if x != nil {
 		return x.DataText
+	}
+	return ""
+}
+
+func (x *PageResponse) GetNotifyBiz() string {
+	if x != nil {
+		return x.NotifyBiz
 	}
 	return ""
 }
@@ -1795,7 +1819,7 @@ func (x *BizRequest) GetBizType() BizType {
 	if x != nil {
 		return x.BizType
 	}
-	return BizType_BIZ_TYPE_INVALID
+	return BizType_T_NONE
 }
 
 func (x *BizRequest) GetBizNo() string {
@@ -1873,6 +1897,7 @@ type BizResult struct {
 	Msg           string                 `protobuf:"bytes,4,opt,name=msg,proto3" json:"msg,omitempty"`
 	Trace         *RequestTrace          `protobuf:"bytes,5,opt,name=trace,proto3" json:"trace,omitempty"`
 	Balance       string                 `protobuf:"bytes,6,opt,name=balance,proto3" json:"balance,omitempty"`
+	Buyer         string                 `protobuf:"bytes,7,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1911,7 +1936,7 @@ func (x *BizResult) GetState() BizState {
 	if x != nil {
 		return x.State
 	}
-	return BizState_BIZ_STATE_INVALID
+	return BizState_S_NONE
 }
 
 func (x *BizResult) GetApiNo() string {
@@ -1945,6 +1970,13 @@ func (x *BizResult) GetTrace() *RequestTrace {
 func (x *BizResult) GetBalance() string {
 	if x != nil {
 		return x.Balance
+	}
+	return ""
+}
+
+func (x *BizResult) GetBuyer() string {
+	if x != nil {
+		return x.Buyer
 	}
 	return ""
 }
@@ -2069,7 +2101,7 @@ func (x *Ack) GetError() *PluginError {
 	return nil
 }
 
-type CompleteBizRequest struct {
+type BizDoneReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	BizType       BizType                `protobuf:"varint,2,opt,name=biz_type,json=bizType,proto3,enum=okpay.plugin.BizType" json:"biz_type,omitempty"`
@@ -2084,20 +2116,20 @@ type CompleteBizRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CompleteBizRequest) Reset() {
-	*x = CompleteBizRequest{}
+func (x *BizDoneReq) Reset() {
+	*x = BizDoneReq{}
 	mi := &file_plugin_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CompleteBizRequest) String() string {
+func (x *BizDoneReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CompleteBizRequest) ProtoMessage() {}
+func (*BizDoneReq) ProtoMessage() {}
 
-func (x *CompleteBizRequest) ProtoReflect() protoreflect.Message {
+func (x *BizDoneReq) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2109,75 +2141,75 @@ func (x *CompleteBizRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CompleteBizRequest.ProtoReflect.Descriptor instead.
-func (*CompleteBizRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use BizDoneReq.ProtoReflect.Descriptor instead.
+func (*BizDoneReq) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *CompleteBizRequest) GetRequestId() string {
+func (x *BizDoneReq) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetBizType() BizType {
+func (x *BizDoneReq) GetBizType() BizType {
 	if x != nil {
 		return x.BizType
 	}
-	return BizType_BIZ_TYPE_INVALID
+	return BizType_T_NONE
 }
 
-func (x *CompleteBizRequest) GetBizNo() string {
+func (x *BizDoneReq) GetBizNo() string {
 	if x != nil {
 		return x.BizNo
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetState() BizState {
+func (x *BizDoneReq) GetState() BizState {
 	if x != nil {
 		return x.State
 	}
-	return BizState_BIZ_STATE_INVALID
+	return BizState_S_NONE
 }
 
-func (x *CompleteBizRequest) GetApiNo() string {
+func (x *BizDoneReq) GetApiNo() string {
 	if x != nil {
 		return x.ApiNo
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetCode() string {
+func (x *BizDoneReq) GetCode() string {
 	if x != nil {
 		return x.Code
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetMsg() string {
+func (x *BizDoneReq) GetMsg() string {
 	if x != nil {
 		return x.Msg
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetRespBody() string {
+func (x *BizDoneReq) GetRespBody() string {
 	if x != nil {
 		return x.RespBody
 	}
 	return ""
 }
 
-func (x *CompleteBizRequest) GetBuyer() string {
+func (x *BizDoneReq) GetBuyer() string {
 	if x != nil {
 		return x.Buyer
 	}
 	return ""
 }
 
-type LockOrderExtRequest struct {
+type LockExtReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	TradeNo       string                 `protobuf:"bytes,2,opt,name=trade_no,json=tradeNo,proto3" json:"trade_no,omitempty"`
@@ -2185,25 +2217,25 @@ type LockOrderExtRequest struct {
 	RespBody      string                 `protobuf:"bytes,4,opt,name=resp_body,json=respBody,proto3" json:"resp_body,omitempty"`
 	ReqCount      int32                  `protobuf:"varint,5,opt,name=req_count,json=reqCount,proto3" json:"req_count,omitempty"`
 	ReqMs         int32                  `protobuf:"varint,6,opt,name=req_ms,json=reqMs,proto3" json:"req_ms,omitempty"`
-	ExtJsonRaw    []byte                 `protobuf:"bytes,7,opt,name=ext_json_raw,json=extJsonRaw,proto3" json:"ext_json_raw,omitempty"`
+	ExtRaw        []byte                 `protobuf:"bytes,7,opt,name=ext_raw,json=extRaw,proto3" json:"ext_raw,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LockOrderExtRequest) Reset() {
-	*x = LockOrderExtRequest{}
+func (x *LockExtReq) Reset() {
+	*x = LockExtReq{}
 	mi := &file_plugin_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LockOrderExtRequest) String() string {
+func (x *LockExtReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LockOrderExtRequest) ProtoMessage() {}
+func (*LockExtReq) ProtoMessage() {}
 
-func (x *LockOrderExtRequest) ProtoReflect() protoreflect.Message {
+func (x *LockExtReq) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2215,81 +2247,81 @@ func (x *LockOrderExtRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LockOrderExtRequest.ProtoReflect.Descriptor instead.
-func (*LockOrderExtRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use LockExtReq.ProtoReflect.Descriptor instead.
+func (*LockExtReq) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *LockOrderExtRequest) GetRequestId() string {
+func (x *LockExtReq) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
 	}
 	return ""
 }
 
-func (x *LockOrderExtRequest) GetTradeNo() string {
+func (x *LockExtReq) GetTradeNo() string {
 	if x != nil {
 		return x.TradeNo
 	}
 	return ""
 }
 
-func (x *LockOrderExtRequest) GetReqBody() string {
+func (x *LockExtReq) GetReqBody() string {
 	if x != nil {
 		return x.ReqBody
 	}
 	return ""
 }
 
-func (x *LockOrderExtRequest) GetRespBody() string {
+func (x *LockExtReq) GetRespBody() string {
 	if x != nil {
 		return x.RespBody
 	}
 	return ""
 }
 
-func (x *LockOrderExtRequest) GetReqCount() int32 {
+func (x *LockExtReq) GetReqCount() int32 {
 	if x != nil {
 		return x.ReqCount
 	}
 	return 0
 }
 
-func (x *LockOrderExtRequest) GetReqMs() int32 {
+func (x *LockExtReq) GetReqMs() int32 {
 	if x != nil {
 		return x.ReqMs
 	}
 	return 0
 }
 
-func (x *LockOrderExtRequest) GetExtJsonRaw() []byte {
+func (x *LockExtReq) GetExtRaw() []byte {
 	if x != nil {
-		return x.ExtJsonRaw
+		return x.ExtRaw
 	}
 	return nil
 }
 
-type LockOrderExtResponse struct {
+type LockExtResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ExtJsonRaw    []byte                 `protobuf:"bytes,1,opt,name=ext_json_raw,json=extJsonRaw,proto3" json:"ext_json_raw,omitempty"`
+	ExtRaw        []byte                 `protobuf:"bytes,1,opt,name=ext_raw,json=extRaw,proto3" json:"ext_raw,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LockOrderExtResponse) Reset() {
-	*x = LockOrderExtResponse{}
+func (x *LockExtResp) Reset() {
+	*x = LockExtResp{}
 	mi := &file_plugin_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LockOrderExtResponse) String() string {
+func (x *LockExtResp) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LockOrderExtResponse) ProtoMessage() {}
+func (*LockExtResp) ProtoMessage() {}
 
-func (x *LockOrderExtResponse) ProtoReflect() protoreflect.Message {
+func (x *LockExtResp) ProtoReflect() protoreflect.Message {
 	mi := &file_plugin_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2301,14 +2333,14 @@ func (x *LockOrderExtResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LockOrderExtResponse.ProtoReflect.Descriptor instead.
-func (*LockOrderExtResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use LockExtResp.ProtoReflect.Descriptor instead.
+func (*LockExtResp) Descriptor() ([]byte, []int) {
 	return file_plugin_proto_rawDescGZIP(), []int{21}
 }
 
-func (x *LockOrderExtResponse) GetExtJsonRaw() []byte {
+func (x *LockExtResp) GetExtRaw() []byte {
 	if x != nil {
-		return x.ExtJsonRaw
+		return x.ExtRaw
 	}
 	return nil
 }
@@ -2419,7 +2451,7 @@ const file_plugin_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x1a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xfa\x03\n" +
+	"updated_at\x18\x1b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xeb\x03\n" +
 	"\x0fChannelSnapshot\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\x12\x16\n" +
@@ -2429,9 +2461,9 @@ const file_plugin_proto_rawDesc = "" +
 	"\tfixed_fee\x18\x06 \x01(\x03R\bfixedFee\x12\x16\n" +
 	"\x06status\x18\a \x01(\x05R\x06status\x12\x16\n" +
 	"\x06action\x18\b \x01(\x05R\x06action\x12\x16\n" +
-	"\x06domain\x18\t \x01(\tR\x06domain\x12&\n" +
-	"\x0fconfig_json_raw\x18\n" +
-	" \x01(\fR\rconfigJsonRaw\x12\x1a\n" +
+	"\x06domain\x18\t \x01(\tR\x06domain\x12\x17\n" +
+	"\acfg_raw\x18\n" +
+	" \x01(\fR\x06cfgRaw\x12\x1a\n" +
 	"\bdaylimit\x18\v \x01(\x03R\bdaylimit\x12\x1c\n" +
 	"\tdaynumber\x18\f \x01(\x03R\tdaynumber\x12\x16\n" +
 	"\x06paymin\x18\r \x01(\x03R\x06paymin\x12\x16\n" +
@@ -2456,7 +2488,7 @@ const file_plugin_proto_rawDesc = "" +
 	"\x02ua\x18\x04 \x01(\tR\x02ua\x12\x14\n" +
 	"\x05query\x18\x05 \x01(\tR\x05query\x12\x12\n" +
 	"\x04body\x18\x06 \x01(\fR\x04body\x120\n" +
-	"\aheaders\x18\a \x03(\v2\x16.okpay.plugin.HeaderKVR\aheadersJ\x04\b\b\x10\v\"\xba\x03\n" +
+	"\aheaders\x18\a \x03(\v2\x16.okpay.plugin.HeaderKVR\aheadersJ\x04\b\b\x10\v\"\xad\x03\n" +
 	"\rInvokeContext\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x12\x1b\n" +
@@ -2466,8 +2498,8 @@ const file_plugin_proto_rawDesc = "" +
 	"\btransfer\x18\x05 \x01(\v2\x1e.okpay.plugin.TransferSnapshotR\btransfer\x127\n" +
 	"\achannel\x18\x06 \x01(\v2\x1d.okpay.plugin.ChannelSnapshotR\achannel\x124\n" +
 	"\x06config\x18\a \x01(\v2\x1c.okpay.plugin.ConfigSnapshotR\x06config\x12/\n" +
-	"\arequest\x18\b \x01(\v2\x15.okpay.plugin.RequestR\arequest\x12(\n" +
-	"\x10kernel_broker_id\x18\t \x01(\rR\x0ekernelBrokerId\"\x13\n" +
+	"\arequest\x18\b \x01(\v2\x15.okpay.plugin.RequestR\arequest\x12\x1b\n" +
+	"\tbroker_id\x18\t \x01(\rR\bbrokerId\"\x13\n" +
 	"\x11PluginInfoRequest\"\x86\x02\n" +
 	"\n" +
 	"InputField\x12\x12\n" +
@@ -2479,7 +2511,7 @@ const file_plugin_proto_rawDesc = "" +
 	"\aoptions\x18\x06 \x03(\v2%.okpay.plugin.InputField.OptionsEntryR\aoptions\x1a:\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb7\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xed\x02\n" +
 	"\x12PluginInfoResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
@@ -2489,17 +2521,21 @@ const file_plugin_proto_rawDesc = "" +
 	"transtypes\x18\x05 \x03(\tR\n" +
 	"transtypes\x12D\n" +
 	"\x06inputs\x18\x06 \x03(\v2,.okpay.plugin.PluginInfoResponse.InputsEntryR\x06inputs\x12\x12\n" +
-	"\x04note\x18\a \x01(\tR\x04note\x1aS\n" +
+	"\x04note\x18\a \x01(\tR\x04note\x12\x1a\n" +
+	"\bbindwxmp\x18\b \x01(\bR\bbindwxmp\x12\x18\n" +
+	"\abindwxa\x18\t \x01(\bR\abindwxa\x1aS\n" +
 	"\vInputsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.okpay.plugin.InputFieldR\x05value:\x028\x01\"\x9b\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\x18.okpay.plugin.InputFieldR\x05value:\x028\x01\"\xb1\x01\n" +
 	"\fPageResponse\x12\x12\n" +
 	"\x04type\x18\x01 \x01(\tR\x04type\x12\x12\n" +
 	"\x04page\x18\x02 \x01(\tR\x04page\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\x12\x10\n" +
-	"\x03msg\x18\x04 \x01(\tR\x03msg\x12\"\n" +
-	"\rdata_json_raw\x18\x05 \x01(\fR\vdataJsonRaw\x12\x1b\n" +
-	"\tdata_text\x18\x06 \x01(\tR\bdataText\">\n" +
+	"\x03msg\x18\x04 \x01(\tR\x03msg\x12\x19\n" +
+	"\bdata_raw\x18\x05 \x01(\fR\adataRaw\x12\x1b\n" +
+	"\tdata_text\x18\x06 \x01(\tR\bdataText\x12\x1d\n" +
+	"\n" +
+	"notify_biz\x18\a \x01(\tR\tnotifyBiz\">\n" +
 	"\rHandleRequest\x12-\n" +
 	"\x03ctx\x18\x01 \x01(\v2\x1b.okpay.plugin.InvokeContextR\x03ctx\"@\n" +
 	"\x0eHandleResponse\x12.\n" +
@@ -2512,14 +2548,15 @@ const file_plugin_proto_rawDesc = "" +
 	"\fRequestTrace\x12\x15\n" +
 	"\x06req_ms\x18\x01 \x01(\x05R\x05reqMs\x12\x19\n" +
 	"\breq_body\x18\x02 \x01(\tR\areqBody\x12\x1b\n" +
-	"\tresp_body\x18\x03 \x01(\tR\brespBody\"\xc2\x01\n" +
+	"\tresp_body\x18\x03 \x01(\tR\brespBody\"\xd8\x01\n" +
 	"\tBizResult\x12,\n" +
 	"\x05state\x18\x01 \x01(\x0e2\x16.okpay.plugin.BizStateR\x05state\x12\x15\n" +
 	"\x06api_no\x18\x02 \x01(\tR\x05apiNo\x12\x12\n" +
 	"\x04code\x18\x03 \x01(\tR\x04code\x12\x10\n" +
 	"\x03msg\x18\x04 \x01(\tR\x03msg\x120\n" +
 	"\x05trace\x18\x05 \x01(\v2\x1a.okpay.plugin.RequestTraceR\x05trace\x12\x18\n" +
-	"\abalance\x18\x06 \x01(\tR\abalance\"Y\n" +
+	"\abalance\x18\x06 \x01(\tR\abalance\x12\x14\n" +
+	"\x05buyer\x18\a \x01(\tR\x05buyer\"Y\n" +
 	"\vPluginError\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1c\n" +
@@ -2528,8 +2565,9 @@ const file_plugin_proto_rawDesc = "" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tR\trequestId\x12/\n" +
-	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\x9a\x02\n" +
-	"\x12CompleteBizRequest\x12\x1d\n" +
+	"\x05error\x18\x03 \x01(\v2\x19.okpay.plugin.PluginErrorR\x05error\"\x92\x02\n" +
+	"\n" +
+	"BizDoneReq\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x120\n" +
 	"\bbiz_type\x18\x02 \x01(\x0e2\x15.okpay.plugin.BizTypeR\abizType\x12\x15\n" +
@@ -2539,39 +2577,42 @@ const file_plugin_proto_rawDesc = "" +
 	"\x04code\x18\x06 \x01(\tR\x04code\x12\x10\n" +
 	"\x03msg\x18\a \x01(\tR\x03msg\x12\x1b\n" +
 	"\tresp_body\x18\b \x01(\tR\brespBody\x12\x14\n" +
-	"\x05buyer\x18\t \x01(\tR\x05buyer\"\xdd\x01\n" +
-	"\x13LockOrderExtRequest\x12\x1d\n" +
+	"\x05buyer\x18\t \x01(\tR\x05buyer\"\xcb\x01\n" +
+	"\n" +
+	"LockExtReq\x12\x1d\n" +
 	"\n" +
 	"request_id\x18\x01 \x01(\tR\trequestId\x12\x19\n" +
 	"\btrade_no\x18\x02 \x01(\tR\atradeNo\x12\x19\n" +
 	"\breq_body\x18\x03 \x01(\tR\areqBody\x12\x1b\n" +
 	"\tresp_body\x18\x04 \x01(\tR\brespBody\x12\x1b\n" +
 	"\treq_count\x18\x05 \x01(\x05R\breqCount\x12\x15\n" +
-	"\x06req_ms\x18\x06 \x01(\x05R\x05reqMs\x12 \n" +
-	"\fext_json_raw\x18\a \x01(\fR\n" +
-	"extJsonRaw\"8\n" +
-	"\x14LockOrderExtResponse\x12 \n" +
-	"\fext_json_raw\x18\x01 \x01(\fR\n" +
-	"extJsonRaw*u\n" +
-	"\aBizType\x12\x14\n" +
-	"\x10BIZ_TYPE_INVALID\x10\x00\x12\x12\n" +
-	"\x0eBIZ_TYPE_ORDER\x10\x01\x12\x13\n" +
-	"\x0fBIZ_TYPE_REFUND\x10\x02\x12\x15\n" +
-	"\x11BIZ_TYPE_TRANSFER\x10\x03\x12\x14\n" +
-	"\x10BIZ_TYPE_BALANCE\x10\x04*j\n" +
-	"\bBizState\x12\x15\n" +
-	"\x11BIZ_STATE_INVALID\x10\x00\x12\x14\n" +
-	"\x10BIZ_STATE_FAILED\x10\x01\x12\x18\n" +
-	"\x14BIZ_STATE_PROCESSING\x10\x02\x12\x17\n" +
-	"\x13BIZ_STATE_SUCCEEDED\x10\x032\x98\x02\n" +
+	"\x06req_ms\x18\x06 \x01(\x05R\x05reqMs\x12\x17\n" +
+	"\aext_raw\x18\a \x01(\fR\x06extRaw\"&\n" +
+	"\vLockExtResp\x12\x17\n" +
+	"\aext_raw\x18\x01 \x01(\fR\x06extRaw*B\n" +
+	"\aBizType\x12\n" +
+	"\n" +
+	"\x06T_NONE\x10\x00\x12\t\n" +
+	"\x05T_PAY\x10\x01\x12\t\n" +
+	"\x05T_REF\x10\x02\x12\n" +
+	"\n" +
+	"\x06T_XFER\x10\x03\x12\t\n" +
+	"\x05T_BAL\x10\x04*7\n" +
+	"\bBizState\x12\n" +
+	"\n" +
+	"\x06S_NONE\x10\x00\x12\n" +
+	"\n" +
+	"\x06S_FAIL\x10\x01\x12\t\n" +
+	"\x05S_ING\x10\x02\x12\b\n" +
+	"\x04S_OK\x10\x032\x98\x02\n" +
 	"\rPluginService\x12I\n" +
 	"\x04Info\x12\x1f.okpay.plugin.PluginInfoRequest\x1a .okpay.plugin.PluginInfoResponse\x12C\n" +
 	"\x06Handle\x12\x1b.okpay.plugin.HandleRequest\x1a\x1c.okpay.plugin.HandleResponse\x12;\n" +
 	"\x06Submit\x12\x18.okpay.plugin.BizRequest\x1a\x17.okpay.plugin.BizResult\x12:\n" +
-	"\x05Query\x12\x18.okpay.plugin.BizRequest\x1a\x17.okpay.plugin.BizResult2\xaa\x01\n" +
-	"\rKernelService\x12B\n" +
-	"\vCompleteBiz\x12 .okpay.plugin.CompleteBizRequest\x1a\x11.okpay.plugin.Ack\x12U\n" +
-	"\fLockOrderExt\x12!.okpay.plugin.LockOrderExtRequest\x1a\".okpay.plugin.LockOrderExtResponseB0Z.github.com/ppswws/okpay-plugin-sdk/proto;protob\x06proto3"
+	"\x05Query\x12\x18.okpay.plugin.BizRequest\x1a\x17.okpay.plugin.BizResult2\x90\x01\n" +
+	"\rKernelService\x12:\n" +
+	"\vCompleteBiz\x12\x18.okpay.plugin.BizDoneReq\x1a\x11.okpay.plugin.Ack\x12C\n" +
+	"\fLockOrderExt\x12\x18.okpay.plugin.LockExtReq\x1a\x19.okpay.plugin.LockExtRespB0Z.github.com/ppswws/okpay-plugin-sdk/proto;protob\x06proto3"
 
 var (
 	file_plugin_proto_rawDescOnce sync.Once
@@ -2609,9 +2650,9 @@ var file_plugin_proto_goTypes = []any{
 	(*BizResult)(nil),             // 18: okpay.plugin.BizResult
 	(*PluginError)(nil),           // 19: okpay.plugin.PluginError
 	(*Ack)(nil),                   // 20: okpay.plugin.Ack
-	(*CompleteBizRequest)(nil),    // 21: okpay.plugin.CompleteBizRequest
-	(*LockOrderExtRequest)(nil),   // 22: okpay.plugin.LockOrderExtRequest
-	(*LockOrderExtResponse)(nil),  // 23: okpay.plugin.LockOrderExtResponse
+	(*BizDoneReq)(nil),            // 21: okpay.plugin.BizDoneReq
+	(*LockExtReq)(nil),            // 22: okpay.plugin.LockExtReq
+	(*LockExtResp)(nil),           // 23: okpay.plugin.LockExtResp
 	nil,                           // 24: okpay.plugin.InputField.OptionsEntry
 	nil,                           // 25: okpay.plugin.PluginInfoResponse.InputsEntry
 	(*timestamppb.Timestamp)(nil), // 26: google.protobuf.Timestamp
@@ -2644,21 +2685,21 @@ var file_plugin_proto_depIdxs = []int32{
 	1,  // 24: okpay.plugin.BizResult.state:type_name -> okpay.plugin.BizState
 	17, // 25: okpay.plugin.BizResult.trace:type_name -> okpay.plugin.RequestTrace
 	19, // 26: okpay.plugin.Ack.error:type_name -> okpay.plugin.PluginError
-	0,  // 27: okpay.plugin.CompleteBizRequest.biz_type:type_name -> okpay.plugin.BizType
-	1,  // 28: okpay.plugin.CompleteBizRequest.state:type_name -> okpay.plugin.BizState
+	0,  // 27: okpay.plugin.BizDoneReq.biz_type:type_name -> okpay.plugin.BizType
+	1,  // 28: okpay.plugin.BizDoneReq.state:type_name -> okpay.plugin.BizState
 	11, // 29: okpay.plugin.PluginInfoResponse.InputsEntry.value:type_name -> okpay.plugin.InputField
 	10, // 30: okpay.plugin.PluginService.Info:input_type -> okpay.plugin.PluginInfoRequest
 	14, // 31: okpay.plugin.PluginService.Handle:input_type -> okpay.plugin.HandleRequest
 	16, // 32: okpay.plugin.PluginService.Submit:input_type -> okpay.plugin.BizRequest
 	16, // 33: okpay.plugin.PluginService.Query:input_type -> okpay.plugin.BizRequest
-	21, // 34: okpay.plugin.KernelService.CompleteBiz:input_type -> okpay.plugin.CompleteBizRequest
-	22, // 35: okpay.plugin.KernelService.LockOrderExt:input_type -> okpay.plugin.LockOrderExtRequest
+	21, // 34: okpay.plugin.KernelService.CompleteBiz:input_type -> okpay.plugin.BizDoneReq
+	22, // 35: okpay.plugin.KernelService.LockOrderExt:input_type -> okpay.plugin.LockExtReq
 	12, // 36: okpay.plugin.PluginService.Info:output_type -> okpay.plugin.PluginInfoResponse
 	15, // 37: okpay.plugin.PluginService.Handle:output_type -> okpay.plugin.HandleResponse
 	18, // 38: okpay.plugin.PluginService.Submit:output_type -> okpay.plugin.BizResult
 	18, // 39: okpay.plugin.PluginService.Query:output_type -> okpay.plugin.BizResult
 	20, // 40: okpay.plugin.KernelService.CompleteBiz:output_type -> okpay.plugin.Ack
-	23, // 41: okpay.plugin.KernelService.LockOrderExt:output_type -> okpay.plugin.LockOrderExtResponse
+	23, // 41: okpay.plugin.KernelService.LockOrderExt:output_type -> okpay.plugin.LockExtResp
 	36, // [36:42] is the sub-list for method output_type
 	30, // [30:36] is the sub-list for method input_type
 	30, // [30:30] is the sub-list for extension type_name
