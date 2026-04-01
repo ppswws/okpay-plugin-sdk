@@ -63,9 +63,9 @@ func BuildPostHTML(params PostForm) (string, error) {
 		return "", fmt.Errorf("action url is incomplete")
 	}
 	actionURL = (&url.URL{
-		Scheme: u.Scheme,
-		Host:   u.Host,
-		Path:   u.Path,
+		Scheme:   u.Scheme,
+		Host:     u.Host,
+		Path:     u.Path,
 		RawQuery: u.RawQuery,
 	}).String()
 	if len(params.Fields) == 0 {
